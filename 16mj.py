@@ -236,11 +236,13 @@ def next_two_not_block(block, mj_num, next):
 def hu(mj, mj_num):
     block = [0] * mj_num
     
-    for c in range(mj_num):
+    c = 0
+    while c < mj_num:
         #check pair
         if mj[c] == mj[c+1]:
             block[c] = 1
             block[c+1] = 1
+            c += 2
             i = 0
             
             # mj_hu 1:hu, 0:NOT hu
@@ -265,6 +267,7 @@ def hu(mj, mj_num):
                 i += 1
             if 1 == mj_hu:
                 return 1
+        c += 1
     
     return 0
     
