@@ -218,7 +218,55 @@ def index_to_pic(index):
         return h7
     elif 41 == index:
         return h8
+
+def next_two_not_block(block, mj_num, next):
+    num = 0
+    next_index = [-1] * 2
     
+    for i in range(mj_num):
+        if 2 == num:
+            break
+        if 0 == block[next]:
+            next_index[num] = next
+            num += 1
+    
+    return next_index[0], next_index[1]
+
+# rturn 1: hu, 0: NOT hu, mj must sort   
+def hu(mj, mj_num):
+    block = [0] * mj_num
+    
+    for c in range(mj_num):
+        #check pair
+        if mj[c] == mj[c+1]:
+            block[c] = 1
+            block[c+1] = 1
+            i = 0
+            
+            # mj_hu 1:hu, 0:NOT hu
+            mj_hu = 1
+            while i < mj_num:
+                if 1 == block[i]:
+                    i += 1
+                    continue
+                
+                n1, n2 = next_two_not_block(block, mj_num, i+1)
+                
+                if mj[n2] != -1:
+                    if mj[i] == mj[n1] == mj[n2]:
+                        i += 3
+                        continue
+                    elif mj[i] < 27 and mj[i]//9 == mj[n1]//9 == mj[n2]//9 and mj[i]+1 == mj[n1] and mj[n1]+1 == mj[n2]:
+                        i += 3
+                        continue
+                    else:
+                        mj_hu = 0
+                        break
+                i += 1
+            if 1 == mj_hu:
+                return 1
+    
+    return 0
     
 def draw_p0_mj(pmj, pmjloc, mjnum):
     for c, xy in enumerate(pmjloc):
