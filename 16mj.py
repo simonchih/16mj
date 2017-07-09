@@ -242,7 +242,6 @@ def hu(mj, mj_num):
         if mj[c] == mj[c+1]:
             block[c] = 1
             block[c+1] = 1
-            c += 2
             i = 0
             
             # mj_hu 1:hu, 0:NOT hu
@@ -267,6 +266,11 @@ def hu(mj, mj_num):
                 i += 1
             if 1 == mj_hu:
                 return 1
+                
+            block[c] = 0
+            block[c+1] = 0
+            c += 2
+            
         c += 1
     
     return 0
