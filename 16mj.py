@@ -249,7 +249,34 @@ def next_not_same(mj, mj_num, id):
         else:
             return i
     return -1
+
+# -1: Can't gon, 0~mj_num - 1: start of mj index    
+def gon(mj, mj_num, value):
+    for i in range(mj_num - 2):
+        if value == mj[i] == mj[i+1] == mj[i+2]:
+            return i
+    return -1
+# -1: Can't pon, 0~mj_num - 1: start of mj index
+def pon(mj, mj_num, value):
+    for i in range(mj_num - 1):
+        if value == mj[i] == mj[i+1]:
+            return i
+    return -1
+
+# []: Can't eat, [a, b, c]: eat index
+def eat(mj, mj_num, value):
+    eindex = []
+    if value >= 27:
+        return eindex
     
+    for i in range(mj_num - 1):
+        if mj[i] >= 27:
+            continue
+        elif  mj[i]//9 == mj[i+1]//9 == value//9:
+            if mj[i] + 2 == mj[i+1] + 1 == value or mj[i] + 2 == value + 1 == mj[i+1] or value + 2 == mj[i] + 1 == mj[i+1]:
+                eindex.append(i)
+        
+    return eindex
 def hear(mj, mj_num):
     block = [0] * mj_num
     
@@ -321,13 +348,14 @@ def hear(mj, mj_num):
     while c < mj_num:
         nt = next_not_same(mj, mj_num, c)
         if -1 == nt:
-            # NOT pair
+            # the end
             block[c] = 1
         elif nt - c > 1:
             c = nt
-            # pair
+            # sequence
             continue
         else:
+            # only one
             block[c] =1
             
         i = 0
