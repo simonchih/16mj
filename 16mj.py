@@ -252,7 +252,6 @@ def next_not_same(mj, mj_num, id):
     
 def hear(mj, mj_num):
     block = [0] * mj_num
-    two_s = 0
     
     c = 0
     while c < mj_num:
@@ -267,6 +266,7 @@ def hear(mj, mj_num):
             
             # mj_hear 1:hear, 0:NOT hear
             mj_hear = 1
+            two_s = 0
             while i < mj_num:
                 if 1 == block[i]:
                     i += 1
@@ -277,7 +277,7 @@ def hear(mj, mj_num):
                 if -1 == n1 and -1 == n2:
                     mj_hear = 0
                     break
-                elif n1 != -1:
+                elif n1 != -1 and -1 == n2:
                     if 1 == two_s:
                         mj_hear = 0
                         break
@@ -296,8 +296,16 @@ def hear(mj, mj_num):
                         i += 3
                         continue
                     else:
-                        mj_hear = 0
-                        break
+                        if 1 == two_s:
+                            mj_hear = 0
+                            break
+                        elif mj[i] == mj[n1] or (mj[i] < 27 and mj[i]//9 == mj[n1]//9 and mj[i]+1 == mj[n1]):
+                            two_s = 1
+                            i += 2
+                            continue
+                        else:
+                            mj_hear = 0
+                            break
                 i += 1
             if 1 == mj_hear:
                 return 1
@@ -377,7 +385,7 @@ def hu(mj, mj_num):
                 
                 n1, n2 = next_two_not_block(block, mj_num, i+1)
                 
-                if n2 != -1:
+                if n1 != -1 and n2 != -1:
                     if mj[i] == mj[n1] == mj[n2]:
                         i += 3
                         continue
@@ -387,6 +395,9 @@ def hu(mj, mj_num):
                     else:
                         mj_hu = 0
                         break
+                else:
+                    mj_hu = 0
+                    break
                 i += 1
             if 1 == mj_hu:
                 return 1
