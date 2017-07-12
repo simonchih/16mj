@@ -57,6 +57,9 @@ h7_image_filename = 'Image/MJh7.gif'
 h8_image_filename = 'Image/MJh8.gif'
 
 mjback_image_filename = 'Image/mjback.gif'
+mjb_image_filename = 'Image/mjb.gif'
+
+hu_image_filename = 'Image/hu.gif'
 
 SCREEN_SIZE = (1200, 900) 
 pygame.init()
@@ -117,10 +120,13 @@ h7 = pygame.image.load(h7_image_filename).convert()
 h8 = pygame.image.load(h8_image_filename).convert()
 
 mjback = pygame.image.load(mjback_image_filename).convert()
+mjb    = pygame.image.load(mjb_image_filename).convert()
 
 mjback2 = pygame.transform.rotate(mjback , -90)
 mjback3 = pygame.transform.rotate(mjback , -180)
 mjback4 = pygame.transform.rotate(mjback , -270)
+
+hu_button = pygame.image.load(hu_image_filename).convert()
 
 p_num = 16
 mjp = 0
@@ -128,6 +134,8 @@ mjp = 0
 mjloc = [(300, 800), (50, 120), (250, 90), (1100, 120)]
 #player 0 mj location
 p0_mjloc = []
+#button loc
+button_loc = [(1025, 800), (1080, 800), (1025, 850), (1080, 850)]
 p0_mj_width = t1.get_width()-10
 player_mj_num = [p_num, p_num, p_num, p_num]
 player_mj = [[0]*p_num, [0]*p_num, [0]*p_num, [0]*p_num]
