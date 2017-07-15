@@ -120,7 +120,7 @@ h7 = pygame.image.load(h7_image_filename).convert()
 h8 = pygame.image.load(h8_image_filename).convert()
 
 mjback = pygame.image.load(mjback_image_filename).convert()
-mjb    = pygame.image.load(mjb_image_filename).convert()
+mjbk   = pygame.image.load(mjb_image_filename).convert()
 
 mjback2 = pygame.transform.rotate(mjback , -90)
 mjback3 = pygame.transform.rotate(mjback , -180)
@@ -139,8 +139,8 @@ p0_mjloc = []
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
 drop_mj_loc = [[[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8]]
 hmj_loc = [[0] * 8, [0] * 8, [0] * 8, [0] * 8]
-dmj_loc = [[], [], [], []]
-# [value, type] in dmj. type 0: eat, 1: show gon, 2: dark gon
+dmj_loc = [[300, 740], [], [], []]
+# [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
 player_mj_num = [p_num, p_num, p_num, p_num]
@@ -232,6 +232,8 @@ def index_to_pic(index):
         return h7
     elif 41 == index:
         return h8
+    elif 42 == index:
+        return mjbk
 
 def pid_to_image(pid, index):
     pic = index_to_pic(index)
@@ -486,22 +488,51 @@ def fill_background():
         for x in range(0, screen_width, background.get_width()):
             screen.blit(background, (x, y))
 
+def display_dark_gon(pid, loc):
+    (x, y) = loc
+    if 0 == pid or 2 == pid:
+        for i in range(3):
+            screen.blit(pid_to_image(pid, 42), (x + i*p0_mj_width, y))
+        
+        screen.blit(pid_to_image(pid, 42), (x + p0_mj_width, y))
+    elif 1 == pid or 3 == pid:
+        for i in range(3):
+            screen.blit(pid_to_image(pid, 42), (x, y + i*p0_mj_width))
+        
+        screen.blit(pid_to_image(pid, 42), (x, y + p0_mj_width))
+    
+def display_show_gon(pid, value, loc):            
+    (x, y) = loc
+    if 0 == pid or 2 == pid:
+        for i in range(3):
+            screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
+        
+        screen.blit(pid_to_image(pid, value), (x + p0_mj_width, y))
+    elif 1 == pid or 3 == pid:
+        for i in range(3):
+            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
+        
+        screen.blit(pid_to_image(pid, value), (x, y + p0_mj_width))
+            
 # pid: 0~3
 def display_front_eat(pid, fmj, middle, loc):
     (x, y) = loc
     if 0 == pid:
-        screen.blit(pid_to_image(0, fmj[0]), (x, y))
+        
         screen.blit(pid_to_image(0, middle), (x + p0_mj_width, y))
         screen.blit(pid_to_image(0, fmj[1]), (x + 2*p0_mj_width, y))
     elif 1 == pid:
         screen.blit(pid_to_image(1, fmj[0]), (x, y))
-        # TBD
+        screen.blit(pid_to_image(1, middle), (x, y + p0_mj_width))
+        screen.blit(pid_to_image(1, fmj[1]), (x, y + 2*p0_mj_width))
     elif 2 == pid:
         screen.blit(pid_to_image(2, fmj[0]), (x, y))
-        # TBD
+        screen.blit(pid_to_image(2, middle), (x + p0_mj_width, y))
+        screen.blit(pid_to_image(2, fmj[1]), (x + 2*p0_mj_width, y))
     elif 3 == pid:
         screen.blit(pid_to_image(3, fmj[0]), (x, y))
-        # TBD
+        screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
+        screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))
 
 def display_all():
     fill_background()
