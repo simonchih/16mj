@@ -130,12 +130,18 @@ hu_button = pygame.image.load(hu_image_filename).convert()
 
 p_num = 16
 mjp = 0
+mjb = 143
 # 0~3: player 0~3
 mjloc = [(300, 800), (50, 120), (250, 90), (1100, 120)]
 #player 0 mj location
 p0_mjloc = []
 #button loc
-button_loc = [(1025, 800), (1080, 800), (1025, 850), (1080, 850)]
+button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
+drop_mj_loc = [[[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8]]
+hmj_loc = [[0] * 8, [0] * 8, [0] * 8, [0] * 8]
+dmj_loc = [[], [], [], []]
+# [value, type] in dmj. type 0: eat, 1: show gon, 2: dark gon
+dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
 player_mj_num = [p_num, p_num, p_num, p_num]
 player_mj = [[0]*p_num, [0]*p_num, [0]*p_num, [0]*p_num]
@@ -227,6 +233,18 @@ def index_to_pic(index):
     elif 41 == index:
         return h8
 
+def pid_to_image(pid, index):
+    pic = index_to_pic(index)
+
+    if 0 == pid:
+        return pic
+    elif 1 == pid:
+        return pygame.transform.rotate(pic , -90)
+    elif 2 == pid:
+        return pygame.transform.rotate(pic , -180)
+    elif 3 == pid:
+        return pygame.transform.rotate(pic , -270)
+    
 def next_two_not_block(block, mj_num, next):
     n0 = next_not_block(block, mj_num, next)
     if -1 == n0:
@@ -451,7 +469,7 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
         if c == mjnum:
             break
         (x, y) = xy
-        screen.blit(index_to_pic(pmj[c]), (x, y))
+        screen.blit(pid_to_image(0, pmj[c]), (x, y))
 
 def draw_mj_column(mj_pic, xy, mj_num):
     (startx, starty) = xy
@@ -468,13 +486,30 @@ def fill_background():
         for x in range(0, screen_width, background.get_width()):
             screen.blit(background, (x, y))
 
+# pid: 0~3
+def display_front_eat(pid, fmj, middle, loc):
+    (x, y) = loc
+    if 0 == pid:
+        screen.blit(pid_to_image(0, fmj[0]), (x, y))
+        screen.blit(pid_to_image(0, middle), (x + p0_mj_width, y))
+        screen.blit(pid_to_image(0, fmj[1]), (x + 2*p0_mj_width, y))
+    elif 1 == pid:
+        screen.blit(pid_to_image(1, fmj[0]), (x, y))
+        # TBD
+    elif 2 == pid:
+        screen.blit(pid_to_image(2, fmj[0]), (x, y))
+        # TBD
+    elif 3 == pid:
+        screen.blit(pid_to_image(3, fmj[0]), (x, y))
+        # TBD
+
 def display_all():
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
     draw_mj_column(mjback2, mjloc[1], player_mj_num[1])
     draw_mj_row(mjback3, mjloc[2], player_mj_num[2])
     draw_mj_column(mjback4, mjloc[3], player_mj_num[3])
-            
+    
 def main():
     global all_mj
     global player_mj_num
@@ -527,6 +562,8 @@ def main():
             first = 0
         
         display_all()
+        # Temp Test Code
+        # End Temp Test
         pygame.display.update()
         
         for event in pygame.event.get():
