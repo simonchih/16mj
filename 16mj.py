@@ -139,7 +139,7 @@ p0_mjloc = []
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
 drop_mj_loc = [[[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8]]
 hmj_loc = [[0] * 8, [0] * 8, [0] * 8, [0] * 8]
-dmj_loc = [[300, 740], [], [], []]
+dmj_loc = [[(280, 740)], [(110, 150)], [(280, 150)], [(1040, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
@@ -547,6 +547,10 @@ def main():
     global player_mj
     global p0_mjloc
     global mjp
+    global drop_mj_loc
+    global hmj_loc
+    global dmj_loc
+    global dmj
     
     first = 1
     p0_mjloc_ini = []
@@ -567,6 +571,17 @@ def main():
     for x in range(startx, startx + p_num*p0_mj_width, p0_mj_width):
         p0_mjloc_ini.append([x, starty])
         ii += 1
+    
+    # assign dmj_loc
+    gap = 5
+    for pi in range(4):
+        for i in range(1, 5):
+            (x, y) = dmj_loc[pi][i-1]
+            if 0 == pi or 2 == pi:
+                dmj_loc[pi].append((x + 2*p0_mj_width + mjbk.get_width() + gap, y))
+            else: #1 == pi or 3 == pi:
+                dmj_loc[pi].append((x, y + 2*p0_mj_width + mjbk.get_height() + gap))
+    # end assign dmj loc
     
     while True:
         
@@ -594,6 +609,11 @@ def main():
         
         display_all()
         # Temp Test Code
+        #for i in range(5):
+        #    display_dark_gon(0, dmj_loc[0][i])
+        #    display_dark_gon(1, dmj_loc[1][i])
+        #    display_dark_gon(2, dmj_loc[2][i])
+        #    display_dark_gon(3, dmj_loc[3][i])
         # End Temp Test
         pygame.display.update()
         
