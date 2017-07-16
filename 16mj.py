@@ -132,14 +132,14 @@ p_num = 16
 mjp = 0
 mjb = 143
 # 0~3: player 0~3
-mjloc = [(300, 800), (50, 120), (250, 90), (1100, 120)]
+mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 #player 0 mj location
 p0_mjloc = []
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
-drop_mj_loc = [[[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8], [[0] * 8, [0] * 8, [0] * 8, [0] * 8]]
-hmj_loc = [[0] * 8, [0] * 8, [0] * 8, [0] * 8]
-dmj_loc = [[(280, 740)], [(110, 150)], [(280, 150)], [(1040, 150)]]
+drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
+hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
+dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
@@ -566,11 +566,13 @@ def main():
         j += 1
     # end assign all mj
     
+    # assign p0_mjloc
     ii = 0
     (startx, starty) = mjloc[0]
     for x in range(startx, startx + p_num*p0_mj_width, p0_mj_width):
         p0_mjloc_ini.append([x, starty])
         ii += 1
+    # end p0_mjloc
     
     # assign dmj_loc
     gap = 5
@@ -582,6 +584,45 @@ def main():
             else: #1 == pi or 3 == pi:
                 dmj_loc[pi].append((x, y + 2*p0_mj_width + mjbk.get_height() + gap))
     # end assign dmj loc
+    
+    # assign hmj_loc
+    for pi in range(4):
+        for i in range(1, 8):
+            (x, y) = hmj_loc[pi][i-1]
+            if 0 == pi or 2 == pi:
+                hmj_loc[pi].append((x + p0_mj_width, y))
+            else: #1 == pi or 3 == pi:
+                hmj_loc[pi].append((x, y + p0_mj_width))
+    
+    # end assign hmj_loc
+    
+    # assign drop_mj_loc
+    for pi in range(4):
+        for i in range(4):
+            for j in range(8):
+                if 0 == j:
+                    if 0 == i:
+                        continue
+                    else:
+                        (x, y) = drop_mj_loc[pi][0]
+                        if 0 == pi:
+                            drop_mj_loc[pi][i*8] = (x, y - i*55)
+                        elif 1 == pi:
+                            drop_mj_loc[pi][i*8] = (x + i*55, y)
+                        elif 2 == pi:
+                            drop_mj_loc[pi][i*8] = (x, y + i*55)
+                        elif 3 == pi:
+                            drop_mj_loc[pi][i*8] = (x - i*55, y)
+                else:
+                    (x, y) = drop_mj_loc[pi][i*8+j-1]
+                    if 0 == pi or 2 == pi:
+                        drop_mj_loc[pi][i*8+j] = (x + p0_mj_width, y)
+                    else: #1 == pi or 3 == pi:
+                        drop_mj_loc[pi][i*8+j] = (x, y + p0_mj_width)
+                        
+    
+    drop_mj_loc[32:64] = drop_mj_loc[0:32]
+    # end assign drop_mj_loc
     
     while True:
         
@@ -614,6 +655,18 @@ def main():
         #    display_dark_gon(1, dmj_loc[1][i])
         #    display_dark_gon(2, dmj_loc[2][i])
         #    display_dark_gon(3, dmj_loc[3][i])
+        #
+        #for i in range(8):
+        #    screen.blit(pid_to_image(0, 40), hmj_loc[0][i])
+        #    screen.blit(pid_to_image(1, 39), hmj_loc[1][i])
+        #    screen.blit(pid_to_image(2, 38), hmj_loc[2][i])
+        #    screen.blit(pid_to_image(3, 37), hmj_loc[3][i])
+        #
+        #for i in range(32):
+        #    screen.blit(pid_to_image(0, 4), drop_mj_loc[0][i])
+        #    screen.blit(pid_to_image(1, 5), drop_mj_loc[1][i])
+        #    screen.blit(pid_to_image(2, 6), drop_mj_loc[2][i])
+        #    screen.blit(pid_to_image(3, 7), drop_mj_loc[3][i])
         # End Temp Test
         pygame.display.update()
         
