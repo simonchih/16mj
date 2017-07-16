@@ -138,7 +138,9 @@ p0_mjloc = []
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
+drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
+hmj = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
 dmj = [[], [], [], []]
@@ -518,7 +520,7 @@ def display_show_gon(pid, value, loc):
 def display_front_eat(pid, fmj, middle, loc):
     (x, y) = loc
     if 0 == pid:
-        
+        screen.blit(pid_to_image(0, fmj[0]), (x, y))
         screen.blit(pid_to_image(0, middle), (x + p0_mj_width, y))
         screen.blit(pid_to_image(0, fmj[1]), (x + 2*p0_mj_width, y))
     elif 1 == pid:
@@ -534,12 +536,30 @@ def display_front_eat(pid, fmj, middle, loc):
         screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
         screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))
 
+def draw_dmj():
+    for pid in range(4):
+        for i in range(len(dmj[pid])):
+            screen.blit(pid_to_image(pid, dmj[pid][i]), dmj_loc[pid][i])        
+        
+def draw_hmj():
+    for pid in range(4):
+        for i in range(len(hmj[pid])):
+            screen.blit(pid_to_image(pid, hmj[pid][i]), hmj_loc[pid][i])
+            
+def draw_drop_mj():
+    for pid in range(4):
+        for i in range(len(drop_mj[pid])):        
+            screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
+        
 def display_all():
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
     draw_mj_column(mjback2, mjloc[1], player_mj_num[1])
     draw_mj_row(mjback3, mjloc[2], player_mj_num[2])
     draw_mj_column(mjback4, mjloc[3], player_mj_num[3])
+    draw_dmj()
+    draw_hmj()
+    draw_drop_mj()
     
 def main():
     global all_mj
