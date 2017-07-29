@@ -142,7 +142,8 @@ p0_get_loc = []
 getmj = -1
 #player 0 mj location
 p0_mjloc = []
-get_done = [False] * 4
+# 1:get done, 0:get from mjp, -1: get from mjb
+get_done = [0] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
@@ -542,7 +543,7 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
         (x, y) = pmjloc[i]
         screen.blit(pid_to_image(0, pmj[c]), (x, y))
         
-    if True == get_done[turn_id]:
+    if 1 == get_done[turn_id]:
         # draw get mj
         screen.blit(pid_to_image(0, getmj), p0_get_loc)
 
@@ -732,7 +733,7 @@ def main():
         while (mjb - mjp + 1) > 0:
             
             if 1 == first:
-                get_done = [False] * 4
+                get_done = [0] * 4
                 random.shuffle(all_mj)
                 for i in range(0, p_num*4, 4):
                     player_mj[0][i//4] = all_mj[i]
@@ -790,11 +791,17 @@ def main():
             
             if 0 == (mjb - mjp + 1):
                 break
-            elif False == get_done[turn_id]:
-                getmj = all_mj[mjp]
-                mjp += 1
+            elif 0 == get_done[turn_id] or -1 == get_done[turn_id]:
+                if 0 == get_done[turn_id]:
+                    getmj = all_mj[mjp]
+                    mjp += 1
+                else: #-1 == get_done[turn_id]
+                    getmj = all_mj[mjb]
+                    mjb -= 1
                 if 0 == proc_add_hmj(turn_id, True, getmj):
-                    get_done[turn_id] = True
+                    get_done[turn_id] = 1
+                else:
+                    get_done[turn_id] = -1
             
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -816,7 +823,7 @@ def main():
                         p0_mjloc[ii][1] = p0_mjloc_org[ii][1] - 10
                         select = c
                         break
-                if True == get_done[0]:
+                if 1 == get_done[0]:
                     (mouseX, mouseY) = pygame.mouse.get_pos()
                     (x, y) = p0_get_loc_org
                     if x < mouseX < x + t1.get_width() and y < mouseY < y + t1.get_height():
