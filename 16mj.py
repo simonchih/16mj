@@ -131,12 +131,18 @@ hu_button = pygame.image.load(hu_image_filename).convert()
 p_num = 16
 mjp = 0
 mjb = 143
-# mj number remains
+turn_id = 0
+# location of mj number font remains
 renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
+p0_is_AI = False
+p0_get_loc_org = (880, 815)
+p0_get_loc = []
+getmj = -1
 #player 0 mj location
 p0_mjloc = []
+get_done = [False] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
@@ -531,11 +537,14 @@ def insert_mj(mjv, pid):
     player_mj_num[pid] = len(player_mj[pid])
     
 def draw_p0_mj(pmj, pmjloc, mjnum):
-    for c, xy in enumerate(pmjloc):
-        if c == mjnum:
-            break
-        (x, y) = xy
+    for c in range(mjnum):
+        i = p_num - mjnum + c
+        (x, y) = pmjloc[i]
         screen.blit(pid_to_image(0, pmj[c]), (x, y))
+        
+    if True == get_done[turn_id]:
+        # draw get mj
+        screen.blit(pid_to_image(0, getmj), p0_get_loc)
 
 def draw_mj_column(mj_pic, xy, mj_num):
     (startx, starty) = xy
@@ -642,6 +651,10 @@ def main():
     global hmj_loc
     global dmj_loc
     global dmj
+    global turn_id
+    global get_done
+    global p0_get_loc
+    global getmj
     
     first = 1
     p0_mjloc_ini = []
@@ -718,6 +731,7 @@ def main():
     while (mjb - mjp + 1) > 0:
         
         if 1 == first:
+            get_done = [False] * 4
             random.shuffle(all_mj)
             for i in range(0, p_num*4, 4):
                 player_mj[0][i//4] = all_mj[i]
@@ -727,6 +741,7 @@ def main():
             player_mj_num = [p_num, p_num, p_num, p_num]
             p0_mjloc_org = copy.deepcopy(p0_mjloc_ini)
             p0_mjloc = copy.deepcopy(p0_mjloc_ini)
+            p0_get_loc = list(p0_get_loc_org)
             mjp = p_num*4
             display_all()
             pygame.display.update()
@@ -772,27 +787,42 @@ def main():
         # End Temp Test
         pygame.display.update()
         
+        if False == get_done[turn_id]:
+            getmj = all_mj[mjp]
+            mjp += 1
+            get_done[turn_id] = True
+        
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
-            if event.type == MOUSEBUTTONDOWN:
+            elif False == p0_is_AI:
+                if event.type == MOUSEBUTTONDOWN:
+                    (mouseX, mouseY) = pygame.mouse.get_pos()
+                elif event.type == MOUSEBUTTONUP:
+                    (mouseX, mouseY) = pygame.mouse.get_pos()
+
+        if False == p0_is_AI:
+            select = None
+            for c in range(player_mj_num[0]):
                 (mouseX, mouseY) = pygame.mouse.get_pos()
-            elif event.type == MOUSEBUTTONUP:
+                ii = p_num - player_mj_num[0] + c
+                (x, y) = p0_mjloc_org[ii]
+                if x < mouseX < x + p0_mj_width and y < mouseY < y + t1.get_height():
+                    p0_mjloc = copy.deepcopy(p0_mjloc_org)
+                    p0_mjloc[ii][1] = p0_mjloc_org[ii][1] - 10
+                    select = c
+                    break
+            if True == get_done[0]:
                 (mouseX, mouseY) = pygame.mouse.get_pos()
-        
-        select = None
-        for c, v in enumerate(p0_mjloc_org):
-            if c == player_mj_num:
-                break
-            (mouseX, mouseY) = pygame.mouse.get_pos()
-            if v[0] < mouseX < v[0] + p0_mj_width and v[1] < mouseY < v[1] + t1.get_height():
-                p0_mjloc = copy.deepcopy(p0_mjloc_org)
-                p0_mjloc[c][1] = p0_mjloc_org[c][1] - 10
-                select = c
-                break
+                (x, y) = p0_get_loc_org
+                if x < mouseX < x + t1.get_width() and y < mouseY < y + t1.get_height():
+                    p0_get_loc[1] = p0_get_loc_org[1] - 10
+                    #get mj index is 16(p_num)
+                    select = p_num
             
-        if None == select:
-            p0_mjloc = copy.deepcopy(p0_mjloc_org)
+            if None == select:
+                p0_mjloc = copy.deepcopy(p0_mjloc_org)
+                p0_get_loc = list(p0_get_loc_org)
                 
     exit()
 		
