@@ -131,6 +131,8 @@ hu_button = pygame.image.load(hu_image_filename).convert()
 p_num = 16
 mjp = 0
 mjb = 143
+# mj number remains
+renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 #player 0 mj location
@@ -505,7 +507,21 @@ def proc_add_hmj(pid):
         screen.blit(write(u"補花", (0, 0, 255)), htext_loc[pid])
         pygame.display.update()
         time.sleep(1)
-        
+    return tget_num
+
+def insert_mj(mjv, pid):
+    global player_mj
+    global player_mj_num
+    
+    for i, v in enumerate(player_mj[pid]):
+        if mjv <= v:
+            player_mj[pid] = player_mj[pid][:i] + [mjv] + player_mj[pid][i:]
+            player_mj_num[pid] = len(player_mj[pid])
+            return
+    
+    player_mj[pid].append(mjv)
+    player_mj_num[pid] = len(player_mj[pid])
+    
 def draw_p0_mj(pmj, pmjloc, mjnum):
     for c, xy in enumerate(pmjloc):
         if c == mjnum:
@@ -598,6 +614,7 @@ def display_all():
     draw_dmj()
     draw_hmj()
     draw_drop_mj()
+    screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
 
 def write(msg="pygame is cool", color= (0,0,0)):    
     #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
@@ -612,6 +629,7 @@ def main():
     global player_mj
     global p0_mjloc
     global mjp
+    global mjb
     global drop_mj_loc
     global hmj_loc
     global dmj_loc
@@ -689,7 +707,7 @@ def main():
     drop_mj_loc[32:64] = drop_mj_loc[0:32]
     # end assign drop_mj_loc
     
-    while True:
+    while (mjb - mjp + 1) > 0:
         
         if 1 == first:
             random.shuffle(all_mj)
@@ -710,6 +728,16 @@ def main():
             player_mj[1].sort()
             player_mj[2].sort()
             player_mj[3].sort()
+            
+            for pid in range(4):
+                while True:
+                    get_num = proc_add_hmj(pid)
+                    if 0 == get_num:
+                        break
+                    else:
+                        for j in range(get_num):
+                            insert_mj(all_mj[mjb], pid)
+                            mjb -= 1
             
             first = 0
         
@@ -732,7 +760,7 @@ def main():
         #    screen.blit(pid_to_image(1, 5), drop_mj_loc[1][i])
         #    screen.blit(pid_to_image(2, 6), drop_mj_loc[2][i])
         #    screen.blit(pid_to_image(3, 7), drop_mj_loc[3][i])
-        #screen.blit(write(u"補花", (0, 0, 255)), (750, 700))
+        #screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (0, 0, 255)), (470, 10))
         # End Temp Test
         pygame.display.update()
         
