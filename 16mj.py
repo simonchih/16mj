@@ -487,7 +487,7 @@ def check_get_hmj(mj, mj_num):
     else:
         return mj[:start], rhmj, get_num
 
-def proc_add_hmj(pid):
+def proc_add_hmj(pid, get = False, value = -1):
     global hmj
     global player_mj
     global player_mj_num
@@ -496,17 +496,25 @@ def proc_add_hmj(pid):
     thmj = []
     tget_num = 0
     
-    tmj, thmj, tget_num = check_get_hmj(player_mj[pid], player_mj_num[pid])
+    if True == get:
+        if 42 > value > 33:
+            hmj[pid].append(value)
+            tget_num = 1
+    
+    else:
+        tmj, thmj, tget_num = check_get_hmj(player_mj[pid], player_mj_num[pid])
+    
+        if tget_num > 0:
+            player_mj[pid] = tmj
+            player_mj_num[pid] = len(tmj)
+            hmj[pid].extend(thmj)
     
     if tget_num > 0:
-        player_mj[pid] = tmj
-        player_mj_num[pid] = len(tmj)
-        hmj[pid].extend(thmj)
-        display_all()
-        
+        display_all()            
         screen.blit(write(u"補花", (0, 0, 255)), htext_loc[pid])
         pygame.display.update()
         time.sleep(1)
+    
     return tget_num
 
 def insert_mj(mjv, pid):
