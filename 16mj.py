@@ -140,6 +140,7 @@ button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
+htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
 hmj = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
@@ -467,7 +468,44 @@ def hu(mj, mj_num):
         c += 1
     
     return 0
+
+def check_get_hmj(mj, mj_num):
+    rhmj = []
+    get_num = 0
+    start = -1
+    for i in range(mj_num):
+        if 42 > mj[i] > 33:
+            if -1 == start:
+                start = i
+            rhmj.append(mj[i])
+            get_num += 1
+            
+    if 0 == get_num:        
+        return mj, rhmj, get_num
+    else:
+        return mj[:start], rhmj, get_num
+
+def proc_add_hmj(pid):
+    global hmj
+    global player_mj
+    global player_mj_num
     
+    tmj = []
+    thmj = []
+    tget_num = 0
+    
+    tmj, thmj, tget_num = check_get_hmj(player_mj[pid], player_mj_num[pid])
+    
+    if tget_num > 0:
+        player_mj[pid] = tmj
+        player_mj_num[pid] = len(tmj)
+        hmj[pid].extend(thmj)
+        display_all()
+        
+        screen.blit(write(u"補花", (0, 0, 255)), htext_loc[pid])
+        pygame.display.update()
+        time.sleep(1)
+        
 def draw_p0_mj(pmj, pmjloc, mjnum):
     for c, xy in enumerate(pmjloc):
         if c == mjnum:
@@ -560,6 +598,13 @@ def display_all():
     draw_dmj()
     draw_hmj()
     draw_drop_mj()
+
+def write(msg="pygame is cool", color= (0,0,0)):    
+    #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
+    myfont = pygame.font.Font("wqy-zenhei.ttf",36)
+    mytext = myfont.render(msg, True, color)
+    mytext = mytext.convert_alpha()
+    return mytext 
     
 def main():
     global all_mj
@@ -659,7 +704,7 @@ def main():
             mjp = p_num*4
             display_all()
             pygame.display.update()
-            time.sleep(2)
+            time.sleep(1)
             
             player_mj[0].sort()
             player_mj[1].sort()
@@ -687,6 +732,7 @@ def main():
         #    screen.blit(pid_to_image(1, 5), drop_mj_loc[1][i])
         #    screen.blit(pid_to_image(2, 6), drop_mj_loc[2][i])
         #    screen.blit(pid_to_image(3, 7), drop_mj_loc[3][i])
+        #screen.blit(write(u"補花", (0, 0, 255)), (750, 700))
         # End Temp Test
         pygame.display.update()
         
