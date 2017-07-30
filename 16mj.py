@@ -847,6 +847,7 @@ def main():
                     get_done[turn_id] = 1
                     temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
                     if 1 == hu(temp_mj, temp_mj_num):
+                        winner = turn_id
                         display_all(winner)
                         pygame.display.update()
                         time.sleep(5)
