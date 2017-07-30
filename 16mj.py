@@ -148,8 +148,8 @@ p0_mjloc = []
 get_done = [0] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850), (1100, 800)]
-#0: Disable, 1: Enable, 2: Clicked (for eat only)
-button_enable = [0] * 5
+#-1: ini, 0: Disable, 1: Enable, 2: Clicked (for eat only)
+button_enable = [-1] * 5
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
@@ -768,7 +768,7 @@ def main():
             
             if 1 == first:
                 get_done = [0] * 4
-                button_enable = [False] * 5
+                button_enable = [-1] * 5
                 random.shuffle(all_mj)
                 for i in range(0, p_num*4, 4):
                     player_mj[0][i//4] = all_mj[i]
