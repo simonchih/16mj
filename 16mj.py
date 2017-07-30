@@ -60,6 +60,7 @@ mjback_image_filename = 'Image/mjback.gif'
 mjb_image_filename = 'Image/mjb.gif'
 
 hu_image_filename = 'Image/hu.gif'
+button_image_filename = 'Image/50x50_mjb.gif'
 
 SCREEN_SIZE = (1200, 900) 
 pygame.init()
@@ -127,6 +128,7 @@ mjback3 = pygame.transform.rotate(mjback , -180)
 mjback4 = pygame.transform.rotate(mjback , -270)
 
 hu_button = pygame.image.load(hu_image_filename).convert()
+button = pygame.image.load(button_image_filename).convert()
 
 p_num = 16
 mjp = 0
@@ -145,7 +147,9 @@ p0_mjloc = []
 # 1:get done, 0:get from mjp, -1: get from mjb
 get_done = [0] * 4
 #button loc
-button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850)]
+button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850), (1100, 800)]
+#0: Disable, 1: Enable, 2: Clicked (for eat only)
+button_enable = [0] * 5
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
@@ -634,9 +638,38 @@ def display_all():
     draw_drop_mj()
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
 
-def write(msg="pygame is cool", color= (0,0,0)):    
+def index_to_btext(index):
+    if 0 == index:
+        return u"碰"
+    elif 1 == index:
+        return u"槓"
+    elif 2 == index:
+        return u"聽"
+    elif 3 == index:
+        return u"吃"
+    elif 4 == index:
+        return u"返"
+
+def draw_p0_button():
+    # Test only
+    #button_enable = [1] * 5
+    # End Test only
+    for i in range(len(button_loc)):
+        if button_enable[i] > 0:
+            (mouseX, mouseY) = pygame.mouse.get_pos()
+            (x, y) = button_loc[i]
+            screen.blit(button, button_loc[i])
+            if 2 == button_enable[i]:
+                screen.blit(write(index_to_btext(i), (0, 255, 0), 30), (x+10, y+5))
+            elif x < mouseX < x + button.get_width() and y < mouseY < y + button.get_height():
+                screen.blit(write(index_to_btext(i), (255, 0, 0), 30), (x+10, y+5))
+            else:
+                screen.blit(write(index_to_btext(i), (0, 0, 0), 30), (x+10, y+5))
+    
+        
+def write(msg="pygame is cool", color= (0,0,0), size = 36):    
     #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
-    myfont = pygame.font.Font("wqy-zenhei.ttf",36)
+    myfont = pygame.font.Font("wqy-zenhei.ttf",size)
     mytext = myfont.render(msg, True, color)
     mytext = mytext.convert_alpha()
     return mytext 
@@ -656,6 +689,7 @@ def main():
     global get_done
     global p0_get_loc
     global getmj
+    global button_enable
     
     first = 1
     p0_mjloc_ini = []
@@ -734,6 +768,7 @@ def main():
             
             if 1 == first:
                 get_done = [0] * 4
+                button_enable = [False] * 5
                 random.shuffle(all_mj)
                 for i in range(0, p_num*4, 4):
                     player_mj[0][i//4] = all_mj[i]
@@ -786,6 +821,8 @@ def main():
             #    screen.blit(pid_to_image(2, 6), drop_mj_loc[2][i])
             #    screen.blit(pid_to_image(3, 7), drop_mj_loc[3][i])
             #screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (0, 0, 255)), (470, 10))
+            #screen.blit(button, button_loc[0])
+            draw_p0_button()
             # End Temp Test
             pygame.display.update()
             
@@ -802,15 +839,6 @@ def main():
                     get_done[turn_id] = 1
                 else:
                     get_done[turn_id] = -1
-            
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    exit()
-                elif False == p0_is_AI:
-                    if event.type == MOUSEBUTTONDOWN:
-                        (mouseX, mouseY) = pygame.mouse.get_pos()
-                    elif event.type == MOUSEBUTTONUP:
-                        (mouseX, mouseY) = pygame.mouse.get_pos()
     
             if False == p0_is_AI:
                 select = None
@@ -834,6 +862,15 @@ def main():
                 if None == select:
                     p0_mjloc = copy.deepcopy(p0_mjloc_org)
                     p0_get_loc = list(p0_get_loc_org)
+                    
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    exit()
+                elif False == p0_is_AI:
+                    if event.type == MOUSEBUTTONDOWN:
+                        (mouseX, mouseY) = pygame.mouse.get_pos()
+                    elif event.type == MOUSEBUTTONUP:
+                        (mouseX, mouseY) = pygame.mouse.get_pos()
                     
     exit()
 		
