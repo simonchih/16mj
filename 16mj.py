@@ -531,18 +531,18 @@ def proc_add_hmj(pid, get = False, value = -1):
     
     return tget_num
 
-def insert_mj(mjv, pid):
-    global player_mj
-    global player_mj_num
-    
-    for i, v in enumerate(player_mj[pid]):
+def insert_mj(mjv, mj):    
+    for i, v in enumerate(mj):
         if mjv <= v:
-            player_mj[pid] = player_mj[pid][:i] + [mjv] + player_mj[pid][i:]
-            player_mj_num[pid] = len(player_mj[pid])
-            return
+            mj = mj[:i] + [mjv] + mj[i:]
+            return mj, len(mj)
     
-    player_mj[pid].append(mjv)
-    player_mj_num[pid] = len(player_mj[pid])
+    mj.append(mjv)
+    return mj, len(mj)
+
+def draw_hu(win_id):
+    if win_id >= 0:
+        screen.blit(pid_to_image(win_id, 43), huloc[win_id])
     
 def draw_p0_mj(pmj, pmjloc, mjnum):
     for c in range(mjnum):
@@ -630,7 +630,7 @@ def draw_drop_mj():
         for i in range(len(drop_mj[pid])):        
             screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
         
-def display_all():
+def display_all(win_id = -1):
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
     draw_mj_column(mjback2, mjloc[1], player_mj_num[1])
@@ -640,6 +640,7 @@ def display_all():
     draw_hmj()
     draw_drop_mj()
     draw_p0_button()
+    draw_hu(win_id)
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
 
 def index_to_btext(index):
@@ -771,6 +772,8 @@ def main():
         while (mjb - mjp + 1) > 0:
             
             if 1 == first:
+                # winner: -1, ini. 0~3: winner id
+                winner = -1
                 get_done = [0] * 4
                 button_enable = [-1] * 5
                 random.shuffle(all_mj)
@@ -800,7 +803,7 @@ def main():
                             break
                         else:
                             for j in range(get_num):
-                                insert_mj(all_mj[mjb], pid)
+                                player_mj[pid], player_mj_num[pid] = insert_mj(all_mj[mjb], player_mj[pid])
                                 mjb -= 1
                 
                 first = 0
@@ -842,6 +845,12 @@ def main():
                     mjb -= 1
                 if 0 == proc_add_hmj(turn_id, True, getmj):
                     get_done[turn_id] = 1
+                    temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
+                    if 1 == hu(temp_mj, temp_mj_num):
+                        display_all(winner)
+                        pygame.display.update()
+                        time.sleep(5)
+                        break
                 else:
                     get_done[turn_id] = -1
     
