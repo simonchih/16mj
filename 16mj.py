@@ -138,6 +138,7 @@ turn_id = 0
 renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
+huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
 p0_is_AI = False
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
@@ -250,6 +251,8 @@ def index_to_pic(index):
         return h8
     elif 42 == index:
         return mjbk
+    elif 43 == index:
+        return hu_button
 
 def pid_to_image(pid, index):
     pic = index_to_pic(index)
@@ -636,6 +639,7 @@ def display_all():
     draw_dmj()
     draw_hmj()
     draw_drop_mj()
+    draw_p0_button()
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
 
 def index_to_btext(index):
@@ -820,9 +824,10 @@ def main():
             #    screen.blit(pid_to_image(1, 5), drop_mj_loc[1][i])
             #    screen.blit(pid_to_image(2, 6), drop_mj_loc[2][i])
             #    screen.blit(pid_to_image(3, 7), drop_mj_loc[3][i])
+            #for i in range(4):
+            #    screen.blit(pid_to_image(i, 43), huloc[i])
             #screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (0, 0, 255)), (470, 10))
             #screen.blit(button, button_loc[0])
-            draw_p0_button()
             # End Temp Test
             pygame.display.update()
             
