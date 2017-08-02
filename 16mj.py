@@ -343,8 +343,15 @@ def add_block2(mj, mj_num, block):
         else:
             i += 1
     return block
+
+# -1: Can't gon, 0~mj_num - 4: start of mj index 
+def show_gon(mj, mj_num):
+    for i in range(mj_num - 3):
+        if mj[i] == mj[i+1] == mj[i+2] == mj[i+2]:
+            return i
+    return -1
     
-# -1: Can't gon, 0~mj_num - 1: start of mj index    
+# -1: Can't gon, 0~mj_num - 3: start of mj index    
 def gon(mj, mj_num, value):
     for i in range(mj_num - 2):
         if value == mj[i] == mj[i+1] == mj[i+2]:
@@ -739,14 +746,12 @@ def mjAI(tid, getv):
     
     tmj, tmj_num = insert_mj(getv, player_mj[tid])
     
-    for i in range(tmj_num):
-        temp_mj = tmj[:i] + tmj[i+1:]
-        temp_mj_num = tmj_num-1
-        if gon(temp_mj, temp_mj_num, tmj[i]) != -1:
-            player_mj[tid] = list(filter(lambda a: a != tmj[i], tmj))
-            player_mj_num[tid] = len(player_mj[tid])
-            dmj[tid].append([1, [tmj[i]]])
-            return -1
+    si = show_gon(tmj, tmj_num)
+    if si != -1:
+        player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
+        player_mj_num[tid] = len(player_mj[tid])
+        dmj[tid].append([1, [tmj[si]]])
+        return -1
     
     block = [0] * tmj_num
     block = add_block3(tmj, tmj_num, block)
