@@ -696,7 +696,7 @@ def mjAI(tid, getv):
         temp_mj = tmj[:i] + tmj[i+1:]
         temp_mj_num = tmj_num-1
         if gon(temp_mj, temp_mj_num, tmj[i]) != -1:
-            player_mj[tid] = list(filter(lambda a: a != tmj[i], player_mj[tid]))
+            player_mj[tid] = list(filter(lambda a: a != tmj[i], tmj))
             player_mj_num[tid] = len(player_mj[tid])
             dmj[tid].append([1, [tmj[i]]])
             return -1        
