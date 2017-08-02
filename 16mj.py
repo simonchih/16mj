@@ -278,7 +278,7 @@ def next_two_not_block(block, mj_num, next):
     return n0, n1
 
 # return -1 if exceed mj_num    
-def next_not_block(block, mj_num, next):
+def next_not_block(block, mj_num, next=0):
     i = next
     while i < mj_num:
         if 0 == block[i]:
@@ -298,6 +298,52 @@ def next_not_same(mj, mj_num, id):
             return i
     return -1
 
+# Precondition, mj must sort    
+def seq3_block(mj, mj_num, block):
+    i = 0
+    while i < mj_num:
+        if 1 == block[i]:
+            i += 1
+        elif mj[i]//9 == mj[i+1]//9 == mj[i+2]//9 and (mj[i] + 2 == mj[i+1] + 1 == mj[i+2]):
+            block[i] = block[i+1] = block[i+2] = 1
+            i += 3
+        else:
+            i += 1
+    return block
+    
+# Precondition, mj must sort
+def same3_block(mj, mj_num, block):
+    i = 0
+    while i < mj_num:
+        if 1 == block[i]:
+            i += 1
+        elif mj[i] == mj[i+1] == mj[i+2]:
+            block[i] = block[i+1] = block[i+2] = 1
+            i += 3
+        else:
+            i += 1
+    return block
+
+def add_block3(mj, mj_num, block):
+    b = same3_block(mj, mj_num, block)
+    b = seq3_block(mj, mj_num, b)
+    return b
+
+def add_block2(mj, mj_num, block):
+    i = 0
+    while block.count(0) > 2 and i < mj_num:
+        if 1 == block[i]:
+            i += 1
+        elif mj[i] == mj[i+1]:
+            block[i] = block[i+1] = 1
+            i += 2
+        elif mj[i]//9 == mj[i+1]//9 and mj[i]+1 == mj[i+1]:
+            block[i] = block[i+1] = 1
+            i += 2
+        else:
+            i += 1
+    return block
+    
 # -1: Can't gon, 0~mj_num - 1: start of mj index    
 def gon(mj, mj_num, value):
     for i in range(mj_num - 2):
@@ -689,6 +735,7 @@ def mjAI(tid, getv):
     global player_mj
     global player_mj_num
     global dmj
+    global drop_mj
     
     tmj, tmj_num = insert_mj(getv, player_mj[tid])
     
@@ -699,7 +746,21 @@ def mjAI(tid, getv):
             player_mj[tid] = list(filter(lambda a: a != tmj[i], tmj))
             player_mj_num[tid] = len(player_mj[tid])
             dmj[tid].append([1, [tmj[i]]])
-            return -1        
+            return -1
+    
+    block = [0] * tmj_num
+    block = add_block3(tmj, tmj_num, block)
+    block0_num = block.count(0)
+    
+    if block0_num > 2:
+        block = add_block2(tmj, tmj_num, block)
+        
+    di = next_not_block(block, len(block))
+    drop_mj[tid].append = tmj[di]
+    player_mj[tid] = tmj[:di] + tmj[di:]
+    player_mj_num[tid] = len(player_mj)
+    
+    return 1
     
 def main():
     global all_mj
@@ -886,11 +947,13 @@ def main():
                 if True == hear_status[turn_id]:
                     drop_mj[turn_id].append(getmj)
                     continue
+            elif True == hear_status[turn_id]:
+                drop_mj[turn_id].append(getmj)
+                continue
             else:
                 get_done[turn_id] = mjAI(turn_id, getmj)
-                if 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
+                if 1 == get_done[turn_id] and 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
                     hear_status[turn_id] = True
-                    # TBD
                     continue
     
             if False == p0_is_AI:
