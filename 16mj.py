@@ -147,6 +147,7 @@ getmj = -1
 p0_mjloc = []
 # 1:get done, 0:get from mjp, -1: get from mjb
 get_done = [0] * 4
+hear_status = [False] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850), (1100, 800)]
 #-1: ini, 0: Disable, 1: Enable, 2: Clicked (for eat only)
@@ -310,7 +311,7 @@ def pon(mj, mj_num, value):
             return i
     return -1
 
-# []: Can't eat, [a, b, c]: eat index
+# []: Can't eat, [a, c]: eat index
 def eat(mj, mj_num, value):
     eindex = []
     if value >= 27:
@@ -595,7 +596,7 @@ def display_show_gon(pid, value, loc):
         
         screen.blit(pid_to_image(pid, value), (x, y + p0_mj_width))
             
-# pid: 0~3
+# pid: 0~3, middle is fmj[2]
 def display_front_eat(pid, fmj, middle, loc):
     (x, y) = loc
     if 0 == pid:
@@ -618,7 +619,12 @@ def display_front_eat(pid, fmj, middle, loc):
 def draw_dmj():
     for pid in range(4):
         for i in range(len(dmj[pid])):
-            screen.blit(pid_to_image(pid, dmj[pid][i]), dmj_loc[pid][i])        
+            if 0 == dmj[pid][i][0]:
+                display_front_eat(pid, dmj[pid][i][1], dmj[pid][i][1][2], dmj_loc[pid][i])
+            elif 1 == dmj[pid][i][0]:
+                display_show_gon(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
+            elif 2 == dmj[pid][i][0]:
+                display_dark_gon(pid, dmj_loc[pid][i])        
         
 def draw_hmj():
     for pid in range(4):
@@ -678,6 +684,17 @@ def write(msg="pygame is cool", color= (0,0,0), size = 36):
     mytext = myfont.render(msg, True, color)
     mytext = mytext.convert_alpha()
     return mytext 
+
+def mjAI(tid, getv):
+    global player_mj
+    global player_mj_num
+    global dmj
+    
+    if gon(player_mj, player_mj_num, getv) != -1:
+        player_mj[tid] = list(filter(lambda a: a != getv, player_mj[tid]))
+        player_mj_num[tid] = len(player_mj[tid])
+        dmj[tid].append([1, [getv]])
+        return -1        
     
 def main():
     global all_mj
@@ -695,6 +712,7 @@ def main():
     global p0_get_loc
     global getmj
     global button_enable
+    global hear_status
     
     first = 1
     p0_mjloc_ini = []
@@ -774,6 +792,7 @@ def main():
             if 1 == first:
                 # winner: -1, ini. 0~3: winner id
                 winner = -1
+                hear_status = [False] * 4
                 get_done = [0] * 4
                 button_enable = [-1] * 5
                 random.shuffle(all_mj)
@@ -846,6 +865,7 @@ def main():
                 if 0 == proc_add_hmj(turn_id, True, getmj):
                     get_done[turn_id] = 1
                     temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
+                    # Check hu
                     if 1 == hu(temp_mj, temp_mj_num):
                         winner = turn_id
                         display_all(winner)
@@ -854,6 +874,19 @@ def main():
                         break
                 else:
                     get_done[turn_id] = -1
+                    continue
+    
+            # Check hu before
+            if False == p0_is_AI and 0 == turn_id:
+                if True == hear_status[turn_id]:
+                    drop_mj[turn_id].append(getmj)
+                    continue
+            else:
+                get_done[turn_id] = mjAI(turn_id, getmj)
+                if 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
+                    hear_status[turn_id] = True
+                    # TBD
+                    continue
     
             if False == p0_is_AI:
                 select = None
