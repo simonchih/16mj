@@ -690,11 +690,16 @@ def mjAI(tid, getv):
     global player_mj_num
     global dmj
     
-    if gon(player_mj, player_mj_num, getv) != -1:
-        player_mj[tid] = list(filter(lambda a: a != getv, player_mj[tid]))
-        player_mj_num[tid] = len(player_mj[tid])
-        dmj[tid].append([1, [getv]])
-        return -1        
+    tmj, tmj_num = insert_mj(getv, player_mj[tid])
+    
+    for i in range(tmj_num):
+        temp_mj = tmj[:i] + tmj[i+1:]
+        temp_mj_num = tmj_num-1
+        if gon(temp_mj, temp_mj_num, tmj[i]) != -1:
+            player_mj[tid] = list(filter(lambda a: a != tmj[i], player_mj[tid]))
+            player_mj_num[tid] = len(player_mj[tid])
+            dmj[tid].append([1, [tmj[i]]])
+            return -1        
     
 def main():
     global all_mj
