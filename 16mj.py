@@ -159,6 +159,7 @@ htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
 hmj = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
+# if type == 2 (dark gon), NO value property, e.g. [type]
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
 player_mj_num = [p_num, p_num, p_num, p_num]
@@ -345,7 +346,7 @@ def add_block2(mj, mj_num, block):
     return block
 
 # -1: Can't gon, 0~mj_num - 4: start of mj index 
-def show_gon(mj, mj_num):
+def dark_gon(mj, mj_num):
     for i in range(mj_num - 3):
         if mj[i] == mj[i+1] == mj[i+2] == mj[i+2]:
             return i
@@ -746,11 +747,11 @@ def mjAI(tid, getv):
     
     tmj, tmj_num = insert_mj(getv, player_mj[tid])
     
-    si = show_gon(tmj, tmj_num)
+    si = dark_gon(tmj, tmj_num)
     if si != -1:
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
-        dmj[tid].append([1, [tmj[si]]])
+        dmj[tid].append([2])
         return -1
     
     block = [0] * tmj_num
@@ -951,14 +952,13 @@ def main():
             if False == p0_is_AI and 0 == turn_id:
                 if True == hear_status[turn_id]:
                     drop_mj[turn_id].append(getmj)
-                    continue
             elif True == hear_status[turn_id]:
                 drop_mj[turn_id].append(getmj)
-                continue
             else:
                 get_done[turn_id] = mjAI(turn_id, getmj)
                 if 1 == get_done[turn_id] and 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
                     hear_status[turn_id] = True
+                elif -1 == get_done[turn_id]:
                     continue
     
             if False == p0_is_AI:
