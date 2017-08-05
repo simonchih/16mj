@@ -378,6 +378,8 @@ def eat(mj, mj_num, value):
             continue
         else:
             j = next_not_same(mj, mj_num, i)
+            if -1 == j:
+                break
             if  mj[i]//9 == mj[j]//9 == value//9:
                 if mj[i] + 2 == mj[j] + 1 == value or mj[i] + 2 == value + 1 == mj[j] or value + 2 == mj[i] + 1 == mj[j]:
                     eindex.append(i)
@@ -575,8 +577,7 @@ def proc_add_hmj(pid, get = False, value = -1):
     if True == get:
         if 42 > value > 33:
             hmj[pid].append(value)
-            tget_num = 1
-    
+            tget_num = 1    
     else:
         tmj, thmj, tget_num = check_get_hmj(player_mj[pid], player_mj_num[pid])
     
@@ -612,7 +613,7 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
         (x, y) = pmjloc[i]
         screen.blit(pid_to_image(0, pmj[c]), (x, y))
         
-    if 1 == get_done[turn_id] and getmj != None:
+    if 1 == get_done[turn_id]:
         # draw get mj
         screen.blit(pid_to_image(0, getmj), p0_get_loc)
 
@@ -706,7 +707,7 @@ def draw_hmj():
             
 def draw_drop_mj():
     for pid in range(4):
-        for i in range(len(drop_mj[pid])):        
+        for i in range(len(drop_mj[pid])):
             screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
         
 def display_all(win_id = -1):
@@ -758,23 +759,32 @@ def write(msg="pygame is cool", color= (0,0,0), size = 36):
     mytext = mytext.convert_alpha()
     return mytext 
 
-def mjAI(tid, getv=None):
+def mjAI(tid, getv = None):
     global player_mj
     global player_mj_num
     global dmj
     global drop_mj
     
-    if getv != None:
-        tmj, tmj_num = insert_mj(getv, player_mj[tid])
-    else:
+    if None == getv:
         tmj = player_mj[tid]
         tmj_num = player_mj_num[tid]
+    elif 1 == proc_add_hmj(tid, True, getv):
+        return -1
+    else:
+        tmj, tmj_num = insert_mj(getv, player_mj[tid])
+        # temp
+        print("tid=%d, num=%d"%(tid, player_mj_num[tid] + 3*len(dmj[tid])))
+        if player_mj_num[tid] + 3*len(dmj[tid]) > 17:
+            input("stop")
+        # end temp
+        
     
     si = dark_gon(tmj, tmj_num)
     if si != -1:
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
         dmj[tid].append([2])
+        print("-1") #temp
         return -1
     
     block = [0] * tmj_num
@@ -788,6 +798,7 @@ def mjAI(tid, getv=None):
     drop_mj[tid].append(tmj[di])
     player_mj[tid] = tmj[:di] + tmj[di+1:]
     player_mj_num[tid] = len(player_mj[tid])
+    print("player_mj_num[%d]=%s"%(tid, player_mj_num[tid]))# temp
     
     return 2
     
@@ -955,6 +966,7 @@ def main():
             #screen.blit(button, button_loc[0])
             # End Temp Test
             pygame.display.update()
+            # handle_drop_done. -1: ini, 0: handle drop mj, 1: done and get from mjp, 2: done and get from mjb
             handle_drop_done = -1
 
             if 0 == (mjb - mjp + 1):
@@ -1033,11 +1045,22 @@ def main():
             pygame.display.update()
             
             # Handle drop mj
-            if 0 == handle_drop_done:
+            while 0 == handle_drop_done or 1 == handle_drop_done:
                 did = (turn_id + 1)%4
                 while True:
                     if did == turn_id:
+                        handle_drop_done = 0
                         break
+                    else: 
+                        temp_mj, temp_mj_num = insert_mj(drop_mj[turn_id][-1], player_mj[did])
+                        # Check hu
+                        if 1 == hu(temp_mj, temp_mj_num):
+                            winner = did
+                            display_all(winner)
+                            pygame.display.update()
+                            handle_drop_done = 1
+                            time.sleep(5)
+                            break
                     if False == p0_is_AI and 0 == did:
                         pass
                     else:
@@ -1052,14 +1075,9 @@ def main():
                             screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
                             pygame.display.update()
                             time.sleep(1)
-                            handle_drop_done = 1
+                            handle_drop_done = 2
                             
                             turn_id = did
-                            getmj = all_mj[mjb]
-                            mjb -= 1
-                            while -1 == mjAI(turn_id, getmj):
-                                getmj = all_mj[mjb]
-                                mjb -= 1
                             break
                             
                         pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
@@ -1076,15 +1094,14 @@ def main():
                             handle_drop_done = 1
                             
                             turn_id = did
-                            getmj = None
-                            while -1 == mjAI(turn_id, getmj):
-                                getmj = all_mj[mjb]
-                                mjb -= 1
+                            mjAI(turn_id)
                             break
                     
                     did = (did + 1)%4            
-                
-                if 0 == handle_drop_done:
+                                
+                if 1 == handle_drop_done:
+                    continue
+                elif 0 == handle_drop_done:
                     did = (turn_id + 1)%4
                     if False == p0_is_AI and 0 == did:
                         pass
@@ -1098,7 +1115,12 @@ def main():
                             # 0: eat
                             dmj[did].append([0, etempv])
                             drop_mj[turn_id] = drop_mj[turn_id][:-1]
-                            player_mj[did] = player_mj[did][:etemp[0]] + player_mj[did][etemp[0]+1:etemp[1]] + player_mj[did][etemp[1]+1:]
+
+                            # player_mj[did] = player_mj[did][:etemp[0]] + player_mj[did][etemp[0]+1:etemp[1]] + player_mj[did][etemp[1]+1:]
+                            # delete in reverse older
+                            del player_mj[did][etemp[1]]
+                            del player_mj[did][etemp[0]]
+                            
                             player_mj_num[did] = len(player_mj[did])
                             display_all()            
                             screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
@@ -1106,14 +1128,17 @@ def main():
                             time.sleep(1)
                             
                             turn_id = did
-                            getmj = None
-                            while -1 == mjAI(turn_id, getmj):
-                                getmj = all_mj[mjb]
-                                mjb -= 1
-                        
-                get_done[turn_id] = 0
-                turn_id = (turn_id + 1)%4
+                            mjAI(turn_id)
+                            continue
+                if 2 == handle_drop_done:
+                    get_done[turn_id] = -1
+                else: # handle_drop_done == 0 or 1
+                    get_done[turn_id] = 0
+                    turn_id = (turn_id + 1)%4
+                break
             # End handle drop mj
+            if winner != -1:
+                break
         
         first = 1
         mjp = 0
