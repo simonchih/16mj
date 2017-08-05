@@ -145,7 +145,7 @@ p0_get_loc = []
 getmj = -1
 #player 0 mj location
 p0_mjloc = []
-# 1:get done, 0:get from mjp, -1: get from mjb
+# 2: won't show get mj, 1:get done, 0:get from mjp, -1: get from mjb 
 get_done = [0] * 4
 hear_status = [False] * 4
 #button loc
@@ -158,7 +158,7 @@ hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
 htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
 hmj = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
-# [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon
+# [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon, 3: pon
 # if type == 2 (dark gon), NO value property, e.g. [type]
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
@@ -302,7 +302,7 @@ def next_not_same(mj, mj_num, id):
 # Precondition, mj must sort    
 def seq3_block(mj, mj_num, block):
     i = 0
-    while i < mj_num:
+    while i < mj_num - 2:
         if 1 == block[i]:
             i += 1
         elif mj[i]//9 == mj[i+1]//9 == mj[i+2]//9 and (mj[i] + 2 == mj[i+1] + 1 == mj[i+2]):
@@ -315,7 +315,7 @@ def seq3_block(mj, mj_num, block):
 # Precondition, mj must sort
 def same3_block(mj, mj_num, block):
     i = 0
-    while i < mj_num:
+    while i < mj_num - 2:
         if 1 == block[i]:
             i += 1
         elif mj[i] == mj[i+1] == mj[i+2]:
@@ -332,7 +332,7 @@ def add_block3(mj, mj_num, block):
 
 def add_block2(mj, mj_num, block):
     i = 0
-    while block.count(0) > 2 and i < mj_num:
+    while block.count(0) > 2 and i < mj_num - 1:
         if 1 == block[i]:
             i += 1
         elif mj[i] == mj[i+1]:
@@ -348,7 +348,7 @@ def add_block2(mj, mj_num, block):
 # -1: Can't gon, 0~mj_num - 4: start of mj index 
 def dark_gon(mj, mj_num):
     for i in range(mj_num - 3):
-        if mj[i] == mj[i+1] == mj[i+2] == mj[i+2]:
+        if mj[i] == mj[i+1] == mj[i+2] == mj[i+3]:
             return i
     return -1
     
@@ -371,12 +371,19 @@ def eat(mj, mj_num, value):
     if value >= 27:
         return eindex
     
-    for i in range(mj_num - 1):
+    i = 0
+    while i < mj_num - 1:
         if mj[i] >= 27:
+            i += 1
             continue
-        elif  mj[i]//9 == mj[i+1]//9 == value//9:
-            if mj[i] + 2 == mj[i+1] + 1 == value or mj[i] + 2 == value + 1 == mj[i+1] or value + 2 == mj[i] + 1 == mj[i+1]:
-                eindex.append(i)
+        else:
+            j = next_not_same(mj, mj_num, i)
+            if  mj[i]//9 == mj[j]//9 == value//9:
+                if mj[i] + 2 == mj[j] + 1 == value or mj[i] + 2 == value + 1 == mj[j] or value + 2 == mj[i] + 1 == mj[j]:
+                    eindex.append(i)
+                    eindex.append(j)
+                    break
+        i += 1
         
     return eindex
 def hear(mj, mj_num):
@@ -605,7 +612,7 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
         (x, y) = pmjloc[i]
         screen.blit(pid_to_image(0, pmj[c]), (x, y))
         
-    if 1 == get_done[turn_id]:
+    if 1 == get_done[turn_id] and getmj != None:
         # draw get mj
         screen.blit(pid_to_image(0, getmj), p0_get_loc)
 
@@ -670,6 +677,16 @@ def display_front_eat(pid, fmj, middle, loc):
         screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
         screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))
 
+def display_pon(pid, value, loc):            
+    (x, y) = loc
+    if 0 == pid or 2 == pid:
+        for i in range(3):
+            screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
+        
+    elif 1 == pid or 3 == pid:
+        for i in range(3):
+            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))      
+        
 def draw_dmj():
     for pid in range(4):
         for i in range(len(dmj[pid])):
@@ -678,7 +695,9 @@ def draw_dmj():
             elif 1 == dmj[pid][i][0]:
                 display_show_gon(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
             elif 2 == dmj[pid][i][0]:
-                display_dark_gon(pid, dmj_loc[pid][i])        
+                display_dark_gon(pid, dmj_loc[pid][i])
+            elif 3 == dmj[pid][i][0]:
+                display_pon(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
         
 def draw_hmj():
     for pid in range(4):
@@ -739,13 +758,17 @@ def write(msg="pygame is cool", color= (0,0,0), size = 36):
     mytext = mytext.convert_alpha()
     return mytext 
 
-def mjAI(tid, getv):
+def mjAI(tid, getv=None):
     global player_mj
     global player_mj_num
     global dmj
     global drop_mj
     
-    tmj, tmj_num = insert_mj(getv, player_mj[tid])
+    if getv != None:
+        tmj, tmj_num = insert_mj(getv, player_mj[tid])
+    else:
+        tmj = player_mj[tid]
+        tmj_num = player_mj_num[tid]
     
     si = dark_gon(tmj, tmj_num)
     if si != -1:
@@ -762,11 +785,11 @@ def mjAI(tid, getv):
         block = add_block2(tmj, tmj_num, block)
         
     di = next_not_block(block, len(block))
-    drop_mj[tid].append = tmj[di]
-    player_mj[tid] = tmj[:di] + tmj[di:]
-    player_mj_num[tid] = len(player_mj)
+    drop_mj[tid].append(tmj[di])
+    player_mj[tid] = tmj[:di] + tmj[di+1:]
+    player_mj_num[tid] = len(player_mj[tid])
     
-    return 1
+    return 2
     
 def main():
     global all_mj
@@ -776,7 +799,9 @@ def main():
     global mjp
     global mjb
     global drop_mj_loc
+    global drop_mj
     global hmj_loc
+    global hmj
     global dmj_loc
     global dmj
     global turn_id
@@ -867,6 +892,12 @@ def main():
                 hear_status = [False] * 4
                 get_done = [0] * 4
                 button_enable = [-1] * 5
+                dmj = [[], [], [], []]
+                hmj = [[], [], [], []]
+                drop_mj = [[], [], [], []]
+                player_mj = [[0]*p_num, [0]*p_num, [0]*p_num, [0]*p_num]
+                player_mj_num = [p_num, p_num, p_num, p_num]
+                
                 random.shuffle(all_mj)
                 for i in range(0, p_num*4, 4):
                     player_mj[0][i//4] = all_mj[i]
@@ -924,14 +955,15 @@ def main():
             #screen.blit(button, button_loc[0])
             # End Temp Test
             pygame.display.update()
-            
+            handle_drop_done = -1
+
             if 0 == (mjb - mjp + 1):
                 break
             elif 0 == get_done[turn_id] or -1 == get_done[turn_id]:
                 if 0 == get_done[turn_id]:
                     getmj = all_mj[mjp]
                     mjp += 1
-                else: #-1 == get_done[turn_id]
+                elif -1 == get_done[turn_id]:
                     getmj = all_mj[mjb]
                     mjb -= 1
                 if 0 == proc_add_hmj(turn_id, True, getmj):
@@ -947,21 +979,25 @@ def main():
                 else:
                     get_done[turn_id] = -1
                     continue
-    
+
             # Check hu before
             if False == p0_is_AI and 0 == turn_id:
                 if True == hear_status[turn_id]:
                     drop_mj[turn_id].append(getmj)
+                    handle_drop_done = 0
             elif True == hear_status[turn_id]:
                 drop_mj[turn_id].append(getmj)
+                handle_drop_done = 0
             else:
                 get_done[turn_id] = mjAI(turn_id, getmj)
-                if 1 == get_done[turn_id] and 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
-                    hear_status[turn_id] = True
+                if 2 == get_done[turn_id]:
+                    handle_drop_done = 0
+                    if 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
+                        hear_status[turn_id] = True
                 elif -1 == get_done[turn_id]:
                     continue
-    
-            if False == p0_is_AI:
+
+            if False == p0_is_AI and 0 == turn_id:
                 select = None
                 for c in range(player_mj_num[0]):
                     (mouseX, mouseY) = pygame.mouse.get_pos()
@@ -983,16 +1019,106 @@ def main():
                 if None == select:
                     p0_mjloc = copy.deepcopy(p0_mjloc_org)
                     p0_get_loc = list(p0_get_loc_org)
-                    
+
             for event in pygame.event.get():
                 if event.type == QUIT:
                     exit()
-                elif False == p0_is_AI:
+                elif False == p0_is_AI and 0 == turn_id:
                     if event.type == MOUSEBUTTONDOWN:
                         (mouseX, mouseY) = pygame.mouse.get_pos()
                     elif event.type == MOUSEBUTTONUP:
                         (mouseX, mouseY) = pygame.mouse.get_pos()
+
+            display_all()
+            pygame.display.update()
+            
+            # Handle drop mj
+            if 0 == handle_drop_done:
+                did = (turn_id + 1)%4
+                while True:
+                    if did == turn_id:
+                        break
+                    if False == p0_is_AI and 0 == did:
+                        pass
+                    else:
+                        gi = gon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                        if  gi!= -1:
+                            # 1: show gon
+                            dmj[did].append([1, [drop_mj[turn_id][-1]]])
+                            drop_mj[turn_id] = drop_mj[turn_id][:-1]
+                            player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
+                            player_mj_num[did] = len(player_mj[did])
+                            display_all()            
+                            screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
+                            pygame.display.update()
+                            time.sleep(1)
+                            handle_drop_done = 1
+                            
+                            turn_id = did
+                            getmj = all_mj[mjb]
+                            mjb -= 1
+                            while -1 == mjAI(turn_id, getmj):
+                                getmj = all_mj[mjb]
+                                mjb -= 1
+                            break
+                            
+                        pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                        if pi != -1:
+                            # 3: pon
+                            dmj[did].append([3, [drop_mj[turn_id][-1]]])
+                            drop_mj[turn_id] = drop_mj[turn_id][:-1]
+                            player_mj[did] = player_mj[did][:pi] + player_mj[did][pi+2:]
+                            player_mj_num[did] = len(player_mj[did])
+                            display_all()            
+                            screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
+                            pygame.display.update()
+                            time.sleep(1)
+                            handle_drop_done = 1
+                            
+                            turn_id = did
+                            getmj = None
+                            while -1 == mjAI(turn_id, getmj):
+                                getmj = all_mj[mjb]
+                                mjb -= 1
+                            break
                     
+                    did = (did + 1)%4            
+                
+                if 0 == handle_drop_done:
+                    did = (turn_id + 1)%4
+                    if False == p0_is_AI and 0 == did:
+                        pass
+                    else: 
+                        etemp = eat(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                        if etemp != []:
+                            etempv = []
+                            for i in range(2):
+                                etempv.append(player_mj[did][etemp[i]])
+                            etempv.append(drop_mj[turn_id][-1])
+                            # 0: eat
+                            dmj[did].append([0, etempv])
+                            drop_mj[turn_id] = drop_mj[turn_id][:-1]
+                            player_mj[did] = player_mj[did][:etemp[0]] + player_mj[did][etemp[0]+1:etemp[1]] + player_mj[did][etemp[1]+1:]
+                            player_mj_num[did] = len(player_mj[did])
+                            display_all()            
+                            screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
+                            pygame.display.update()
+                            time.sleep(1)
+                            
+                            turn_id = did
+                            getmj = None
+                            while -1 == mjAI(turn_id, getmj):
+                                getmj = all_mj[mjb]
+                                mjb -= 1
+                        
+                get_done[turn_id] = 0
+                turn_id = (turn_id + 1)%4
+            # End handle drop mj
+        
+        first = 1
+        mjp = 0
+        mjb = 143
+            
     exit()
 		
 if __name__ == "__main__":
