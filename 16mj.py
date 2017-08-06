@@ -134,6 +134,7 @@ p_num = 16
 mjp = 0
 mjb = 143
 turn_id = 0
+host_id = 0
 # location of mj number font remains
 renum_loc = (470, 10)
 # 0~3: player 0~3
@@ -618,15 +619,32 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
         # draw get mj
         screen.blit(pid_to_image(0, getmj), p0_get_loc)
 
-def draw_mj_column(mj_pic, xy, mj_num):
+def draw_mj_column(mj_pic, xy, mj_num, draw_all = -1):
     (startx, starty) = xy
-    for y in range(starty, starty + mj_num*mj_pic.get_height(), mj_pic.get_height()):
-        screen.blit(mj_pic, (startx, y))
+    if -1 == draw_all:
+        for y in range(starty, starty + mj_num*mj_pic.get_height(), mj_pic.get_height()):
+            screen.blit(mj_pic, (startx, y))
+    elif 1 == draw_all:
+        c = 0
+        for y in range(starty, starty + mj_num*p0_mj_width, p0_mj_width):
+            screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
+            c += 1
+    elif 3 == draw_all: # reverse older
+        c = mj_num - 1
+        for y in range(starty + (mj_num-1)*p0_mj_width, starty - 1, (-1)*p0_mj_width):
+            screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
+            c -= 1
 
-def draw_mj_row(mj_pic, xy, mj_num):
+def draw_mj_row(mj_pic, xy, mj_num, draw_all = -1):
     (startx, starty) = xy
-    for x in range(startx, startx + mj_num*mj_pic.get_width(), mj_pic.get_width()):
-        screen.blit(mj_pic, (x, starty))
+    if -1 == draw_all:
+        for x in range(startx, startx + mj_num*mj_pic.get_width(), mj_pic.get_width()):
+            screen.blit(mj_pic, (x, starty))
+    else: # reverse older
+        c = mj_num - 1
+        for x in range(startx + (mj_num-1)*p0_mj_width, startx - 1, (-1)*p0_mj_width):
+            screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (x, starty))
+            c -= 1
 
 def fill_background():
     for y in range(0, screen_height, background.get_height()):
@@ -711,18 +729,33 @@ def draw_drop_mj():
         for i in range(len(drop_mj[pid])):
             screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
         
-def display_all(win_id = -1):
+def draw_p123_mj(win_id = -1):
+    for pid in range(1,4):
+        if pid == win_id:
+            draw = pid
+        else:
+            draw = -1
+        
+        if 2 == pid:
+            draw_mj_row(mjback3, mjloc[pid], player_mj_num[pid], draw)
+        else: # player 1, 3
+            draw_mj_column(mjback4, mjloc[pid], player_mj_num[pid], draw)
+        
+
+def display_all(win_id = -1, did = -1):
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
-    draw_mj_column(mjback2, mjloc[1], player_mj_num[1])
-    draw_mj_row(mjback3, mjloc[2], player_mj_num[2])
-    draw_mj_column(mjback4, mjloc[3], player_mj_num[3])
+    draw_p123_mj(win_id)
     draw_dmj()
     draw_hmj()
     draw_drop_mj()
     draw_p0_button()
     draw_hu(win_id)
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
+    if did != -1:
+        (x, y) = drop_mj_loc[did][len(drop_mj[did])-1]
+        p = pid_to_image(did, drop_mj[did][-1])
+        pygame.draw.rect(screen, (0xff, 0, 0), (x, y, p.get_width(), p.get_height()), 3)
 
 def index_to_btext(index):
     if 0 == index:
@@ -814,6 +847,7 @@ def main():
     global getmj
     global button_enable
     global hear_status
+    global host_id
     
     first = 1
     p0_mjloc_ini = []
@@ -857,6 +891,9 @@ def main():
             else: #1 == pi or 3 == pi:
                 hmj_loc[pi].append((x, y + p0_mj_width))
     
+    # reverse older
+    hmj_loc[2] = hmj_loc[2][::-1]
+    hmj_loc[3] = hmj_loc[3][::-1]
     # end assign hmj_loc
     
     # assign drop_mj_loc
@@ -883,8 +920,12 @@ def main():
                     else: #1 == pi or 3 == pi:
                         drop_mj_loc[pi][i*8+j] = (x, y + p0_mj_width)
                         
-    
-    drop_mj_loc[32:64] = drop_mj_loc[0:32]
+    for pi in range(4):
+        if 2 == pi or 3 == pi: # reverse older
+            drop_mj_loc[pi][0:8] = drop_mj_loc[pi][7::-1]
+            for i in range(1, 4):
+                drop_mj_loc[pi][8*i:8*(i+1)] = drop_mj_loc[pi][8*(i+1)-1:8*i-1:-1]
+        drop_mj_loc[pi][32:64] = drop_mj_loc[pi][0:32]
     # end assign drop_mj_loc
     
     while True:
@@ -893,6 +934,7 @@ def main():
             if 1 == first:
                 # winner: -1, ini. 0~3: winner id
                 winner = -1
+                turn_id = host_id
                 hear_status = [False] * 4
                 get_done = [0] * 4
                 button_enable = [-1] * 5
@@ -904,10 +946,10 @@ def main():
                 
                 random.shuffle(all_mj)
                 for i in range(0, p_num*4, 4):
-                    player_mj[0][i//4] = all_mj[i]
-                    player_mj[1][i//4] = all_mj[i+1]
-                    player_mj[2][i//4] = all_mj[i+2]
-                    player_mj[3][i//4] = all_mj[i+3]
+                    player_mj[turn_id][i//4] = all_mj[i]
+                    player_mj[(turn_id+1)%4][i//4] = all_mj[i+1]
+                    player_mj[(turn_id+2)%4][i//4] = all_mj[i+2]
+                    player_mj[(turn_id+3)%4][i//4] = all_mj[i+3]
                 player_mj_num = [p_num, p_num, p_num, p_num]
                 p0_mjloc_org = copy.deepcopy(p0_mjloc_ini)
                 p0_mjloc = copy.deepcopy(p0_mjloc_ini)
@@ -955,10 +997,10 @@ def main():
             #    screen.blit(pid_to_image(3, 7), drop_mj_loc[3][i])
             #for i in range(4):
             #    screen.blit(pid_to_image(i, 43), huloc[i])
-            #screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (0, 0, 255)), (470, 10))
             #screen.blit(button, button_loc[0])
             # End Temp Test
             pygame.display.update()
+
             # handle_drop_done. -1: ini, 0: handle drop mj, 1: done and get from mjp, 2: done and get from mjb, 3: hu
             handle_drop_done = -1
 
@@ -976,10 +1018,12 @@ def main():
                     temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
                     # Check hu
                     if 1 == hu(temp_mj, temp_mj_num):
+                        player_mj[turn_id] = temp_mj
+                        player_mj_num[turn_id] = temp_mj_num
                         winner = turn_id
                         display_all(winner)
                         pygame.display.update()
-                        time.sleep(5)
+                        time.sleep(9)
                         break
                 else:
                     get_done[turn_id] = -1
@@ -993,6 +1037,7 @@ def main():
             elif True == hear_status[turn_id]:
                 drop_mj[turn_id].append(getmj)
                 handle_drop_done = 0
+                get_done[turn_id] = 2
             else:
                 get_done[turn_id] = mjAI(turn_id, getmj)
                 if 2 == get_done[turn_id]:
@@ -1044,15 +1089,17 @@ def main():
                     if did == turn_id:
                         handle_drop_done = 0
                         break
-                    else: 
+                    else:
+                        print("turn_id=%d"%turn_id)
+                        print("drop_mj[%d][-1] = %s"%(turn_id, drop_mj[turn_id][-1]))
                         temp_mj, temp_mj_num = insert_mj(drop_mj[turn_id][-1], player_mj[did])
                         # Check hu
                         if 1 == hu(temp_mj, temp_mj_num):
                             winner = did
-                            display_all(winner)
+                            display_all(winner, turn_id)
                             pygame.display.update()
                             handle_drop_done = 3
-                            time.sleep(5)
+                            time.sleep(9)
                             break
                     if False == p0_is_AI and 0 == did:
                         pass
@@ -1125,7 +1172,7 @@ def main():
                             continue
                 if 2 == handle_drop_done:
                     get_done[turn_id] = -1
-                else: # handle_drop_done == 0, 3
+                elif 0 == handle_drop_done: 
                     get_done[turn_id] = 0
                     turn_id = (turn_id + 1)%4
                 break
@@ -1133,10 +1180,12 @@ def main():
             if winner != -1:
                 break
         
+        if host_id != winner:
+            host_id = (host_id + 1)%4
+            
         first = 1
         mjp = 0
         mjb = 143
-            
     exit()
 		
 if __name__ == "__main__":
