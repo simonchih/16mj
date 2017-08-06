@@ -139,7 +139,7 @@ renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
-p0_is_AI = False
+p0_is_AI = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
 getmj = -1
@@ -559,7 +559,7 @@ def check_get_hmj(mj, mj_num):
                 start = i
             rhmj.append(mj[i])
             get_num += 1
-            
+    
     if 0 == get_num:        
         return mj, rhmj, get_num
     else:
@@ -594,14 +594,15 @@ def proc_add_hmj(pid, get = False, value = -1):
     
     return tget_num
 
-def insert_mj(mjv, mj):    
-    for i, v in enumerate(mj):
+def insert_mj(mjv, mj):
+    return_mj = mj[:]
+    for i, v in enumerate(return_mj):
         if mjv <= v:
-            mj = mj[:i] + [mjv] + mj[i:]
-            return mj, len(mj)
+            return_mj = return_mj[:i] + [mjv] + return_mj[i:]
+            return return_mj, len(return_mj)
     
-    mj.append(mjv)
-    return mj, len(mj)
+    return_mj.append(mjv)
+    return return_mj, len(return_mj)
 
 def draw_hu(win_id):
     if win_id >= 0:
@@ -772,19 +773,12 @@ def mjAI(tid, getv = None):
         return -1
     else:
         tmj, tmj_num = insert_mj(getv, player_mj[tid])
-        # temp
-        print("tid=%d, num=%d"%(tid, player_mj_num[tid] + 3*len(dmj[tid])))
-        if player_mj_num[tid] + 3*len(dmj[tid]) > 17:
-            input("stop")
-        # end temp
-        
     
     si = dark_gon(tmj, tmj_num)
     if si != -1:
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
         dmj[tid].append([2])
-        print("-1") #temp
         return -1
     
     block = [0] * tmj_num
@@ -798,7 +792,6 @@ def mjAI(tid, getv = None):
     drop_mj[tid].append(tmj[di])
     player_mj[tid] = tmj[:di] + tmj[di+1:]
     player_mj_num[tid] = len(player_mj[tid])
-    print("player_mj_num[%d]=%s"%(tid, player_mj_num[tid]))# temp
     
     return 2
     
@@ -966,7 +959,7 @@ def main():
             #screen.blit(button, button_loc[0])
             # End Temp Test
             pygame.display.update()
-            # handle_drop_done. -1: ini, 0: handle drop mj, 1: done and get from mjp, 2: done and get from mjb
+            # handle_drop_done. -1: ini, 0: handle drop mj, 1: done and get from mjp, 2: done and get from mjb, 3: hu
             handle_drop_done = -1
 
             if 0 == (mjb - mjp + 1):
@@ -1058,7 +1051,7 @@ def main():
                             winner = did
                             display_all(winner)
                             pygame.display.update()
-                            handle_drop_done = 1
+                            handle_drop_done = 3
                             time.sleep(5)
                             break
                     if False == p0_is_AI and 0 == did:
@@ -1132,7 +1125,7 @@ def main():
                             continue
                 if 2 == handle_drop_done:
                     get_done[turn_id] = -1
-                else: # handle_drop_done == 0 or 1
+                else: # handle_drop_done == 0, 3
                     get_done[turn_id] = 0
                     turn_id = (turn_id + 1)%4
                 break
