@@ -689,24 +689,29 @@ def display_front_eat(pid, fmj, middle, loc):
         screen.blit(pid_to_image(1, middle), (x, y + p0_mj_width))
         screen.blit(pid_to_image(1, fmj[1]), (x, y + 2*p0_mj_width))
     elif 2 == pid:
-        screen.blit(pid_to_image(2, fmj[0]), (x, y))
-        screen.blit(pid_to_image(2, middle), (x + p0_mj_width, y))
         screen.blit(pid_to_image(2, fmj[1]), (x + 2*p0_mj_width, y))
+        screen.blit(pid_to_image(2, middle), (x + p0_mj_width, y))
+        screen.blit(pid_to_image(2, fmj[0]), (x, y))
     elif 3 == pid:
-        screen.blit(pid_to_image(3, fmj[0]), (x, y))
-        screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
         screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))
-
+        screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
+        screen.blit(pid_to_image(3, fmj[0]), (x, y))
+        
 def display_pon(pid, value, loc):            
     (x, y) = loc
-    if 0 == pid or 2 == pid:
+    if 0 == pid:
         for i in range(3):
             screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
-        
-    elif 1 == pid or 3 == pid:
+    elif 2 == pid:
+         for i in range(2, -1, -1):
+            screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
+    elif 1 == pid:
         for i in range(3):
             screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))      
-        
+    elif 3 == pid:
+        for i in range(2, -1, -1):
+            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
+    
 def draw_dmj():
     for pid in range(4):
         for i in range(len(dmj[pid])):
@@ -717,6 +722,9 @@ def draw_dmj():
             elif 2 == dmj[pid][i][0]:
                 display_dark_gon(pid, dmj_loc[pid][i])
             elif 3 == dmj[pid][i][0]:
+                print("pid=%d"%pid)
+                print("i=%d"%i)
+                print("dmj[%d][%d][1][0]=%s"%(pid, i, dmj[pid][i][1][0]))
                 display_pon(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
         
 def draw_hmj():
@@ -1018,8 +1026,9 @@ def main():
                     temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
                     # Check hu
                     if 1 == hu(temp_mj, temp_mj_num):
-                        player_mj[turn_id] = temp_mj
-                        player_mj_num[turn_id] = temp_mj_num
+                        if turn_id != 0:
+                            player_mj[turn_id] = temp_mj
+                            player_mj_num[turn_id] = temp_mj_num
                         winner = turn_id
                         display_all(winner)
                         pygame.display.update()
