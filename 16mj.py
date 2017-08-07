@@ -140,7 +140,7 @@ renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
-p0_is_AI = True
+p0_is_AI = False
 Add_Delay = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
@@ -1094,8 +1094,18 @@ def main():
                 elif False == p0_is_AI and 0 == turn_id:
                     if event.type == MOUSEBUTTONDOWN:
                         (mouseX, mouseY) = pygame.mouse.get_pos()
-                    elif event.type == MOUSEBUTTONUP:
-                        (mouseX, mouseY) = pygame.mouse.get_pos()
+                        if p_num == select:
+                            drop_mj[turn_id].append(getmj)
+                            handle_drop_done = 0
+                            get_done[turn_id] = 2
+                            break
+                        elif select != None:
+                            drop_mj[turn_id].append(player_mj[turn_id][select])
+                            del player_mj[turn_id][select]
+                            player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
+                            handle_drop_done = 0
+                            get_done[turn_id] = 2
+                            break
 
             display_all()
             pygame.display.update()
@@ -1135,6 +1145,7 @@ def main():
                                 time.sleep(1)
                             handle_drop_done = 2
                             
+                            get_done[turn_id] = 0
                             turn_id = did
                             break
                             
@@ -1152,6 +1163,7 @@ def main():
                                 time.sleep(1)
                             handle_drop_done = 1
                             
+                            get_done[turn_id] = 0
                             turn_id = did
                             mjAI(turn_id)
                             break
@@ -1187,6 +1199,7 @@ def main():
                             if True == Add_Delay:
                                 time.sleep(1)
                             
+                            get_done[turn_id] = 0
                             turn_id = did
                             mjAI(turn_id)
                             continue
