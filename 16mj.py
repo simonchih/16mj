@@ -328,13 +328,12 @@ def seq3_block(mj, mj_num, block):
         if 1 == block[i]:
             i += 1
             continue
-        elif mj[i]//9 == mj[i+1]//9:
-            j = next_not_same(mj, mj_num, i+1)
-            if j != -1 and 0 == block[i+1] and 0 == block[j]:
-                if mj[i+1]//9 == mj[j]//9 and (mj[i] + 2 == mj[i+1] + 1 == mj[j]):
-                    block[i] = block[i+1] = block[j] = 1
-                    i = j+1
-                    continue
+        else:
+            m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])            
+            if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                block[i] = block[m1] = block[m2] = 1
+                i += 1
+                continue
         i += 1
         
     return block
@@ -448,39 +447,46 @@ def hear(mj, mj_num):
                         break
                     elif mj[i] == mj[n1] or (mj[i] < 27 and mj[i]//9 == mj[n1]//9 and mj[i]+1 == mj[n1]):
                         two_s = 1
-                        i += 2
+                        block[i] = block[n1] = 1
+                        i += 1
                         continue
                     else:
                         mj_hear = 0
                         break
                 else:
                     if mj[i] == mj[n1] == mj[n2]:
-                        i += 3
-                        continue
-                    elif mj[i] < 27 and mj[i]//9 == mj[n1]//9 == mj[n2]//9 and mj[i]+1 == mj[n1] and mj[n1]+1 == mj[n2]:
-                        i += 3
+                        block[i] = block[n1] = block[n2] = 1
+                        i += 1
                         continue
                     else:
-                        if 1 == two_s:
-                            mj_hear = 0
-                            break
-                        elif mj[i] == mj[n1] or (mj[i] < 27 and mj[i]//9 == mj[n1]//9 and mj[i]+1 == mj[n1]):
-                            two_s = 1
-                            i += 2
+                        m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
+                        
+                        if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                            block[i] = block[m1] = block[m2] = 1
+                            i += 1
                             continue
                         else:
-                            mj_hear = 0
-                            break
-                i += 1
+                            if 1 == two_s:
+                                mj_hear = 0
+                                break
+                            elif mj[i] == mj[m1] or (mj[i] < 27 and mj[i]//9 == mj[m1]//9 and mj[i]+1 == mj[m1]):
+                                two_s = 1
+                                block[i] = block[m1] = 1
+                                i += 1
+                                continue
+                            else:
+                                mj_hear = 0
+                                break
+            
             if 1 == mj_hear:
                 return 1
                 
-            block[c] = 0
-            block[c+1] = 0
+            block = [0] * mj_num
             c += 2
         else:    
             c += 1
     
+    block = [0] * mj_num
     # Check NOT pair
     c = 0
     while c < mj_num:
@@ -511,19 +517,24 @@ def hear(mj, mj_num):
                 break
             else:
                 if mj[i] == mj[n1] == mj[n2]:
-                    i += 3
-                    continue
-                elif mj[i] < 27 and mj[i]//9 == mj[n1]//9 == mj[n2]//9 and mj[i]+1 == mj[n1] and mj[n1]+1 == mj[n2]:
-                    i += 3
+                    block[i] = block[n1] = block[n2] = 1
+                    i += 1
                     continue
                 else:
-                    mj_hear = 0
-                    break
-            i += 1
+                    m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
+                    
+                    if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                        block[i] = block[m1] = block[m2] = 1
+                        i += 1
+                        continue
+                    else:
+                        mj_hear = 0
+                        break
+
         if 1 == mj_hear:
             return 1
             
-        block[c] = 0 
+        block = [0] * mj_num
         c += 1
     
     return 0
