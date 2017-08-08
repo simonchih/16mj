@@ -284,7 +284,7 @@ def next_two_not_blsame(block, mj_num, next, mj, sv):
     n0 = next_not_blsame(block, mj_num, mj, sv, next)
     if -1 == n0:
         return -1, -1
-    n1 = next_not_blsame(block, mj_num, mj, sv, n0+1)
+    n1 = next_not_blsame(block, mj_num, mj, mj[n0], n0+1)
     if -1 == n1:
         return n0, -1
     
