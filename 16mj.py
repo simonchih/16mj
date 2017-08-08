@@ -359,16 +359,16 @@ def add_block3(mj, mj_num, block):
 def add_block2(mj, mj_num, block):
     i = 0
     while block.count(0) > 2 and i < mj_num - 1: 
-        if 1 == block[i]:
-            i += 1
-        elif mj[i] == mj[i+1] and 0 == block[i+1]:
-            block[i] = block[i+1] = 1
-            i += 2
-        elif mj[i]//9 == mj[i+1]//9 and mj[i]+1 == mj[i+1] and 0 == block[i+1]:
-            block[i] = block[i+1] = 1
-            i += 2
-        else:
-            i += 1            
+        if 0 == block[i]:
+            j = next_not_block(block, mj_num, i+1)
+            if j != -1:
+                if mj[i] == mj[j]:
+                    block[i] = block[j] = 1
+                elif mj[i] < 27 and mj[i]//9 == mj[j]//9 and mj[i]+1 == mj[j]:
+                    block[i] = block[j] = 1
+        
+        i += 1
+        
     return block
 
 # -1: Can't gon, 0~mj_num - 4: start of mj index 
