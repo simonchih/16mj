@@ -140,7 +140,7 @@ renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
-p0_is_AI = False
+p0_is_AI = True
 Add_Delay = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
@@ -280,6 +280,16 @@ def next_two_not_block(block, mj_num, next):
     
     return n0, n1
 
+def next_two_not_blsame(block, mj_num, next, mj, sv):
+    n0 = next_not_blsame(block, mj_num, mj, sv, next)
+    if -1 == n0:
+        return -1, -1
+    n1 = next_not_blsame(block, mj_num, mj, sv, n0+1)
+    if -1 == n1:
+        return n0, -1
+    
+    return n0, n1    
+    
 # return -1 if exceed mj_num    
 def next_not_block(block, mj_num, next=0):
     i = next
@@ -290,6 +300,16 @@ def next_not_block(block, mj_num, next=0):
         
     return -1
 
+# return -1 if exceed mj_num    
+def next_not_blsame(block, mj_num, mj, sv, next=0):
+    i = next
+    while i < mj_num:
+        if 0 == block[i] and mj[i] != sv:
+            return i
+        i += 1
+        
+    return -1    
+    
 def next_not_same(mj, mj_num, id):
     i = id+1
     v = mj[id]
@@ -533,23 +553,27 @@ def hu(mj, mj_num):
                 
                 if n1 != -1 and n2 != -1:
                     if mj[i] == mj[n1] == mj[n2]:
-                        i += 3
-                        continue
-                    elif mj[i] < 27 and mj[i]//9 == mj[n1]//9 == mj[n2]//9 and mj[i]+1 == mj[n1] and mj[n1]+1 == mj[n2]:
-                        i += 3
+                        block[i] = block[n1] = block[n2] = 1
+                        i += 1
                         continue
                     else:
-                        mj_hu = 0
-                        break
+                        m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
+                        
+                        if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                            block[i] = block[m1] = block[m2] = 1
+                            i += 1
+                            continue
+                        else:
+                            mj_hu = 0
+                            break
                 else:
                     mj_hu = 0
                     break
-                i += 1
+                    
             if 1 == mj_hu:
                 return 1
                 
-            block[c] = 0
-            block[c+1] = 0
+            block = [0] * mj_num
             c += 2
             
         c += 1
