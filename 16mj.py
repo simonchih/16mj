@@ -1015,13 +1015,13 @@ def main():
                 player_mj[2].sort()
                 player_mj[3].sort()
                 
-                p4_no_hu = [0] * 4
+                p4_noh = [0] * 4
                 
-                while p4_no_hu.count(1) < 4:
+                while p4_noh.count(1) < 4:
                     for pid in range(4):
                         get_num = proc_add_hmj(pid)
                         if 0 == get_num:
-                            p4_no_hu[pid] = 1
+                            p4_noh[pid] = 1
                         else:
                             for j in range(get_num):
                                 player_mj[pid], player_mj_num[pid] = insert_mj(all_mj[mjb], player_mj[pid])
@@ -1080,6 +1080,13 @@ def main():
                         if True == Add_Delay:
                             time.sleep(9)
                         break
+                elif len(hmj[turn_id]) == 8:
+                    winner = turn_id
+                    display_all(winner)
+                    pygame.display.update()
+                    if True == Add_Delay:
+                        time.sleep(9)
+                    break
                 else:
                     get_done[turn_id] = -1
                     continue
