@@ -1015,11 +1015,13 @@ def main():
                 player_mj[2].sort()
                 player_mj[3].sort()
                 
-                for pid in range(4):
-                    while True:
+                p4_no_hu = [0] * 4
+                
+                while p4_no_hu.count(1) < 4:
+                    for pid in range(4):
                         get_num = proc_add_hmj(pid)
                         if 0 == get_num:
-                            break
+                            p4_no_hu[pid] = 1
                         else:
                             for j in range(get_num):
                                 player_mj[pid], player_mj_num[pid] = insert_mj(all_mj[mjb], player_mj[pid])
