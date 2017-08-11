@@ -151,9 +151,9 @@ p0_mjloc = []
 get_done = [0] * 4
 hear_status = [False] * 4
 #button loc
-button_loc = [(1000, 800), (1050, 800), (1000, 850), (1050, 850), (1100, 800)]
+button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
 #-1: ini, 0: Disable, 1: Enable, 2: Clicked (for eat only)
-button_enable = [-1] * 5
+button_enable = [-1] * 6
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
@@ -814,11 +814,13 @@ def index_to_btext(index):
     elif 3 == index:
         return u"吃"
     elif 4 == index:
+        return u"胡"
+    elif 5 == index:
         return u"返"
 
 def draw_p0_button():
     # Test only
-    #button_enable = [1] * 5
+    #button_enable = [1] * 6
     # End Test only
     for i in range(len(button_loc)):
         if button_enable[i] > 0:
@@ -826,13 +828,42 @@ def draw_p0_button():
             (x, y) = button_loc[i]
             screen.blit(button, button_loc[i])
             if 2 == button_enable[i]:
-                screen.blit(write(index_to_btext(i), (0, 255, 0), 30), (x+10, y+5))
-            elif x < mouseX < x + button.get_width() and y < mouseY < y + button.get_height():
                 screen.blit(write(index_to_btext(i), (255, 0, 0), 30), (x+10, y+5))
+            elif x < mouseX < x + button.get_width() and y < mouseY < y + button.get_height():
+                screen.blit(write(index_to_btext(i), (0, 255, 0), 30), (x+10, y+5))
             else:
                 screen.blit(write(index_to_btext(i), (0, 0, 0), 30), (x+10, y+5))
     
-        
+def click_p0_button(mouseX, mouseY, benable):
+    l = len(button_loc)
+    
+    for i in range(l):
+        if button_enable[i] > 0:
+            (x, y) = button_loc[i]            
+            if x < mouseX < x + button.get_width() and y < mouseY < y + button.get_height():
+                if 2 == button_enable[i]:
+                    if 0 == i or 1 == i or 3 == i: # Can't off hear, hu, return
+                        button_enable[i] = 1
+                        return i
+                # if 1 == button_enable[i]    
+                elif 5 == i:
+                    no2 = True
+                    for j in range(l):
+                        if 2 == j or 4 == j or 5 == j: # Can't off hear, hu, return
+                            continue
+                        elif 2 == button_enable[j]:
+                            no2 = False
+                            button_enable[j] = 1
+                    
+                    if True == no2: # True == no2, return 5
+                        return i
+                    else: # False == no2, return None
+                        continue
+                elif 0 == i or 1 == i or 2 == i or 3 == i :
+                    button_enable[i] = 2
+                # 4 == i
+                return i
+    
 def write(msg="pygame is cool", color= (0,0,0), size = 36):    
     #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
     myfont = pygame.font.Font("wqy-zenhei.ttf",size)
@@ -987,7 +1018,7 @@ def main():
                 turn_id = host_id
                 hear_status = [False] * 4
                 get_done = [0] * 4
-                button_enable = [-1] * 5
+                button_enable = [-1] * len(button_loc)
                 dmj = [[], [], [], []]
                 hmj = [[], [], [], []]
                 drop_mj = [[], [], [], []]
