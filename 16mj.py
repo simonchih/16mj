@@ -371,6 +371,37 @@ def add_block2(mj, mj_num, block):
         
     return block
 
+# reset button except hear button    
+def reset_po_button():    
+    global button_enable
+    
+    hear_enable = button_enable[2]
+    button_enable = [0] * len(button_loc)
+    button_enable[2] = hear_enable
+    
+def check_p0_button(mj, mj_num, value = None):
+    global button_enable
+    
+    reset_po_button()
+    
+    if None == value:
+        if 0 == button_enable[2] and 1 == hear(mj, mj_num):
+            button_enable[2] = 1
+            button_enable[5] = 1
+    else:
+        if pon(mj, mj_num, value) != -1:
+            button_enable[0] = 1
+            button_enable[5] = 1
+        if gon(mj, mj_num, value) != -1:
+            button_enable[1] = 1
+            button_enable[5] = 1
+        if eat(mj, mj_num, value) != -1:
+            button_enable[3] = 1
+            button_enable[5] = 1
+        if 1 == hu(mj, value):
+            button_enable[4] = 1
+            button_eanble[5] = 1
+    
 # -1: Can't gon, 0~mj_num - 4: start of mj index 
 def dark_gon(mj, mj_num):
     for i in range(mj_num - 3):
@@ -540,7 +571,9 @@ def hear(mj, mj_num):
     return 0
     
 # rturn 1: hu, 0: NOT hu, mj must sort   
-def hu(mj, mj_num):
+def hu(pmj, value):
+
+    mj, mj_num = insert_mj(value, pmj)
     block = [0] * mj_num
     
     c = 0
@@ -834,7 +867,9 @@ def draw_p0_button():
             else:
                 screen.blit(write(index_to_btext(i), (0, 0, 0), 30), (x+10, y+5))
     
-def click_p0_button(mouseX, mouseY, benable):
+def click_p0_button(mouseX, mouseY):
+    global button_enable
+    
     l = len(button_loc)
     
     for i in range(l):
@@ -1099,9 +1134,10 @@ def main():
                     mjb -= 1
                 if 0 == proc_add_hmj(turn_id, True, getmj):
                     get_done[turn_id] = 1
-                    temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
+                    
                     # Check hu
-                    if 1 == hu(temp_mj, temp_mj_num):
+                    if 1 == hu(player_mj[turn_id], getmj):
+                        temp_mj, temp_mj_num = insert_mj(getmj, player_mj[turn_id])
                         if turn_id != 0:
                             player_mj[turn_id] = list(temp_mj)
                             player_mj_num[turn_id] = temp_mj_num
@@ -1193,9 +1229,9 @@ def main():
                         handle_drop_done = 0
                         break
                     else:
-                        temp_mj, temp_mj_num = insert_mj(drop_mj[turn_id][-1], player_mj[did])
+                        
                         # Check hu
-                        if 1 == hu(temp_mj, temp_mj_num):
+                        if 1 == hu(player_mj[did], drop_mj[turn_id][-1]):
                             winner = did
                             display_all(winner, turn_id)
                             pygame.display.update()
