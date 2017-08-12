@@ -372,6 +372,26 @@ def add_block2(mj, mj_num, block):
         
     return block
 
+def pon_gon_select(p0_mjloc_org, tid = 0):    
+    global p0_mjloc
+    
+    select = None
+    for c in range(player_mj_num[tid]):
+        (mouseX, mouseY) = pygame.mouse.get_pos()
+        ii = p_num - player_mj_num[tid] + c
+        (x, y) = p0_mjloc_org[ii]
+        if x < mouseX < x + p0_mj_width and y < mouseY < y + t1.get_height():
+            p0_mjloc = copy.deepcopy(p0_mjloc_org)
+            p0_mjloc[ii][1] = p0_mjloc_org[ii][1] - 10
+            select = c
+            break
+    
+    if None == select:
+        p0_mjloc = copy.deepcopy(p0_mjloc_org)
+        p0_get_loc = list(p0_get_loc_org)
+        
+    return select
+    
 # reset button except hear button    
 def reset_p0_button():    
     global button_enable
@@ -929,8 +949,6 @@ def click_p0_button(mouseX, mouseY):
                         hear_status[0] = True
                 # 4 == i
                 return i
-
-def p0_select():
                 
 def write(msg="pygame is cool", color= (0,0,0), size = 36):    
     #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
@@ -1312,11 +1330,24 @@ def main():
                                 time.sleep(9)
                             break
                     if False == p0_is_AI and 0 == did:
-                        for event in pygame.event.get():
-                            if event.type == QUIT:
-                                exit()
-                            elif event.type == MOUSEBUTTONDOWN:
-                                pass #in progress
+                        if True == button_enable_chk():
+                            select = pon_gon_select(p0_mjloc_org)
+                            display_all()
+                            pygame.display.update()
+                            
+                            for event in pygame.event.get():
+                                if event.type == QUIT:
+                                    exit()
+                                elif event.type == MOUSEBUTTONDOWN:
+                                    bselect = None
+                                    bselect = click_p0_button(mouseX, mouseY)
+                                    if select != None:
+                                        if 2 == button_enable[0]: #pon
+                                            pass # in progress
+                                        if 2 == button_enable[1]: #gon
+                                            pass # in progress
+                                        display_all()
+                                        pygame.display.update()
                     else:
                         gi = gon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                         if  gi!= -1:
