@@ -144,6 +144,7 @@ p0_is_AI = False
 Add_Delay = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
+eat_index = []
 getmj = -1
 #player 0 mj location
 p0_mjloc = []
@@ -378,6 +379,14 @@ def reset_p0_button():
     hear_enable = button_enable[2]
     button_enable = [0] * len(button_loc)
     button_enable[2] = hear_enable
+
+def button_enable_chk():
+    for i in range(len(button_loc)):
+        if 2 == i and 1 == button_enable[i]:
+            return True
+        elif i != 2 and button_enable[i] > 0:
+            return True
+    return False
     
 def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
     global button_enable
@@ -420,6 +429,7 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
         enable = True
     
     return enable
+    
 # -1: Can't gon, 0~mj_num - 4: start of mj index 
 def dark_gon(mj, mj_num):
     for i in range(mj_num - 3):
@@ -919,7 +929,9 @@ def click_p0_button(mouseX, mouseY):
                         hear_status[0] = True
                 # 4 == i
                 return i
-    
+
+def p0_select():
+                
 def write(msg="pygame is cool", color= (0,0,0), size = 36):    
     #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
     myfont = pygame.font.Font("wqy-zenhei.ttf",size)
@@ -985,6 +997,7 @@ def main():
     global button_enable
     global hear_status
     global host_id
+    global eat_index
     
     first = 1
     p0_mjloc_ini = []
@@ -1076,6 +1089,7 @@ def main():
                 check_button = 0 #local variable
                 hear_status = [False] * 4
                 get_done = [0] * 4
+                eat_index = []
                 button_enable = [-1] * len(button_loc)
                 dmj = [[], [], [], []]
                 hmj = [[], [], [], []]
@@ -1205,18 +1219,17 @@ def main():
                 elif -1 == get_done[turn_id]:
                     continue
 
-            if False == p0_is_AI and 0 == turn_id:
+            if False == p0_is_AI and 0 == turn_id and False == hear_status[turn_id]:
                 select = None
-                if False == hear_status[turn_id]:
-                    for c in range(player_mj_num[0]):
-                        (mouseX, mouseY) = pygame.mouse.get_pos()
-                        ii = p_num - player_mj_num[0] + c
-                        (x, y) = p0_mjloc_org[ii]
-                        if x < mouseX < x + p0_mj_width and y < mouseY < y + t1.get_height():
-                            p0_mjloc = copy.deepcopy(p0_mjloc_org)
-                            p0_mjloc[ii][1] = p0_mjloc_org[ii][1] - 10
-                            select = c
-                            break
+                for c in range(player_mj_num[0]):
+                    (mouseX, mouseY) = pygame.mouse.get_pos()
+                    ii = p_num - player_mj_num[0] + c
+                    (x, y) = p0_mjloc_org[ii]
+                    if x < mouseX < x + p0_mj_width and y < mouseY < y + t1.get_height():
+                        p0_mjloc = copy.deepcopy(p0_mjloc_org)
+                        p0_mjloc[ii][1] = p0_mjloc_org[ii][1] - 10
+                        select = c
+                        break
                 if 1 == get_done[0]:
                     (mouseX, mouseY) = pygame.mouse.get_pos()
                     (x, y) = p0_get_loc_org
@@ -1250,10 +1263,15 @@ def main():
                             if False == ebutton:
                                 handle_drop_done = 0
                                 break
-                        else: # None == select
+                        elif 2 == get_done[turn_id]:
+                            if False == button_enable_chk():
+                                handle_drop_done = 0
+                                break
+                            
                             bselect = None
                             bselect = click_p0_button(mouseX, mouseY)
                             if 4 == bselect: # if hu
+                                reset_p0_button()
                                 winner = turn_id
                                 display_all(winner)
                                 pygame.display.update()
@@ -1261,9 +1279,11 @@ def main():
                                     time.sleep(9)
                                 break
                             elif 5 == bselect: #return
+                                reset_p0_button()
                                 handle_drop_done = 0
                                 break
                             elif 2 == bselect: #hear
+                                reset_p0_button()
                                 handle_drop_done = 0
                                 break
 
