@@ -398,7 +398,7 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
                 button_enable[1] = 1
                 enable = True
         else: # value != None
-            if chk_eat = False:
+            if False == chk_eat:
                 if pon(mj, mj_num, value) != -1:
                     button_enable[0] = 1
                     button_enable[5] = 1
