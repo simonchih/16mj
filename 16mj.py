@@ -379,7 +379,7 @@ def reset_p0_button():
     button_enable = [0] * len(button_loc)
     button_enable[2] = hear_enable
     
-def check_p0_button(mj, mj_num, myvalue = None, value = None):
+def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
     global button_enable
     
     reset_p0_button()
@@ -398,25 +398,25 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None):
                 button_enable[1] = 1
                 enable = True
         else: # value != None
-            if pon(mj, mj_num, value) != -1:
-                button_enable[0] = 1
-                button_enable[5] = 1
-                enable = True
-            if gon(mj, mj_num, value) != -1:
-                button_enable[1] = 1
-                button_enable[5] = 1
-                enable = True
-            if eat(mj, mj_num, value) != -1:
+            if chk_eat = False:
+                if pon(mj, mj_num, value) != -1:
+                    button_enable[0] = 1
+                    button_enable[5] = 1
+                    enable = True
+                if gon(mj, mj_num, value) != -1:
+                    button_enable[1] = 1
+                    button_enable[5] = 1
+                    enable = True
+            elif eat(mj, mj_num, value) != -1: #chk_eat == True
                 button_enable[3] = 1
                 button_enable[5] = 1
                 enable = True
     elif myvalue != None and 1 == hu(mj, myvalue):
         button_enable[4] = 1
-        button_eanble[5] = 1
         enable = True
     elif value != None and 1 == hu(mj, value):
         button_enable[4] = 1
-        button_eanble[5] = 1
+        button_enable[5] = 1
         enable = True
     
     return enable
@@ -915,7 +915,7 @@ def click_p0_button(mouseX, mouseY):
                         continue
                 elif 0 == i or 1 == i or 2 == i or 3 == i :
                     button_enable[i] = 2
-                    if 3 == i:
+                    if 2 == i:
                         hear_status[0] = True
                 # 4 == i
                 return i
@@ -1292,7 +1292,11 @@ def main():
                                 time.sleep(9)
                             break
                     if False == p0_is_AI and 0 == did:
-                        pass
+                        for event in pygame.event.get():
+                            if event.type == QUIT:
+                                exit()
+                            elif event.type == MOUSEBUTTONDOWN:
+                                pass #in progress
                     else:
                         gi = gon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                         if  gi!= -1:
@@ -1338,7 +1342,7 @@ def main():
                 elif 0 == handle_drop_done:
                     did = (turn_id + 1)%4
                     if False == p0_is_AI and 0 == did:
-                        pass
+                        pass #in progress
                     else: 
                         etemp = eat(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                         if etemp != []:
