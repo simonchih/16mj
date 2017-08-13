@@ -1371,6 +1371,7 @@ def main():
                             display_all()
                             pygame.display.update()
                             
+                            br = False # br: True, break while True
                             for event in pygame.event.get():
                                 if event.type == QUIT:
                                     exit()
@@ -1421,11 +1422,14 @@ def main():
                                             check_button = 0
                                             get_done[turn_id] = 0
                                             turn_id = did
+                                            br = True
                                             break
                                     if 5 == bselect:
                                         reset_p0_button()
                                         did = (did + 1)%4
                                         break
+                            if True == br:
+                                break
                         elif 4 == handle_drop_done: #begin if True == button_enable_chk():
                             # for drop mj
                             select = select_mj(p0_mjloc_org)
