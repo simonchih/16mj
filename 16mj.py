@@ -867,7 +867,8 @@ def draw_p123_mj(win_id = -1):
             draw_mj_row(mjback3, mjloc[pid], player_mj_num[pid], draw)
         else: # player 1, 3
             draw_mj_column(mjback4, mjloc[pid], player_mj_num[pid], draw)
-        
+
+# here did is drop player id            
 def display_all(win_id = -1, did = -1):
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
@@ -1356,7 +1357,24 @@ def main():
                                 if check_button < 2: # check_button == 0 or 1
                                     check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1])
                                     check_button = 2
-                        # Check hu
+                                br = False
+                                while 1 == button_enable[4]:
+                                    bselect = click_p0_button(mouseX, mouseY)
+                                    if 5 == bselect:
+                                        button_enable[4] = 0 # disable hu button
+                                        break
+                                    elif 4 == bselect:
+                                        winner = did
+                                        display_all(winner, turn_id)
+                                        pygame.display.update()
+                                        handle_drop_done = 3
+                                        if True == Add_Delay:
+                                            time.sleep(9)
+                                        br = True
+                                        break
+                                if True == br:
+                                    break
+                        # Check hu for p1~3
                         elif 1 == hu(player_mj[did], drop_mj[turn_id][-1]):
                             winner = did
                             display_all(winner, turn_id)
@@ -1589,7 +1607,7 @@ def main():
                                                             etempv = [sort_value[0], sort_value[1]]
                                                             etempv.append(drop_mj[turn_id][-1])
                                                             # 0: eat
-                                                            dmj[did].append(0, etempv)
+                                                            dmj[did].append([0, etempv])
                                                             drop_mj[turn_id] = drop_mj[turn_id][:-1]
                                                             del player_mj[did][sort_index[1]]
                                                             del player_mj[did][sort_index[0]]
@@ -1605,6 +1623,8 @@ def main():
                                                             handle_drop_done = 4
                                                             smj = None
                                                             break
+                                                        else:
+                                                            smj = None
                                                     else:
                                                         smj = None
                                             elif 5 == bselect:
