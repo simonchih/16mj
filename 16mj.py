@@ -1174,7 +1174,7 @@ def main():
             # End Temp Test
             pygame.display.update()
 
-            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again, 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: p0 eat and drop mj done
+            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and gon), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and gon drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue.
             handle_drop_done = -1
 
             if 0 == (mjb - mjp + 1):
@@ -1280,7 +1280,46 @@ def main():
                             if False == ebutton:
                                 handle_drop_done = 0
                                 break
-                        elif 2 == get_done[turn_id]:
+                        
+                        if True == button_enable_chk():
+                            # handle dark gon
+                            bselect = None
+                            bselect = click_p0_button(mouseX, mouseY)
+                            if 4 == bselect: # if hu
+                                reset_p0_button()
+                                winner = turn_id
+                                display_all(winner)
+                                pygame.display.update()
+                                if True == Add_Delay:
+                                    time.sleep(9)
+                                break
+                            elif 2 == button_enable[1]: #if dark gon
+                                if select != None and select != p_num:
+                                    value = player_mj[turn_id][select]
+                                    gi = [select]
+                                    for i in range(player_mj_num[turn_id]):
+                                        if i == select:
+                                            continue
+                                        elif value == player_mj[turn_id][i]:
+                                            gi.append(i)
+                                    
+                                    gi.sort(reverse=True)
+                                    if value == getmj and 3 == len(gi):
+                                        for i in gi:
+                                            del player_mj[turn_id][i]
+                                        player_mj_num[turn_id] = len(player_mj[turn_id])
+                                        dmj[turn_id].append([2])
+                                        get_done[turn_id] = -1
+                                        break
+                                    elif 4 == len(gi):
+                                        for i in gi:
+                                            del player_mj[turn_id][i]
+                                        player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
+                                        dmj[turn_id].append([2])
+                                        get_done[turn_id] = -1
+                                        break
+                        
+                        if 2 == get_done[turn_id]:
                             if False == button_enable_chk():
                                 handle_drop_done = 0
                                 break
@@ -1308,7 +1347,7 @@ def main():
             pygame.display.update()
             
             # Handle drop mj
-            while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done:
+            while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
                 did = (turn_id + 1)%4
                 while True:
                     if did == turn_id:
@@ -1329,7 +1368,7 @@ def main():
                                 time.sleep(9)
                             break
                     if False == p0_is_AI and 0 == did:
-                        if True == button_enable_chk():
+                        if True == button_enable_chk() and handle_drop_done != 4 and handle_drop_done != 5:
                             select = slect_mj(p0_mjloc_org)
                             display_all()
                             pygame.display.update()
@@ -1357,6 +1396,10 @@ def main():
                                                 
                                                 reset_p0_button()
                                                 handle_drop_done = 4
+                                                
+                                                display_all()
+                                                pygame.display.update()
+                                                break
                                         if 2 == button_enable[1]: #gon
                                             gi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                                             if gi != -1:
@@ -1372,9 +1415,15 @@ def main():
                                                     time.sleep(1)
                                                 
                                                 reset_p0_button()
-                                                handle_drop_done = 4
-                                        display_all()
-                                        pygame.display.update()
+                                                handle_drop_done = 2
+                                                
+                                                display_all()
+                                                pygame.display.update()
+                                                
+                                                get_done[turn_id] = 0
+                                                turn_id = did
+                                                break
+                                        
                         elif 4 == handle_drop_done: #begin if True == button_enable_chk():
                             select = slect_mj(p0_mjloc_org)
                             display_all()
@@ -1390,10 +1439,38 @@ def main():
                                         display_all()
                                         pygame.display.update()
                                         
-                                        handle_drop_done = 1
-                                        get_done[turn_id] = 0
-                                        turn_id = did
-                                        break
+                                        ebutton = check_p0_button(player_mj[did], player_mj_num[did])
+                                        
+                                        if False == ebutton:
+                                            handle_drop_done = 1
+                                            get_done[turn_id] = 0
+                                            turn_id = did
+                                            break
+                                        else:
+                                            handle_drop_done = 5
+                        elif 5 == handle_drop_done:
+                            if False == button_enable_chk():
+                                handle_drop_done = 1
+                                get_done[turn_id] = 0
+                                turn_id = did
+                                break
+                            
+                            bselect = None
+                            bselect = click_p0_button(mouseX, mouseY)
+                            if 5 == bselect: #return
+                                reset_p0_button()
+                                handle_drop_done = 1
+                                get_done[turn_id] = 0
+                                turn_id = did
+                                break
+                            elif 2 == bselect: #hear
+                                reset_p0_button()
+                                handle_drop_done = 1
+                                get_done[turn_id] = 0
+                                turn_id = did
+                                break
+                        elif 2 == handle_drop_done:
+                            break
                         else:
                             did = (did + 1)%4
                     else: #begin if False == p0_is_AI and 0 == did:
@@ -1524,12 +1601,35 @@ def main():
                                                 display_all()
                                                 pygame.display.update()
                                                 
-                                                handle_drop_done = 5
-                                                get_done[turn_id] = 0
-                                                turn_id = did
-                                                break
-                                    
-                            if 5 == handle_drop_done:
+                                                ebutton = check_p0_button(player_mj[did], player_mj_num[did])
+                                                
+                                                handle_drop_done = 6
+                                                if False == ebutton:
+                                                    get_done[turn_id] = 0
+                                                    turn_id = did
+                                                    break
+                                elif 6 == handle_drop_done:
+                                    if False == button_enable_chk():
+                                        handle_drop_done = 7
+                                        get_done[turn_id] = 0
+                                        turn_id = did
+                                        break
+                                        
+                                    bselect = None
+                                    bselect = click_p0_button(mouseX, mouseY)
+                                    if 5 == bselect: #return
+                                        reset_p0_button()
+                                        handle_drop_done = 7
+                                        get_done[turn_id] = 0
+                                        turn_id = did
+                                        break
+                                    elif 2 == bselect: #hear
+                                        reset_p0_button()
+                                        handle_drop_done = 7
+                                        get_done[turn_id] = 0
+                                        turn_id = did
+                                        break
+                            if 7 == handle_drop_done:
                                 handle_drop_done = 0
                                 continue
                     else: 
