@@ -1378,8 +1378,6 @@ def main():
                                     (mouseX, mouseY) = pygame.mouse.get_pos()
                                     bselect = None
                                     bselect = click_p0_button(mouseX, mouseY)
-                                    print(bselect) #temp
-                                    print(button_enable[0])
                                     if 2 == button_enable[0]: #pon
                                         pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                                         if pi != -1:
@@ -1429,6 +1427,7 @@ def main():
                                         did = (did + 1)%4
                                         break
                         elif 4 == handle_drop_done: #begin if True == button_enable_chk():
+                            # for drop mj
                             select = select_mj(p0_mjloc_org)
                             display_all()
                             pygame.display.update()
@@ -1438,8 +1437,9 @@ def main():
                                     exit()
                                 elif event.type == MOUSEBUTTONDOWN:
                                     if select != None:
-                                        drop_mj[turn_id].append(player_mj[turn_id][select])
-                                        del player_mj[turn_id][select]
+                                        drop_mj[did].append(player_mj[did][select])
+                                        del player_mj[did][select]
+                                        player_mj_num[did] = len(player_mj[did])
                                         display_all()
                                         pygame.display.update()
                                         
@@ -1612,6 +1612,7 @@ def main():
                                             if select != None:
                                                 drop_mj[did].append(player_mj[did][select])
                                                 del player_mj[did][select]
+                                                player_mj_num[did] = len(player_mj[did]) 
                                                 display_all()
                                                 pygame.display.update()
                                                 
@@ -1700,9 +1701,10 @@ def main():
     exit()
 		
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print(e)
-        input("Press Enter key to continue")
+    main()
+    #try:
+    #    main()
+    #except Exception as e:
+    #    print(e)
+    #    input("Press Enter key to continue")
     
