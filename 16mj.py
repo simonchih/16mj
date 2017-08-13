@@ -1353,7 +1353,7 @@ def main():
                         break
                     else:
                         if False == p0_is_AI and 0 == did:
-                                if 1 == check_button:
+                                if check_button < 2: # check_button == 0 or 1
                                     check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1])
                                     check_button = 2
                         # Check hu
@@ -1367,7 +1367,7 @@ def main():
                             break
                     if False == p0_is_AI and 0 == did:
                         if True == button_enable_chk() and handle_drop_done != 4 and handle_drop_done != 5:
-                            select = slect_mj(p0_mjloc_org)
+                            select = select_mj(p0_mjloc_org)
                             display_all()
                             pygame.display.update()
                             
@@ -1418,12 +1418,13 @@ def main():
                                                 display_all()
                                                 pygame.display.update()
                                                 
+                                                check_button = 0
                                                 get_done[turn_id] = 0
                                                 turn_id = did
                                                 break
                                         
                         elif 4 == handle_drop_done: #begin if True == button_enable_chk():
-                            select = slect_mj(p0_mjloc_org)
+                            select = select_mj(p0_mjloc_org)
                             display_all()
                             pygame.display.update()
                             
@@ -1443,6 +1444,7 @@ def main():
                                             handle_drop_done = 1
                                             get_done[turn_id] = 0
                                             turn_id = did
+                                            check_button = 1
                                             break
                                         else:
                                             handle_drop_done = 5
@@ -1460,12 +1462,14 @@ def main():
                                 handle_drop_done = 1
                                 get_done[turn_id] = 0
                                 turn_id = did
+                                check_button = 1
                                 break
                             elif 2 == bselect: #hear
                                 reset_p0_button()
                                 handle_drop_done = 1
                                 get_done[turn_id] = 0
                                 turn_id = did
+                                check_button = 1
                                 break
                         elif 2 == handle_drop_done:
                             break
@@ -1605,12 +1609,14 @@ def main():
                                                 if False == ebutton:
                                                     get_done[turn_id] = 0
                                                     turn_id = did
+                                                    check_button = 1
                                                     break
                                 elif 6 == handle_drop_done:
                                     if False == button_enable_chk():
                                         handle_drop_done = 7
                                         get_done[turn_id] = 0
                                         turn_id = did
+                                        check_button = 1
                                         break
                                         
                                     bselect = None
@@ -1620,12 +1626,14 @@ def main():
                                         handle_drop_done = 7
                                         get_done[turn_id] = 0
                                         turn_id = did
+                                        check_button = 1
                                         break
                                     elif 2 == bselect: #hear
                                         reset_p0_button()
                                         handle_drop_done = 7
                                         get_done[turn_id] = 0
                                         turn_id = did
+                                        check_button = 1
                                         break
                             if 7 == handle_drop_done:
                                 handle_drop_done = 0
