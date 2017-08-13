@@ -435,7 +435,7 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
                     button_enable[1] = 1
                     button_enable[5] = 1
                     enable = True
-            elif eat(mj, mj_num, value) != -1: #chk_eat == True
+            elif eat(mj, mj_num, value) != []: #chk_eat == True
                 button_enable[3] = 1
                 button_enable[5] = 1
                 enable = True
@@ -1530,6 +1530,9 @@ def main():
                 elif 0 == handle_drop_done:
                     did = (turn_id + 1)%4
                     if False == p0_is_AI and 0 == did:
+                        if 2 == check_button:
+                            check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1], True)
+                            check_button = 3
                         if True == button_enable_chk():
                             smj = None
                             while True:
