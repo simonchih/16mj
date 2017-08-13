@@ -1535,6 +1535,7 @@ def main():
                             check_button = 3
                         if True == button_enable_chk():
                             smj = None
+                            br = False
                             while True:
                                 # proc for slect
                                 select = None
@@ -1607,9 +1608,7 @@ def main():
                                                     else:
                                                         smj = None
                                             elif 5 == bselect:
-                                                # 0 == handle_drop_done
-                                                #reset_p0_button()
-                                                #get_done[turn_id] = 0
+                                                br = True
                                                 break
                                 elif 4 == handle_drop_done:
                                     for event in pygame.event.get():
@@ -1656,6 +1655,8 @@ def main():
                                         turn_id = did
                                         check_button = 1
                                         break
+                                if True == br:
+                                    break
                             if 7 == handle_drop_done:
                                 handle_drop_done = 0
                                 continue
