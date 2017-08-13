@@ -430,7 +430,8 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
                 button_enable[5] = 1
                 enable = True
         elif None == value: # myvalue != None
-            if gon(mj, mj_num, myvalue) != -1:
+            temp_mj, temp_mj_num = insert_mj(myvalue, mj)
+            if dark_gon(temp_mj, temp_mj_num) != -1:
                 button_enable[1] = 1
                 enable = True
             if 1 == hu(mj, myvalue):
