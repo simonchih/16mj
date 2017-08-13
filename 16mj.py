@@ -1375,54 +1375,59 @@ def main():
                                 if event.type == QUIT:
                                     exit()
                                 elif event.type == MOUSEBUTTONDOWN:
+                                    (mouseX, mouseY) = pygame.mouse.get_pos()
                                     bselect = None
                                     bselect = click_p0_button(mouseX, mouseY)
-                                    if select != None:
-                                        if 2 == button_enable[0]: #pon
-                                            pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
-                                            if pi != -1:
-                                                # 3: pon
-                                                dmj[did].append([3, [drop_mj[turn_id][-1]]])
-                                                drop_mj[turn_id] = drop_mj[turn_id][:-1]
-                                                player_mj[did] = player_mj[did][:pi] + player_mj[did][pi+2:]
-                                                player_mj_num[did] = len(player_mj[did])
-                                                display_all()            
-                                                screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
-                                                pygame.display.update()
-                                                if True == Add_Delay:
-                                                    time.sleep(1)
-                                                
-                                                reset_p0_button()
-                                                handle_drop_done = 4
-                                                
-                                                display_all()
-                                                pygame.display.update()
-                                                break
-                                        if 2 == button_enable[1]: #gon
-                                            gi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
-                                            if gi != -1:
-                                                # 1: show gon
-                                                dmj[did].append([1, [drop_mj[turn_id][-1]]])
-                                                drop_mj[turn_id] = drop_mj[turn_id][:-1]
-                                                player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
-                                                player_mj_num[did] = len(player_mj[did])
-                                                display_all()            
-                                                screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
-                                                pygame.display.update()
-                                                if True == Add_Delay:
-                                                    time.sleep(1)
-                                                
-                                                reset_p0_button()
-                                                handle_drop_done = 2
-                                                
-                                                display_all()
-                                                pygame.display.update()
-                                                
-                                                check_button = 0
-                                                get_done[turn_id] = 0
-                                                turn_id = did
-                                                break
-                                        
+                                    print(bselect) #temp
+                                    print(button_enable[0])
+                                    if 2 == button_enable[0]: #pon
+                                        pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                                        if pi != -1:
+                                            # 3: pon
+                                            dmj[did].append([3, [drop_mj[turn_id][-1]]])
+                                            drop_mj[turn_id] = drop_mj[turn_id][:-1]
+                                            player_mj[did] = player_mj[did][:pi] + player_mj[did][pi+2:]
+                                            player_mj_num[did] = len(player_mj[did])
+                                            display_all()            
+                                            screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
+                                            pygame.display.update()
+                                            if True == Add_Delay:
+                                                time.sleep(1)
+                                            
+                                            reset_p0_button()
+                                            handle_drop_done = 4
+                                            
+                                            display_all()
+                                            pygame.display.update()
+                                            break
+                                    if 2 == button_enable[1]: #gon
+                                        gi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                                        if gi != -1:
+                                            # 1: show gon
+                                            dmj[did].append([1, [drop_mj[turn_id][-1]]])
+                                            drop_mj[turn_id] = drop_mj[turn_id][:-1]
+                                            player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
+                                            player_mj_num[did] = len(player_mj[did])
+                                            display_all()            
+                                            screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
+                                            pygame.display.update()
+                                            if True == Add_Delay:
+                                                time.sleep(1)
+                                            
+                                            reset_p0_button()
+                                            handle_drop_done = 2
+                                            
+                                            display_all()
+                                            pygame.display.update()
+                                            
+                                            check_button = 0
+                                            get_done[turn_id] = 0
+                                            turn_id = did
+                                            break
+                                    if 5 == bselect:
+                                        reset_p0_button()
+                                        did = (did + 1)%4
+                                        break
                         elif 4 == handle_drop_done: #begin if True == button_enable_chk():
                             select = select_mj(p0_mjloc_org)
                             display_all()
@@ -1455,6 +1460,7 @@ def main():
                                 turn_id = did
                                 break
                             
+                            (mouseX, mouseY) = pygame.mouse.get_pos()
                             bselect = None
                             bselect = click_p0_button(mouseX, mouseY)
                             if 5 == bselect: #return
@@ -1555,6 +1561,7 @@ def main():
                                         if event.type == QUIT:
                                             exit()
                                         elif event.type == MOUSEBUTTONDOWN:
+                                            (mouseX, mouseY) = pygame.mouse.get_pos()
                                             bselect = None
                                             bselect = click_p0_button(mouseX, mouseY)
                                             if select != None:
@@ -1592,6 +1599,11 @@ def main():
                                                             break
                                                     else:
                                                         smj = None
+                                            elif 5 == bselect:
+                                                # 0 == handle_drop_done
+                                                #reset_p0_button()
+                                                #get_done[turn_id] = 0
+                                                break
                                 elif 4 == handle_drop_done:
                                     for event in pygame.event.get():
                                         if event.type == QUIT:
@@ -1618,7 +1630,8 @@ def main():
                                         turn_id = did
                                         check_button = 1
                                         break
-                                        
+                                    
+                                    (mouseX, mouseY) = pygame.mouse.get_pos()
                                     bselect = None
                                     bselect = click_p0_button(mouseX, mouseY)
                                     if 5 == bselect: #return
