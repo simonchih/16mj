@@ -153,7 +153,7 @@ get_done = [0] * 4
 hear_status = [False] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
-#-1: ini, 0: Disable, 1: Enable, 2: Clicked (for eat only)
+#-1: ini, 0: Disable, 1: Enable, 2: Clicked (for eat and dark gon only)
 button_enable = [-1] * 6
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
@@ -868,7 +868,6 @@ def draw_p123_mj(win_id = -1):
         else: # player 1, 3
             draw_mj_column(mjback4, mjloc[pid], player_mj_num[pid], draw)
         
-
 def display_all(win_id = -1, did = -1):
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
@@ -1094,7 +1093,7 @@ def main():
                 drop_mj_loc[pi][8*i:8*(i+1)] = drop_mj_loc[pi][8*(i+1)-1:8*i-1:-1]
         drop_mj_loc[pi][32:64] = drop_mj_loc[pi][0:32]
     # end assign drop_mj_loc
-    
+
     while True:
         while (mjb - mjp + 1) > 0:
             
@@ -1215,7 +1214,7 @@ def main():
                 else:
                     get_done[turn_id] = -1
                     continue
-
+            
             # For AI player 1~3, check hu before
             if False == p0_is_AI and 0 == turn_id:
                 # button_enable[4] to check hu, 0: NOT hu, 1:hu
@@ -1235,7 +1234,7 @@ def main():
                         hear_status[turn_id] = True
                 elif -1 == get_done[turn_id]:
                     continue
-
+            
             if False == p0_is_AI and 0 == turn_id and False == hear_status[turn_id]:
                 select = None
                 for c in range(player_mj_num[0]):
@@ -1258,14 +1257,15 @@ def main():
                 if None == select:
                     p0_mjloc = copy.deepcopy(p0_mjloc_org)
                     p0_get_loc = list(p0_get_loc_org)
-
+            
             for event in pygame.event.get():
                 if event.type == QUIT:
                     exit()
                 elif False == p0_is_AI and 0 == turn_id:
                     if event.type == MOUSEBUTTONDOWN:
                         (mouseX, mouseY) = pygame.mouse.get_pos()
-                        if select != None and get_done[turn_id] != 2:
+                        # if NOT dark gon proc
+                        if select != None and get_done[turn_id] != 2 and button_enable[1] != 2:
                             ebutton = False
                             if p_num == select:
                                 drop_mj[turn_id].append(getmj)
@@ -1318,7 +1318,6 @@ def main():
                                         dmj[turn_id].append([2])
                                         get_done[turn_id] = -1
                                         break
-                        
                         if 2 == get_done[turn_id]:
                             if False == button_enable_chk():
                                 handle_drop_done = 0
@@ -1345,7 +1344,6 @@ def main():
 
             display_all()
             pygame.display.update()
-            
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
                 did = (turn_id + 1)%4
