@@ -407,7 +407,7 @@ def button_enable_chk():
             return True
     return False
     
-def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
+def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, chk_huonly = False):
     global button_enable
     
     reset_p0_button()
@@ -415,8 +415,16 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False):
     enable = False
     
     if False == hear_status[0]:
+        if True == chk_huonly:
+            if myvalue != None and 1 == hu(mj, myvalue):
+                button_enable[4] = 1
+                enable = True
+            elif value != None and 1 == hu(mj, value):
+                button_enable[4] = 1
+                button_enable[5] = 1
+                enable = True
         # It's NOT possible for myvalue != None and value != None 
-        if None == value and None == myvalue:
+        elif None == value and None == myvalue:
             if 0 == button_enable[2] and 1 == hear(mj, mj_num):
                 button_enable[2] = 1
                 button_enable[5] = 1
@@ -1355,7 +1363,7 @@ def main():
                     else:
                         if False == p0_is_AI and 0 == did:
                                 if check_button < 2: # check_button == 0 or 1
-                                    check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1])
+                                    check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1], True)
                                     check_button = 2
                                 br = False
                                 while 1 == button_enable[4]:
@@ -1384,6 +1392,9 @@ def main():
                                 time.sleep(9)
                             break
                     if False == p0_is_AI and 0 == did:
+                        if check_button < 3:
+                            check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1])
+                            check_button = 3
                         if True == button_enable_chk() and handle_drop_done != 4 and handle_drop_done != 5:
                             select = select_mj(p0_mjloc_org)
                             display_all()
@@ -1548,9 +1559,9 @@ def main():
                 elif 0 == handle_drop_done:
                     did = (turn_id + 1)%4
                     if False == p0_is_AI and 0 == did:
-                        if 2 == check_button:
+                        if check_button < 4:
                             check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1], True)
-                            check_button = 3
+                            check_button = 4
                         if True == button_enable_chk():
                             smj = None
                             br = False
