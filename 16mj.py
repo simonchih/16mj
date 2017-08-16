@@ -504,6 +504,7 @@ def eat(mj, mj_num, value):
         i += 1
         
     return eindex
+
 def hear(mj, mj_num):
     block = [0] * mj_num
     
@@ -548,14 +549,28 @@ def hear(mj, mj_num):
                         block[i] = block[n1] = block[n2] = 1
                         i += 1
                         continue
+                    elif 0 == two_s and mj[i] == mj[n1]:
+                        two_s = 1
+                        block[i] = block[n1] = 1
                     else:
                         m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
-                        
-                        if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
-                            block[i] = block[m1] = block[m2] = 1
-                            i += 1
-                            continue
-                        else:
+                        if m1 != -1 and m2 != -1:
+                            if mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                                block[i] = block[m1] = block[m2] = 1
+                                i += 1
+                                continue
+                            elif 1 == two_s:
+                                mj_hear = 0
+                                break
+                            elif mj[i] < 27 and mj[i]//9 == mj[m1]//9 and mj[i]+1 == mj[m1]:
+                                two_s = 1
+                                block[i] = block[m1] = 1
+                                i += 1
+                                continue
+                            else:
+                                mj_hear = 0
+                                break
+                        elif m1 != -1:
                             if 1 == two_s:
                                 mj_hear = 0
                                 break
@@ -567,6 +582,9 @@ def hear(mj, mj_num):
                             else:
                                 mj_hear = 0
                                 break
+                        else:
+                            mj_hear = 0
+                            break
             
             if 1 == mj_hear:
                 return 1
@@ -613,10 +631,14 @@ def hear(mj, mj_num):
                 else:
                     m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
                     
-                    if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
-                        block[i] = block[m1] = block[m2] = 1
-                        i += 1
-                        continue
+                    if m1 != -1 and m2 != -1:
+                        if mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                            block[i] = block[m1] = block[m2] = 1
+                            i += 1
+                            continue
+                        else:
+                            mj_hear = 0
+                            break
                     else:
                         mj_hear = 0
                         break
@@ -1367,7 +1389,7 @@ def main():
                     else:
                         if False == p0_is_AI and 0 == did:
                                 if check_button < 2: # check_button == 0 or 1
-                                    check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1], True)
+                                    check_p0_button(player_mj[did], player_mj_num[did], None, drop_mj[turn_id][-1])
                                     check_button = 2
                                 br = False
                                 while 1 == button_enable[4]:
