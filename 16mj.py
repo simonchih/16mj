@@ -153,8 +153,8 @@ get_done = [0] * 4
 hear_status = [False] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
-#-1: ini, 0: Disable, 1: Enable, 2: Clicked (for eat and dark gon only)
-button_enable = [-1] * 6
+#0: Disable, 1: Enable, 2: Clicked (for eat and dark gon only)
+button_enable = [0] * 6
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
@@ -413,7 +413,7 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
     reset_p0_button()
     
     enable = False
-    
+
     if False == hear_status[0]:
         if True == chk_huonly:
             if myvalue != None and 1 == hu(mj, myvalue):
@@ -451,6 +451,10 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
                 button_enable[3] = 1
                 button_enable[5] = 1
                 enable = True
+            
+            if 1 == hu(mj, value):
+                button_enable[4] = 1
+                button_enable[5] = 1
     elif myvalue != None and 1 == hu(mj, myvalue):
         button_enable[4] = 1
         enable = True
@@ -541,6 +545,11 @@ def hear(mj, mj_num):
                         block[i] = block[n1] = 1
                         i += 1
                         continue
+                    elif mj[i] < 27 and mj[i]//9 == mj[n1]//9 and mj[i]+2 == mj[n1]:
+                        two_s = 1
+                        block[i] = block[n1] = 1
+                        i += 1
+                        continue
                     else:
                         mj_hear = 0
                         break
@@ -567,6 +576,11 @@ def hear(mj, mj_num):
                                 block[i] = block[m1] = 1
                                 i += 1
                                 continue
+                            elif mj[i] < 27 and mj[i]//9 == mj[m1]//9 and mj[i]+2 == mj[m1]:
+                                two_s = 1
+                                block[i] = block[m1] = 1
+                                i += 1
+                                continue
                             else:
                                 mj_hear = 0
                                 break
@@ -575,6 +589,11 @@ def hear(mj, mj_num):
                                 mj_hear = 0
                                 break
                             elif mj[i] == mj[m1] or (mj[i] < 27 and mj[i]//9 == mj[m1]//9 and mj[i]+1 == mj[m1]):
+                                two_s = 1
+                                block[i] = block[m1] = 1
+                                i += 1
+                                continue
+                            elif mj[i] == mj[m1] or (mj[i] < 27 and mj[i]//9 == mj[m1]//9 and mj[i]+2 == mj[m1]):
                                 two_s = 1
                                 block[i] = block[m1] = 1
                                 i += 1
@@ -1141,7 +1160,7 @@ def main():
                 hear_status = [False] * 4
                 get_done = [0] * 4
                 eat_index = []
-                button_enable = [-1] * len(button_loc)
+                button_enable = [0] * len(button_loc)
                 dmj = [[], [], [], []]
                 hmj = [[], [], [], []]
                 drop_mj = [[], [], [], []]
@@ -1163,6 +1182,11 @@ def main():
                 pygame.display.update()
                 if True == Add_Delay:
                     time.sleep(1)
+                
+                #temp
+                #player_mj[0] = [0, 0, 0, 3, 3, 10, 11, 12, 15, 16, 17, 28, 28, 28, 30, 30]
+                #player_mj_num[0] = len(player_mj[0])
+                #end temp
                 
                 player_mj[0].sort()
                 player_mj[1].sort()
@@ -1313,6 +1337,7 @@ def main():
                                 ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                 get_done[turn_id] = 2
                             if False == ebutton:
+                                # here get_done[turn_id] == 2
                                 handle_drop_done = 0
                                 break
                         
@@ -1369,6 +1394,8 @@ def main():
                                     time.sleep(9)
                                 break
                             elif 5 == bselect: #return
+                                if False == hear_status[0]:
+                                    button_enable[2] = 0 #hear button off
                                 reset_p0_button()
                                 handle_drop_done = 0
                                 break
@@ -1393,19 +1420,29 @@ def main():
                                     check_button = 2
                                 br = False
                                 while 1 == button_enable[4]:
-                                    bselect = click_p0_button(mouseX, mouseY)
-                                    if 5 == bselect:
-                                        button_enable[4] = 0 # disable hu button
+                                    for event in pygame.event.get():
+                                        if event.type == QUIT:
+                                            exit()
+                                        elif event.type == MOUSEBUTTONDOWN:
+                                            (mouseX, mouseY) = pygame.mouse.get_pos()
+                                            bselect = click_p0_button(mouseX, mouseY)
+                                            if 5 == bselect:
+                                                button_enable[4] = 0 # disable hu button
+                                                break
+                                            elif 4 == bselect:
+                                                winner = did
+                                                display_all(winner, turn_id)
+                                                pygame.display.update()
+                                                handle_drop_done = 3
+                                                if True == Add_Delay:
+                                                    time.sleep(9)
+                                                br = True
+                                                break
+                                    display_all()
+                                    pygame.display.update()
+                                    if True == br:
                                         break
-                                    elif 4 == bselect:
-                                        winner = did
-                                        display_all(winner, turn_id)
-                                        pygame.display.update()
-                                        handle_drop_done = 3
-                                        if True == Add_Delay:
-                                            time.sleep(9)
-                                        br = True
-                                        break
+                                    
                                 if True == br:
                                     break
                         # Check hu for p1~3
