@@ -1184,7 +1184,7 @@ def main():
                     time.sleep(1)
                 
                 #temp
-                #player_mj[0] = [0, 0, 0, 3, 3, 10, 11, 12, 15, 16, 17, 28, 28, 28, 30, 30]
+                #player_mj[0] = [0, 0, 0, 3, 3, 10, 11, 12, 15, 16, 17, 28, 28, 28, 28, 30]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
@@ -1370,6 +1370,7 @@ def main():
                                         player_mj_num[turn_id] = len(player_mj[turn_id])
                                         dmj[turn_id].append([2])
                                         get_done[turn_id] = -1
+                                        reset_p0_button()
                                         break
                                     elif 4 == len(gi):
                                         for i in gi:
@@ -1377,6 +1378,7 @@ def main():
                                         player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
                                         dmj[turn_id].append([2])
                                         get_done[turn_id] = -1
+                                        reset_p0_button()
                                         break
                         if 2 == get_done[turn_id]:
                             if False == button_enable_chk():
