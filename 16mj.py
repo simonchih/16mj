@@ -160,6 +160,9 @@ drop_mj = [[], [], [], []]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
 htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
 hmj = [[], [], [], []]
+# add kong mj index of dmj
+add_kong_mj = None
+add_kong_loc = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
 # if type == 2 (dark kong), NO value property, e.g. [type]
@@ -464,6 +467,16 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
         enable = True
     
     return enable
+
+# -1: Can't add kong, 0~4: index of dmj    
+def add_kong(dj, value):
+    for i, orgv in enumerate(dj):
+        tp = orgv[0]
+        if 3 == tp:
+            v = rogv[1][0]
+            if v == value:
+                return i
+    return -1
     
 # -1: Can't kong, 0~mj_num - 4: start of mj index 
 def dark_kong(mj, mj_num):
@@ -1014,6 +1027,7 @@ def mjAI(tid, getv = None):
     global player_mj_num
     global dmj
     global drop_mj
+    global add_kong_mj
     
     if None == getv:
         tmj = player_mj[tid][:]
@@ -1021,10 +1035,25 @@ def mjAI(tid, getv = None):
     elif 1 == proc_add_hmj(tid, True, getv):
         return -1
     else:
+        #add_kong_mj = None
+        aki = add_kong(dmj[tid], getv)
+        if aki != -1:
+            screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[tid])
+            pygame.display.update()
+            if True == Add_Delay:
+                time.sleep(1)  
+            dmj[tid][aki] = [1, [getv]]
+            add_kong_mj = aki
+            return -1
+        
         tmj, tmj_num = insert_mj(getv, player_mj[tid])
     
     si = dark_kong(tmj, tmj_num)
     if si != -1 and getv != None:
+        screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[tid])
+        pygame.display.update()
+        if True == Add_Delay:
+            time.sleep(1)        
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
         dmj[tid].append([2])
@@ -1068,6 +1097,8 @@ def main():
     global hear_status
     global host_id
     global eat_index
+    global add_kong_loc
+    global add_kong_mj
     
     first = 1
     p0_mjloc_ini = []
@@ -1091,16 +1122,27 @@ def main():
         ii += 1
     # end p0_mjloc
     
-    # assign dmj_loc
+    # assign dmj_loc, add_kong_loc
+    for i, loc in enumerate(dmj_loc):
+        (x, y) = loc[0]
+        if 0 == i or 2 == i:
+            add_kong_loc[i].append((x+p0_mj_width, y))
+        else:
+            add_kong_loc[i].append((x, y+p0_mj_width))
+    
     gap = 5
     for pi in range(4):
         for i in range(1, 5):
             (x, y) = dmj_loc[pi][i-1]
             if 0 == pi or 2 == pi:
                 dmj_loc[pi].append((x + 2*p0_mj_width + mjbk.get_width() + gap, y))
+                (ax, ay) = dmj_loc[pi][-1]
+                add_kong_loc[pi].append((ax + p0_mj_width, ay))
             else: #1 == pi or 3 == pi:
-                dmj_loc[pi].append((x, y + 2*p0_mj_width + mjbk.get_height() + gap))
-    # end assign dmj loc
+                dmj_loc[pi].append((x, y + 2*p0_mj_width + mjbk.get_width() + gap))
+                (ax, ay) = dmj_loc[pi][-1]
+                add_kong_loc[pi].append((ax, ay + p0_mj_width))
+    # end assign dmj loc, add_kong_loc
     
     # assign hmj_loc
     for pi in range(4):
@@ -1234,6 +1276,7 @@ def main():
 
             # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue.
             handle_drop_done = -1
+            add_kong_mj = None
 
             if 0 == (mjb - mjp + 1):
                 break
@@ -1365,6 +1408,11 @@ def main():
                                     
                                     gi.sort(reverse=True)
                                     if value == getmj and 3 == len(gi):
+                                        screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[turn_id])
+                                        pygame.display.update()
+                                        if True == Add_Delay:
+                                            time.sleep(1)
+                                            
                                         for i in gi:
                                             del player_mj[turn_id][i]
                                         player_mj_num[turn_id] = len(player_mj[turn_id])
@@ -1373,6 +1421,11 @@ def main():
                                         reset_p0_button()
                                         break
                                     elif 4 == len(gi):
+                                        screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[turn_id])
+                                        pygame.display.update()
+                                        if True == Add_Delay:
+                                            time.sleep(1)
+                                            
                                         for i in gi:
                                             del player_mj[turn_id][i]
                                         player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
