@@ -153,7 +153,7 @@ get_done = [0] * 4
 hear_status = [False] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
-#0: Disable, 1: Enable, 2: Clicked (for eat and dark gon only)
+#0: Disable, 1: Enable, 2: Clicked (for eat and dark kong only)
 button_enable = [0] * 6
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
@@ -161,8 +161,8 @@ hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
 htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
 hmj = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
-# [type, [value]] in dmj. type 0: eat, 1: show gon, 2: dark gon, 3: pon
-# if type == 2 (dark gon), NO value property, e.g. [type]
+# [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
+# if type == 2 (dark kong), NO value property, e.g. [type]
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
 player_mj_num = [p_num, p_num, p_num, p_num]
@@ -431,7 +431,7 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
                 enable = True
         elif None == value: # myvalue != None
             temp_mj, temp_mj_num = insert_mj(myvalue, mj)
-            if dark_gon(temp_mj, temp_mj_num) != -1:
+            if dark_kong(temp_mj, temp_mj_num) != -1:
                 button_enable[1] = 1
                 enable = True
             if 1 == hu(mj, myvalue):
@@ -443,7 +443,7 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
                     button_enable[0] = 1
                     button_enable[5] = 1
                     enable = True
-                if gon(mj, mj_num, value) != -1:
+                if kong(mj, mj_num, value) != -1:
                     button_enable[1] = 1
                     button_enable[5] = 1
                     enable = True
@@ -465,15 +465,15 @@ def check_p0_button(mj, mj_num, myvalue = None, value = None, chk_eat = False, c
     
     return enable
     
-# -1: Can't gon, 0~mj_num - 4: start of mj index 
-def dark_gon(mj, mj_num):
+# -1: Can't kong, 0~mj_num - 4: start of mj index 
+def dark_kong(mj, mj_num):
     for i in range(mj_num - 3):
         if mj[i] == mj[i+1] == mj[i+2] == mj[i+3]:
             return i
     return -1
     
-# -1: Can't gon, 0~mj_num - 3: start of mj index    
-def gon(mj, mj_num, value):
+# -1: Can't kong, 0~mj_num - 3: start of mj index    
+def kong(mj, mj_num, value):
     for i in range(mj_num - 2):
         if value == mj[i] == mj[i+1] == mj[i+2]:
             return i
@@ -826,7 +826,7 @@ def fill_background():
         for x in range(0, screen_width, background.get_width()):
             screen.blit(background, (x, y))
 
-def display_dark_gon(pid, loc):
+def display_dark_kong(pid, loc):
     (x, y) = loc
     if 0 == pid or 2 == pid:
         for i in range(3):
@@ -839,7 +839,7 @@ def display_dark_gon(pid, loc):
         
         screen.blit(pid_to_image(pid, 42), (x, y + p0_mj_width))
     
-def display_show_gon(pid, value, loc):            
+def display_show_kong(pid, value, loc):            
     (x, y) = loc
     if 0 == pid or 2 == pid:
         for i in range(3):
@@ -893,9 +893,9 @@ def draw_dmj():
             if 0 == dmj[pid][i][0]:
                 display_front_eat(pid, dmj[pid][i][1], dmj[pid][i][1][2], dmj_loc[pid][i])
             elif 1 == dmj[pid][i][0]:
-                display_show_gon(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
+                display_show_kong(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
             elif 2 == dmj[pid][i][0]:
-                display_dark_gon(pid, dmj_loc[pid][i])
+                display_dark_kong(pid, dmj_loc[pid][i])
             elif 3 == dmj[pid][i][0]:
                 display_pon(pid, dmj[pid][i][1][0], dmj_loc[pid][i])
         
@@ -1023,7 +1023,7 @@ def mjAI(tid, getv = None):
     else:
         tmj, tmj_num = insert_mj(getv, player_mj[tid])
     
-    si = dark_gon(tmj, tmj_num)
+    si = dark_kong(tmj, tmj_num)
     if si != -1 and getv != None:
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
@@ -1210,10 +1210,10 @@ def main():
             display_all()
             # Temp Test Code
             #for i in range(5):
-            #    display_dark_gon(0, dmj_loc[0][i])
-            #    display_dark_gon(1, dmj_loc[1][i])
-            #    display_dark_gon(2, dmj_loc[2][i])
-            #    display_dark_gon(3, dmj_loc[3][i])
+            #    display_dark_kong(0, dmj_loc[0][i])
+            #    display_dark_kong(1, dmj_loc[1][i])
+            #    display_dark_kong(2, dmj_loc[2][i])
+            #    display_dark_kong(3, dmj_loc[3][i])
             #
             #for i in range(8):
             #    screen.blit(pid_to_image(0, 40), hmj_loc[0][i])
@@ -1232,7 +1232,7 @@ def main():
             # End Temp Test
             pygame.display.update()
 
-            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and gon), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and gon drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue.
+            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue.
             handle_drop_done = -1
 
             if 0 == (mjb - mjp + 1):
@@ -1323,7 +1323,7 @@ def main():
                 elif False == p0_is_AI and 0 == turn_id:
                     if event.type == MOUSEBUTTONDOWN:
                         (mouseX, mouseY) = pygame.mouse.get_pos()
-                        # if NOT dark gon proc
+                        # if NOT dark kong proc
                         if select != None and get_done[turn_id] != 2 and button_enable[1] != 2:
                             ebutton = False
                             if p_num == select:
@@ -1342,7 +1342,7 @@ def main():
                                 break
                         
                         if True == button_enable_chk():
-                            # handle dark gon
+                            # handle dark kong
                             bselect = None
                             bselect = click_p0_button(mouseX, mouseY)
                             if 4 == bselect: # if hu
@@ -1353,7 +1353,7 @@ def main():
                                 if True == Add_Delay:
                                     time.sleep(9)
                                 break
-                            elif 2 == button_enable[1]: #if dark gon
+                            elif 2 == button_enable[1]: #if dark kong
                                 if select != None and select != p_num:
                                     value = player_mj[turn_id][select]
                                     gi = [select]
@@ -1387,7 +1387,7 @@ def main():
                             
                             bselect = None
                             bselect = click_p0_button(mouseX, mouseY)
-                            if 4 == bselect: # if hu
+                            if 4 == bselect: # if hu, it seems impossible happen
                                 reset_p0_button()
                                 winner = turn_id
                                 display_all(winner)
@@ -1493,10 +1493,10 @@ def main():
                                             display_all()
                                             pygame.display.update()
                                             break
-                                    if 2 == button_enable[1]: #gon
+                                    if 2 == button_enable[1]: #kong
                                         gi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                                         if gi != -1:
-                                            # 1: show gon
+                                            # 1: show kong
                                             dmj[did].append([1, [drop_mj[turn_id][-1]]])
                                             drop_mj[turn_id] = drop_mj[turn_id][:-1]
                                             player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
@@ -1580,9 +1580,9 @@ def main():
                         else:
                             did = (did + 1)%4
                     else: #begin if False == p0_is_AI and 0 == did:
-                        gi = gon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                        gi = kong(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                         if  gi!= -1:
-                            # 1: show gon
+                            # 1: show kong
                             dmj[did].append([1, [drop_mj[turn_id][-1]]])
                             drop_mj[turn_id] = drop_mj[turn_id][:-1]
                             player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
