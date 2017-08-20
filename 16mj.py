@@ -409,7 +409,8 @@ def reset_p0_button():
     
     hear_enable = button_enable[2]
     button_enable = [0] * len(button_loc)
-    button_enable[2] = hear_enable
+    if 2 == hear_enable:
+        button_enable[2] = hear_enable
 
 def button_enable_chk():
     for i in range(len(button_loc)):
