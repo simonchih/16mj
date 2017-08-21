@@ -1307,7 +1307,7 @@ def main():
                     time.sleep(1)
                 
                 #temp
-                #player_mj[0] = [0, 0, 0, 3, 3, 10, 11, 12, 15, 16, 17, 28, 28, 28, 30, 30]
+                #player_mj[0] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 28, 30, 30]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
@@ -1782,46 +1782,50 @@ def main():
                                 pygame.display.update()
                                 
                                 if 0 == handle_drop_done:
+                                    br = False
                                     bselect = None
-                                    bselect = click_p0_button()
-                                    if select != None:
-                                        if 2 == button_enable[3]: #eat
-                                            if None == smj:
-                                                smj = select
-                                            elif select != smj:
-                                                sort_value = []
-                                                sort_index = []
-                                                if select < smj:
-                                                    sort_index = [select, smj]
-                                                    sort_value = [player_mj[did][select], player_mj[did][smj]]
-                                                else:
-                                                    sort_index = [smj, select]
-                                                    sort_value = [player_mj[did][smj], player_mj[did][select]]
-                                                if player_mj[did][select] < 27 and sort_value[0]//9 == sort_value[1]//9 == drop_mj[turn_id][-1]//9 and (sort_value[0] + 2 == sort_value[1] + 1 == drop_mj[turn_id][-1] or sort_value[0] + 2 == drop_mj[turn_id][-1] + 1 == sort_value[1] or  drop_mj[turn_id][-1] + 2 == sort_value[0] + 1 == sort_value[1]):
-                                                    etempv = [sort_value[0], sort_value[1]]
-                                                    etempv.append(drop_mj[turn_id][-1])
-                                                    # 0: eat
-                                                    dmj[did].append([0, etempv])
-                                                    drop_mj[turn_id] = drop_mj[turn_id][:-1]
-                                                    del player_mj[did][sort_index[1]]
-                                                    del player_mj[did][sort_index[0]]
-                                                    
-                                                    player_mj_num[did] = len(player_mj[did])
-                                                    display_all()            
-                                                    screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
-                                                    pygame.display.update()
-                                                    if True == Add_Delay:
-                                                        time.sleep(1)
-                                                    
-                                                    reset_p0_button()
-                                                    handle_drop_done = 4
-                                                    smj = None
-                                                    continue
-                                                else:
-                                                    smj = None
-                                            else:
+                                    for event in pygame.event.get():
+                                        if event.type == QUIT:
+                                            exit()
+                                        elif event.type == MOUSEBUTTONDOWN:
+                                            bselect = p0_button_proc()
+                                            if select != None and 2 == button_enable[3]: #eat
+                                                if None == smj:
+                                                    smj = select
+                                                elif select != smj:
+                                                    sort_value = []
+                                                    sort_index = []
+                                                    if select < smj:
+                                                        sort_index = [select, smj]
+                                                        sort_value = [player_mj[did][select], player_mj[did][smj]]
+                                                    else:
+                                                        sort_index = [smj, select]
+                                                        sort_value = [player_mj[did][smj], player_mj[did][select]]
+                                                    if player_mj[did][select] < 27 and sort_value[0]//9 == sort_value[1]//9 == drop_mj[turn_id][-1]//9 and (sort_value[0] + 2 == sort_value[1] + 1 == drop_mj[turn_id][-1] or sort_value[0] + 2 == drop_mj[turn_id][-1] + 1 == sort_value[1] or  drop_mj[turn_id][-1] + 2 == sort_value[0] + 1 == sort_value[1]):
+                                                        etempv = [sort_value[0], sort_value[1]]
+                                                        etempv.append(drop_mj[turn_id][-1])
+                                                        # 0: eat
+                                                        dmj[did].append([0, etempv])
+                                                        drop_mj[turn_id] = drop_mj[turn_id][:-1]
+                                                        del player_mj[did][sort_index[1]]
+                                                        del player_mj[did][sort_index[0]]
+                                                        
+                                                        player_mj_num[did] = len(player_mj[did])
+                                                        display_all()            
+                                                        screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
+                                                        pygame.display.update()
+                                                        if True == Add_Delay:
+                                                            time.sleep(1)
+                                                        
+                                                        reset_p0_button()
+                                                        handle_drop_done = 4
+                                                        smj = None
+                                                        continue
+                                            elif 5 == bselect:
+                                                break
+                                            else: # None == select or 0 or 1 == button_enable[3]
                                                 smj = None
-                                    elif 5 == bselect:
+                                    if True == br:
                                         break
                                 elif 4 == handle_drop_done:
                                     for event in pygame.event.get():
