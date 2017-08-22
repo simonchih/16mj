@@ -1386,7 +1386,6 @@ def main():
                     get_done[turn_id] = -1
                     continue
             
-            # For AI player 1~3, check hu before
             if False == p0_is_AI and 0 == turn_id:
                 # button_enable[4] to check hu, 0: NOT hu, 1:hu
                 if True == hear_status[turn_id] and 0 == button_enable[4]:
@@ -1397,7 +1396,7 @@ def main():
                 drop_mj[turn_id].append(getmj)
                 handle_drop_done = 0
                 get_done[turn_id] = 2
-            else:
+            else: # For AI player 1~3, check hu before
                 get_done[turn_id] = mjAI(turn_id, getmj)
                 if 2 == get_done[turn_id]:
                     handle_drop_done = 0
@@ -1617,7 +1616,6 @@ def main():
                             check_p0_button(player_mj[did], player_mj_num[did], myvalue = None, dj = None, value = drop_mj[turn_id][-1])
                             check_button = 3
                         if True == button_enable_chk() and handle_drop_done != 4 and handle_drop_done != 5:
-                            #select = select_mj(p0_mjloc_org) #temp?
                                                      
                             bselect = None
                             bselect = click_p0_button()
