@@ -1355,7 +1355,7 @@ def main():
             # End Temp Test
             pygame.display.update()
 
-            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue.
+            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue. 8: all done to break. (for return button)
             handle_drop_done = -1
             add_kong_mj = None
 
@@ -1819,7 +1819,12 @@ def main():
                                                         handle_drop_done = 4
                                                         smj = None
                                                         continue
+                                                    else: # Can't eat
+                                                        smj = None
+                                                else: #smj != None and select == smj
+                                                    smj = None
                                             elif 5 == bselect:
+                                                handle_drop_done = 8
                                                 break
                                             else: # None == select or 0 or 1 == button_enable[3]
                                                 smj = None
@@ -1869,9 +1874,13 @@ def main():
                                         turn_id = did
                                         check_button = 1
                                         break
+                                elif 8 == handle_drop_done:
+                                    break
                             if 7 == handle_drop_done:
                                 handle_drop_done = 0
                                 continue
+                            elif 8 == handle_drop_done:
+                                handle_drop_done = 0
                     else: 
                         etemp = eat(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                         if etemp != []:
