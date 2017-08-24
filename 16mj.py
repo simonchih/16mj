@@ -449,10 +449,10 @@ def check_p0_button(mj, mj_num, myvalue = None, dj = None, value = None, chk_eat
                 button_enable[1] = 1
                 enable = True
             
-            if add_kong(dj, myvalue) != -1:
+            if player_add_kong(dj, mj, myvalue) != None:
                 button_enable[1] = 1
-                add_kong_mj = add_kong(dj, myvalue)
                 enable = True
+                
             if 1 == hu(mj, myvalue):
                 button_enable[4] = 1
                 enable = True
@@ -493,6 +493,29 @@ def add_kong(dj, value):
             if v == value:
                 return i
     return -1
+    
+# return index of dmj, index of tmj, tmj, tmj_num
+# return None if player can't add kong
+def player_add_kong(dj, mj, gmj):
+    if gmj != None:
+        tmj, tmj_num = insert_mj(gmj, mj)
+        
+    for i in range(tmj_num):
+        aki = add_kong(dj, tmj[i])
+        if aki != -1:
+            return aki, i, tmj, tmj_num
+    
+    return None
+
+def p0_add_kong(dj, mj, gmj, dindex):
+    if gmj != None:
+        tmj, tmj_num = insert_mj(gmj, mj)
+        
+    for i in range(tmj_num):
+        if 0 == dj[dindex][0] and tmj[i] == dj[dindex][1][0]:
+            return i, tmj, tmj_num
+    
+    return None
     
 # -1: Can't kong, 0~mj_num - 4: start of mj index 
 def dark_kong(mj, mj_num):
@@ -1117,13 +1140,18 @@ def mjAI(tid, getv = None):
         return -1
     else:
         #add_kong_mj = None
-        aki = add_kong(dmj[tid], getv)
-        if aki != -1:
+        if player_add_kong(dmj[tid], player_mj[tid], getv) != None:
+            aki, vi, player_mj[tid], player_mj_num[tid] = player_add_kong(dmj[tid], player_mj[tid], getv)
             screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[tid])
+            dmj[tid][aki] = [1, [getv]]
+            
+            del player_mj[tid][vi]
+            player_mj_num[tid] = len(player_mj[tid])
+            
             pygame.display.update()
             if True == Add_Delay:
                 time.sleep(1)  
-            dmj[tid][aki] = [1, [getv]]
+            
             add_kong_mj = aki
             return -1
         
@@ -1496,28 +1524,34 @@ def main():
                                     reset_p0_button()
                                     winner = handle_hu(turn_id)
                                     break
-                                elif 2 == button_enable[1]: #if dark kong
-                                    if ak_select != None:
-                                        if ak_select == add_kong_mj:
-                                            screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[turn_id])
-                                            pygame.display.update()
-                                            if True == Add_Delay:
-                                                time.sleep(1)  
-                                            dmj[turn_id][add_kong_mj] = [1, [getmj]]
-                                            did = (turn_id + 1) % 4
-                                            br = False
-                                            while True:
-                                                if did == turn_id:
-                                                    break
-                                                elif 1 == hu(player_mj[did], dmj[turn_id][add_kong_mj][1][0]):
-                                                    winner = handle_hu(did, turn_id, get_hu = False, akong = add_kong_mj)
-                                                    br = True
-                                                    break
-                                                else:
-                                                    did = (did + 1) % 4
-                                            if True == br:
+                                elif 2 == button_enable[1]: #if add kong or dark kong
+                                    if p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, ak_select) != None:
+                                        add_kong_mj = ak_select
+                                        vi, player_mj[turn_id], player_mj_num[turn_id] = p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, ak_select)
+                                        
+                                        screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[turn_id])
+                                        dmj[turn_id][add_kong_mj] = [1, [getmj]]
+                                        del player_mj[turn_id][vi]
+                                        player_mj_num[turn_id] = len(player_mj[turn_id])
+                                        
+                                        pygame.display.update()
+                                        if True == Add_Delay:
+                                            time.sleep(1)
+                                        
+                                        did = (turn_id + 1) % 4
+                                        br = False
+                                        while True:
+                                            if did == turn_id:
                                                 break
-                                            continue
+                                            elif 1 == hu(player_mj[did], dmj[turn_id][add_kong_mj][1][0]):
+                                                winner = handle_hu(did, turn_id, get_hu = False, akong = add_kong_mj)
+                                                br = True
+                                                break
+                                            else:
+                                                did = (did + 1) % 4
+                                        if True == br:
+                                            break
+                                        continue
                                             
                                     elif select != None and select != p_num:
                                         value = player_mj[turn_id][select]
