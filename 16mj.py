@@ -512,7 +512,7 @@ def p0_add_kong(dj, mj, gmj, dindex):
         tmj, tmj_num = insert_mj(gmj, mj)
         
     for i in range(tmj_num):
-        if 0 == dj[dindex][0] and tmj[i] == dj[dindex][1][0]:
+        if 3 == dj[dindex][0] and tmj[i] == dj[dindex][1][0]:
             return i, tmj, tmj_num
     
     return None
