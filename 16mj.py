@@ -516,6 +516,25 @@ def p0_add_kong(dj, mj, gmj, dindex):
             return i, tmj, tmj_num
     
     return None
+
+def hear_dark_kong(mj, mj_num, gmj, tloc):
+    gdone = 2
+    
+    tmj, tmj_num = insert_mj(gmj, mj)
+    
+    di = dark_kong(tmj, tmj_num)
+    if di != -1:
+        temp_mj = list(filter(lambda a: a != tmj[di], tmj))
+        temp_mj_num = len(temp_mj)
+        if 1 == hear(temp_mj, temp_mj_num):
+            gdone = -1
+            screen.blit(write(u"暗槓", (0, 0, 255)), tloc)
+            pygame.display.update()
+            if True == Add_Delay:
+                time.sleep(1)      
+            return temp_mj, temp_mj_num, gdone 
+    
+    return mj, mj_num, gdone
     
 # -1: Can't kong, 0~mj_num - 4: start of mj index 
 def dark_kong(mj, mj_num):
@@ -1418,13 +1437,23 @@ def main():
             if False == p0_is_AI and 0 == turn_id:
                 # button_enable[4] to check hu, 0: NOT hu, 1:hu
                 if True == hear_status[turn_id] and 0 == button_enable[4]:
+                    player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id] = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
+                    
+                    if 2 == get_done[turn_id]:
+                        drop_mj[turn_id].append(getmj)
+                        handle_drop_done = 0
+                    elif -1 == get_done[turn_id]:
+                        dmj[turn_id].append([2])
+                        continue
+            elif True == hear_status[turn_id]:
+                player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id] = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
+                    
+                if 2 == get_done[turn_id]:
                     drop_mj[turn_id].append(getmj)
                     handle_drop_done = 0
-                    get_done[turn_id] = 2 
-            elif True == hear_status[turn_id]:
-                drop_mj[turn_id].append(getmj)
-                handle_drop_done = 0
-                get_done[turn_id] = 2
+                elif -1 == get_done[turn_id]:
+                    dmj[turn_id].append([2])
+                    continue
             else: # For AI player 1~3, check hu before
                 get_done[turn_id] = mjAI(turn_id, getmj)
                 if 2 == get_done[turn_id]:
