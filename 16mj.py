@@ -508,7 +508,9 @@ def player_add_kong(dj, mj, gmj):
     return None
 
 def p0_add_kong(dj, mj, gmj, dindex):
-    if gmj != None:
+    if None == dindex:
+        return None
+    elif gmj != None:
         tmj, tmj_num = insert_mj(gmj, mj)
         
     for i in range(tmj_num):
@@ -1355,7 +1357,10 @@ def main():
                     time.sleep(1)
                 
                 #temp
-                #player_mj[0] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 28, 30, 30]
+                #dmj[0].append([3, [15]])
+                #dmj[0].append([3, [4]])
+                #dmj[0].append([3, [13]])
+                #player_mj[0] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 28, 30, 32]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
@@ -1518,6 +1523,12 @@ def main():
                     (x, y) = dmj_loc[0][d]
                     if x < mouseX < x + 2*p0_mj_width + mjbk.get_width() and y < mouseY < y + mjbk.get_height():
                         ak_select = d
+                        
+                if 2 == button_enable[1]:
+                    add_kong_mj = ak_select
+                
+                display_all()
+                pygame.display.update()
             
             if False == p0_is_AI and 0 == turn_id:
                 if get_done[turn_id] != 2:
@@ -1554,12 +1565,11 @@ def main():
                                     winner = handle_hu(turn_id)
                                     break
                                 elif 2 == button_enable[1]: #if add kong or dark kong
-                                    if p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, ak_select) != None:
-                                        add_kong_mj = ak_select
-                                        vi, player_mj[turn_id], player_mj_num[turn_id] = p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, ak_select)
+                                    if p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, add_kong_mj) != None:
+                                        vi, player_mj[turn_id], player_mj_num[turn_id] = p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, add_kong_mj)
                                         
                                         screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[turn_id])
-                                        dmj[turn_id][add_kong_mj] = [1, [getmj]]
+                                        dmj[turn_id][add_kong_mj] = [1, [player_mj[turn_id][vi]]]
                                         del player_mj[turn_id][vi]
                                         player_mj_num[turn_id] = len(player_mj[turn_id])
                                         
@@ -1578,8 +1588,10 @@ def main():
                                                 break
                                             else:
                                                 did = (did + 1) % 4
+                                        reset_p0_button()
                                         if True == br:
                                             break
+                                        get_done[turn_id] = -1
                                         continue
                                             
                                     elif select != None and select != p_num:
