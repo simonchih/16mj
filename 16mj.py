@@ -1412,6 +1412,19 @@ def main():
             handle_drop_done = -1
             add_kong_mj = None
 
+            # temp auto debug only
+            #for p in range(4):
+            #    if player_mj_num[p] != len(player_mj[p]):
+            #        input("Crash!")
+            #    if player_mj_num[p] != 16 and player_mj_num[p] != 13 and player_mj_num[p] != 10 and player_mj_num[p] != 7 and player_mj_num[p] != 4 and player_mj_num[p] != 1:
+            #        input("Num error!")
+            # End temp
+            
+            if True == p0_is_AI:
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        exit()
+            
             if 0 == (mjb - mjp + 1):
                 break
             elif 0 == get_done[turn_id] or -1 == get_done[turn_id]:
