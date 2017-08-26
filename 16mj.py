@@ -1411,23 +1411,21 @@ def main():
             # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue. 8: all done to break. (for return button)
             handle_drop_done = -1
             add_kong_mj = None
-
-            # temp auto debug only
-            #for p in range(4):
-            #    if player_mj_num[p] != len(player_mj[p]):
-            #        input("Crash!")
-            #    if player_mj_num[p] != 16 and player_mj_num[p] != 13 and player_mj_num[p] != 10 and player_mj_num[p] != 7 and player_mj_num[p] != 4 and player_mj_num[p] != 1:
-            #        input("Num error!")
-            # End temp
             
             if True == p0_is_AI:
+                # auto debug only
+                for p in range(4):
+                    if player_mj_num[p] != len(player_mj[p]):
+                        input("Len error!")
+                    if player_mj_num[p] != 16 and player_mj_num[p] != 13 and player_mj_num[p] != 10 and player_mj_num[p] != 7 and player_mj_num[p] != 4 and player_mj_num[p] != 1:
+                        input("Num error!")
+                # End auto debug
+                
                 for event in pygame.event.get():
                     if event.type == QUIT:
                         exit()
             
-            if 0 == (mjb - mjp + 1):
-                break
-            elif 0 == get_done[turn_id] or -1 == get_done[turn_id]:
+            if 0 == get_done[turn_id] or -1 == get_done[turn_id]:
                 if 0 == get_done[turn_id]:
                     getmj = all_mj[mjp]
                     mjp += 1
