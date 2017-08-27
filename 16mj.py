@@ -56,6 +56,17 @@ h6_image_filename = 'Image/MJh6.gif'
 h7_image_filename = 'Image/MJh7.gif'
 h8_image_filename = 'Image/MJh8.gif'
 
+l0_image_filename = 'Image/l0.gif'
+l1_image_filename = 'Image/l1.gif'
+l2_image_filename = 'Image/l2.gif'
+l3_image_filename = 'Image/l3.gif'
+lred0_image_filename = 'Image/lred0.gif'
+lred1_image_filename = 'Image/lred1.gif'
+lred2_image_filename = 'Image/lred2.gif'
+lred3_image_filename = 'Image/lred3.gif'
+
+host_image_filename = 'Image/host.gif'
+
 mjback_image_filename = 'Image/mjback.gif'
 mjb_image_filename = 'Image/mjb.gif'
 
@@ -120,6 +131,17 @@ h6 = pygame.image.load(h6_image_filename).convert()
 h7 = pygame.image.load(h7_image_filename).convert()
 h8 = pygame.image.load(h8_image_filename).convert()
 
+l0 = pygame.image.load(l0_image_filename).convert()
+l1 = pygame.image.load(l1_image_filename).convert()
+l2 = pygame.image.load(l2_image_filename).convert()
+l3 = pygame.image.load(l3_image_filename).convert()
+lred0 = pygame.image.load(lred0_image_filename).convert()
+lred1 = pygame.image.load(lred1_image_filename).convert()
+lred2 = pygame.image.load(lred2_image_filename).convert()
+lred3 = pygame.image.load(lred3_image_filename).convert()
+
+host_img = pygame.image.load(host_image_filename).convert()
+
 mjback = pygame.image.load(mjback_image_filename).convert()
 mjbk   = pygame.image.load(mjb_image_filename).convert()
 
@@ -147,6 +169,7 @@ p0_get_loc_org = (880, 815)
 p0_get_loc = []
 eat_index = []
 getmj = -1
+east_to_north = []
 #player 0 mj location
 p0_mjloc = []
 # 2: won't show get mj, 1:get done, 0:get from mjp, -1: get from mjb 
@@ -158,6 +181,8 @@ button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (
 button_enable = [0] * 6
 drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
 drop_mj = [[], [], [], []]
+lloc = [(410, 710), (5, 400), (750, 205), (1155, 400)]
+hostloc = [(360, 710), (5, 450), (800, 205), (1155, 450)]
 hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
 htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
 hmj = [[], [], [], []]
@@ -262,6 +287,24 @@ def index_to_pic(index):
         return mjbk
     elif 43 == index:
         return hu_button
+    elif 44 == index:
+        return l0
+    elif 45 == index:
+        return l1
+    elif 46 == index:
+        return l2
+    elif 47 == index:
+        return l3
+    elif 48 == index:
+        return lred0
+    elif 49 == index:
+        return lred1
+    elif 50 == index:
+        return lred2
+    elif 51 == index:
+        return lred3
+    elif 52 == index:
+        return host_img
 
 def pid_to_image(pid, index):
     pic = index_to_pic(index)
@@ -1036,6 +1079,16 @@ def draw_p123_mj(win_id = -1):
         else: # player 1, 3
             draw_mj_column(mjback4, mjloc[pid], player_mj_num[pid], draw)
 
+def draw_host_location():
+    for i, l in enumerate(east_to_north):
+        if l == turn_id:
+            screen.blit(pid_to_image(l, 48+i), lloc[l])
+        else:
+            screen.blit(pid_to_image(l, 44+i), lloc[l])
+            
+        if l == host_id:
+            screen.blit(pid_to_image(l, 52), hostloc[l])
+            
 # here did is drop player id            
 def display_all(win_id = -1, did = -1, akong = None):
     fill_background()
@@ -1045,6 +1098,7 @@ def display_all(win_id = -1, did = -1, akong = None):
     draw_hmj()
     draw_drop_mj()
     draw_p0_button()
+    draw_host_location()
     draw_hu(win_id)
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
     if did != -1:
@@ -1204,6 +1258,11 @@ def mjAI(tid, getv = None):
     player_mj[tid] = tmj[:di] + tmj[di+1:]
     player_mj_num[tid] = len(player_mj[tid])
     
+    display_all()
+    pygame.display.update()
+    if True == Add_Delay:
+        time.sleep(1)
+                    
     return 2
     
 def main():
@@ -1233,6 +1292,18 @@ def main():
     
     first = 1
     p0_mjloc_ini = []
+    host_id = random.randint(0, 3) #0 <= host_id <= 3
+    east_to_north.append(host_id)
+    
+    # assign east_to_north
+    ei = (host_id + 1) % 4
+    while True:
+        if ei == host_id:
+            break
+        else:
+            east_to_north.append(ei)
+            ei = (ei + 1) % 4
+    # end assign east_to_north
     
     # assign all mj
     for i in range(34):
@@ -2005,7 +2076,7 @@ def main():
             if winner != -1:
                 break
         
-        if host_id != winner:
+        if winner != -1 and host_id != winner:
             host_id = (host_id + 1)%4
             
         first = 1
