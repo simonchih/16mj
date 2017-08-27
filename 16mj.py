@@ -3,6 +3,7 @@ import time
 import pygame
 import math
 import copy
+import hu_result
 from pygame.locals import *
 from sys import exit
 
@@ -840,6 +841,7 @@ def hu(pmj, value):
     
     return 0
 
+# hid: winner id
 def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
     global player_mj
     global player_mj_num
@@ -849,13 +851,14 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
         player_mj[hid] = list(temp_mj)
         player_mj_num[hid] = temp_mj_num
     
-    win = hid
-    display_all(win, drop_id, akong)
+    display_all(hid, drop_id, akong)
     pygame.display.update()
     if True == Add_Delay:
-        time.sleep(9)
-        
-    return win
+        time.sleep(4)
+    
+    hu_result.hu_result(player_mj[hid], dmj[hid])
+    
+    return hid
 
 def handle_p0_hu_only(hid, drop_id):
     global handle_drop_done
@@ -1431,7 +1434,7 @@ def main():
                 #dmj[0].append([3, [15]])
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
-                #player_mj[0] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 28, 30, 32]
+                #player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 8, 9, 10, 11, 12, 28, 30, 32]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
