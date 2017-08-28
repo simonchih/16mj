@@ -158,6 +158,7 @@ mjp = 0
 mjb = 143
 turn_id = 0
 host_id = 0
+host_num = 0
 handle_drop_done = -1
 # location of mj number font remains
 renum_loc = (470, 10)
@@ -845,6 +846,7 @@ def hu(pmj, value):
 def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
     global player_mj
     global player_mj_num
+    global host_num
     
     if True == get_hu and hid != 0:
         temp_mj, temp_mj_num = insert_mj(getmj, player_mj[hid])
@@ -856,7 +858,10 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
     if True == Add_Delay:
         time.sleep(4)
     
-    hu_result.hu_result(player_mj[hid], dmj[hid])
+    if hid == host_id:
+        host_num += 1
+    
+    result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num)
     
     return hid
 
@@ -1288,6 +1293,7 @@ def main():
     global button_enable
     global hear_status
     global host_id
+    global host_num
     global eat_index
     global add_kong_loc
     global add_kong_mj
@@ -2080,6 +2086,7 @@ def main():
                 break
         
         if winner != -1 and host_id != winner:
+            host_num = 0
             host_id = (host_id + 1)%4
             
         first = 1
