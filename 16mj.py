@@ -177,6 +177,7 @@ p0_mjloc = []
 # 2: won't show get mj, 1:get done, 0:get from mjp, -1: get from mjb 
 get_done = [0] * 4
 hear_status = [False] * 4
+first_turn = [True] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
 #0: Disable, 1: Enable, 2: Clicked (for eat and dark kong only)
@@ -842,11 +843,35 @@ def hu(pmj, value):
     
     return 0
 
+# Output: None, 0~3    
+def hmj7_get1(turn_id):
+    if 7 == len(hmj[turn_id]):
+        dhid = (turn_id + 1) % 4
+        while True:
+            if turn_id == dhid:
+                break
+            elif 1 == len(hmj[dhid]):
+                return handle_hu(turn_id, -1, False)
+            else: 
+                dhid = (dhid + 1) % 4
+    elif 1 == len(hmj[turn_id]):
+        dhid = (turn_id + 1) % 4
+        while True:
+            if turn_id == dhid:
+                break
+            elif 7 == len(hmj[dhid]):
+                return handle_hu(dhid, -1, False)
+            else: 
+                dhid = (dhid + 1) % 4
+            
+    return None
+            
 # hid: winner id
 def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
     global player_mj
     global player_mj_num
     global host_num
+    global first_turn
     
     if True == get_hu and hid != 0:
         temp_mj, temp_mj_num = insert_mj(getmj, player_mj[hid])
@@ -861,7 +886,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
     if hid == host_id:
         host_num += 1
     
-    result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num)
+    result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid])
     
     return hid
 
@@ -1298,6 +1323,7 @@ def main():
     global add_kong_loc
     global add_kong_mj
     global handle_drop_done
+    global first_turn
     
     first = 1
     p0_mjloc_ini = []
@@ -1411,6 +1437,7 @@ def main():
                 # check_button, 0: ini
                 check_button = 0 #local variable
                 hear_status = [False] * 4
+                first_turn = [True] * 4
                 get_done = [0] * 4
                 eat_index = []
                 button_enable = [0] * len(button_loc)
@@ -1512,6 +1539,13 @@ def main():
                 elif -1 == get_done[turn_id]:
                     getmj = all_mj[mjb]
                     mjb -= 1
+                
+                if len(hmj[turn_id]) == 8:
+                    winner = handle_hu(turn_id, -1, False)
+                    break
+                elif hmj7_get1(turn_id) != None:
+                    break
+                    
                 if 0 == proc_add_hmj(turn_id, True, getmj):
                     get_done[turn_id] = 1
                     if 0 == turn_id and False == p0_is_AI:
@@ -1523,9 +1557,6 @@ def main():
                         if 1 == hu(player_mj[turn_id], getmj):
                             winner = handle_hu(turn_id)
                             break
-                elif len(hmj[turn_id]) == 8:
-                    winner = handle_hu(turn_id, -1, False)
-                    break
                 else:
                     get_done[turn_id] = -1
                     continue
@@ -1554,6 +1585,7 @@ def main():
                 get_done[turn_id] = mjAI(turn_id, getmj)
                 if 2 == get_done[turn_id]:
                     handle_drop_done = 0
+                    first_turn[turn_id] = False
                     if 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
                         hear_status[turn_id] = True
                 elif -1 == get_done[turn_id]:
@@ -1636,12 +1668,14 @@ def main():
                                     drop_mj[turn_id].append(getmj)
                                     ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                     get_done[turn_id] = 2
+                                    first_turn[turn_id] = False
                                 else: # select != None:
                                     drop_mj[turn_id].append(player_mj[turn_id][select])
                                     del player_mj[turn_id][select]
                                     player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
                                     ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                     get_done[turn_id] = 2
+                                    first_turn[turn_id] = False
                                 if False == ebutton:
                                     # here get_done[turn_id] == 2
                                     handle_drop_done = 0
@@ -1803,6 +1837,7 @@ def main():
                                     
                                     display_all()
                                     pygame.display.update()
+                                    first_turn[did] = False
                                     continue
                             if 2 == button_enable[1]: #kong
                                 gi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
@@ -1827,6 +1862,7 @@ def main():
                                     check_button = 0
                                     get_done[turn_id] = 0
                                     turn_id = did
+                                    first_turn[did] = False
                                     break
                             if 5 == bselect:
                                 did = (did + 1)%4
@@ -1848,6 +1884,7 @@ def main():
                                         p0_mjloc = copy.deepcopy(p0_mjloc_org)
                                         display_all()
                                         pygame.display.update()
+                                        first_turn[did] = False
                                         
                                         ebutton = check_p0_button(player_mj[did], player_mj_num[did])
                                         
@@ -1902,6 +1939,7 @@ def main():
                             
                             get_done[turn_id] = 0
                             turn_id = did
+                            first_turn[did] = False
                             break
                             
                         pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
@@ -1921,6 +1959,7 @@ def main():
                             get_done[turn_id] = 0
                             turn_id = did
                             mjAI(turn_id)
+                            first_turn[did] = False
                             break
                     
                         did = (did + 1)%4            
@@ -1983,6 +2022,7 @@ def main():
                                                         p0_mjloc = copy.deepcopy(p0_mjloc_org)
                                                         handle_drop_done = 4
                                                         smj = None
+                                                        first_turn[did] = False
                                                         continue
                                                     else: # Can't eat
                                                         smj = None
@@ -2007,6 +2047,7 @@ def main():
                                                 p0_mjloc = copy.deepcopy(p0_mjloc_org)
                                                 display_all()
                                                 pygame.display.update()
+                                                first_turn[did] = False
                                                 
                                                 ebutton = check_p0_button(player_mj[did], player_mj_num[did])
                                                 
@@ -2072,6 +2113,7 @@ def main():
                             get_done[turn_id] = 0
                             turn_id = did
                             mjAI(turn_id)
+                            first_turn[did] = False
                             continue
                 if 2 == handle_drop_done:
                     get_done[turn_id] = -1
