@@ -886,7 +886,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
     if hid == host_id:
         host_num += 1
     
-    result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid])
+    result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid])
     
     return hid
 
