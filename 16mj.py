@@ -165,12 +165,13 @@ renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
-p0_is_AI = False
-Add_Delay = True
+p0_is_AI = True
+Add_Delay = False
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
 eat_index = []
 getmj = -1
+gethu = False
 east_to_north = []
 #player 0 mj location
 p0_mjloc = []
@@ -853,7 +854,7 @@ def drop1_hmj7(turn_id):
             if turn_id == dhid:
                 break
             elif 7 == len(hmj[dhid]):
-                return handle_hu(dhid, -1, False)
+                return handle_hu(dhid, -1, False, True)
             else: 
                 dhid = (dhid + 1) % 4
     
@@ -867,24 +868,21 @@ def hmj7_get1(turn_id):
             if turn_id == dhid:
                 break
             elif 1 == len(hmj[dhid]):
-                return handle_hu(turn_id, -1, False)
+                return handle_hu(turn_id, -1, False, True)
             else: 
                 dhid = (dhid + 1) % 4    
             
     return None
             
 # hid: winner id
-def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
+def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     global player_mj
     global player_mj_num
     global host_num
     global first_turn
+    global gethu
     
-    # T.B.D: display getmj without insert_mj()
-    if True == get_hu and hid != 0:
-        temp_mj, temp_mj_num = insert_mj(getmj, player_mj[hid])
-        player_mj[hid] = list(temp_mj)
-        player_mj_num[hid] = temp_mj_num
+    gethu = get_hu
     
     display_all(hid, drop_id, akong)
     pygame.display.update()
@@ -895,9 +893,14 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None):
         host_num += 1
     
     if -1 == drop_id: 
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], None, first_hear[hid])
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], getmj, first_hear[hid], None, hhu)
     else:
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], getmj, first_hear[hid])
+        if akong != None:
+            dp = dmj[drop_id][akong][1][0]
+        else:
+            dp = drop_mj[drop_id][-1]
+        
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], None, first_hear[hid], dp, hhu)
     
     return hid
 
@@ -991,6 +994,8 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
 
 def draw_mj_column(mj_pic, xy, mj_num, draw_all = -1):
     (startx, starty) = xy
+    gap = 5
+    
     if -1 == draw_all:
         for y in range(starty, starty + mj_num*mj_pic.get_height(), mj_pic.get_height()):
             screen.blit(mj_pic, (startx, y))
@@ -999,11 +1004,18 @@ def draw_mj_column(mj_pic, xy, mj_num, draw_all = -1):
         for y in range(starty, starty + mj_num*p0_mj_width, p0_mj_width):
             screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
             c += 1
+        
+        if True == gethu:
+            screen.blit(pid_to_image(draw_all, getmj), (startx, starty + gap + t1.get_width() + (mj_num-1)*p0_mj_width))
+            
     elif 3 == draw_all: # reverse older
         c = mj_num - 1
         for y in range(starty + (mj_num-1)*p0_mj_width, starty - 1, (-1)*p0_mj_width):
             screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
             c -= 1
+        
+        if True == gethu:
+            screen.blit(pid_to_image(draw_all, getmj), (startx, starty - gap - t1.get_width()))
 
 def draw_mj_row(mj_pic, xy, mj_num, draw_all = -1):
     (startx, starty) = xy
@@ -1011,10 +1023,14 @@ def draw_mj_row(mj_pic, xy, mj_num, draw_all = -1):
         for x in range(startx, startx + mj_num*mj_pic.get_width(), mj_pic.get_width()):
             screen.blit(mj_pic, (x, starty))
     else: # reverse older
+        gap = 5
         c = mj_num - 1
         for x in range(startx + (mj_num-1)*p0_mj_width, startx - 1, (-1)*p0_mj_width):
             screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (x, starty))
             c -= 1
+        
+        if True == gethu:
+            screen.blit(pid_to_image(draw_all, getmj), (startx - gap - t1.get_width(), starty))
 
 def fill_background():
     for y in range(0, screen_height, background.get_height()):
@@ -1451,6 +1467,7 @@ def main():
                 turn_id = host_id
                 # check_button, 0: ini
                 check_button = 0 #local variable
+                gethu = False
                 hear_status = [False] * 4
                 first_hear = [False] * 4
                 first_turn = [0] * 4
@@ -1557,7 +1574,7 @@ def main():
                     mjb -= 1
                 
                 if len(hmj[turn_id]) == 8:
-                    winner = handle_hu(turn_id, -1, False)
+                    winner = handle_hu(turn_id, -1, False, True)
                     break
                 elif hmj7_get1(turn_id) != None:
                     break
