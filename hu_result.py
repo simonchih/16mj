@@ -1,5 +1,5 @@
 class hu_result():
-    def __init__(self, mj, dmj, hnum, first_turn, hmj, getmj = None, first_hear = None, drophu = None, hhu = False):
+    def __init__(self, mj, dmj, hnum, first_turn, hmj, getmj = None, first_hear = 0, drophu = None, hhu = False):
         self.mj = mj
         self.dj = dmj
         self.hnum = hnum

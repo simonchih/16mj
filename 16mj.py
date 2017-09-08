@@ -165,8 +165,8 @@ renum_loc = (470, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
 huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
-p0_is_AI = True
-Add_Delay = False
+p0_is_AI = False
+Add_Delay = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
 eat_index = []
@@ -177,7 +177,8 @@ east_to_north = []
 p0_mjloc = []
 # 2: won't show get mj, 1:get done, 0:get from mjp, -1: get from mjb 
 get_done = [0] * 4
-first_hear = [False] * 4
+# 0: NOT hear, 1: Sky hear, 2: Ground hear
+first_hear = [0] * 4
 hear_status = [False] * 4
 # 0:ini, 1:after first drop, 2: after first hear or after 2 turn drop, 3~
 first_turn = [0] * 4
@@ -1236,8 +1237,9 @@ def p0_button_proc():
                     if 2 == i:
                         hear_status[0] = True
                         if 1 == first_turn[0]:
+                        # Ground hear
                             first_turn[0] += 1
-                            first_hear[0] = True
+                            first_hear[0] = 2
                 # 4 == i
                 return i
     return None
@@ -1256,7 +1258,27 @@ def click_p0_button():
     pygame.display.update()
     
     return bs
-                
+
+def handle_p0_sky_hear():
+    
+    check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
+    
+    while 1 == button_enable[2]:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exit()
+            elif event.type == MOUSEBUTTONDOWN:
+                s = p0_button_proc()
+                if 2 == s:
+                    # Sky hear
+                    first_turn[0] = 2
+                    first_hear[0] = 1
+                    break
+            
+        display_all()
+        pygame.display.update()
+    
+    
 def write(msg="pygame is cool", color= (0,0,0), size = 36):    
     #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
     myfont = pygame.font.Font("wqy-zenhei.ttf",size)
@@ -1469,7 +1491,7 @@ def main():
                 check_button = 0 #local variable
                 gethu = False
                 hear_status = [False] * 4
-                first_hear = [False] * 4
+                first_hear = [0] * 4
                 first_turn = [0] * 4
                 get_done = [0] * 4
                 eat_index = []
@@ -1500,7 +1522,7 @@ def main():
                 #dmj[0].append([3, [15]])
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
-                #player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 8, 9, 10, 11, 12, 28, 30, 32]
+                #player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 11, 12, 12, 32, 32]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
@@ -1565,6 +1587,16 @@ def main():
                     if event.type == QUIT:
                         exit()
             
+            if 0 == first_turn[turn_id]:
+                if False == p0_is_AI and 0 == turn_id:
+                    handle_p0_sky_hear()
+                    
+                elif 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
+                    # Sky hear
+                    hear_status[turn_id] = True
+                    first_turn[turn_id] = 2
+                    first_hear[turn_id] = 1
+            
             if 0 == get_done[turn_id] or -1 == get_done[turn_id]:
                 if 0 == get_done[turn_id]:
                     getmj = all_mj[mjp]
@@ -1624,8 +1656,9 @@ def main():
                     if 1 == hear(player_mj[turn_id], player_mj_num[turn_id]):
                         hear_status[turn_id] = True
                         if 1 == first_turn[turn_id]:
+                        #Ground hear
                             first_turn[turn_id] += 1
-                            first_hear[turn_id] = True
+                            first_hear[turn_id] = 2
                 elif -1 == get_done[turn_id]:
                     if None == add_kong_mj:
                         continue
