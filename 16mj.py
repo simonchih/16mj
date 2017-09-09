@@ -1271,7 +1271,9 @@ def handle_p0_sky_hear():
                 exit()
             elif event.type == MOUSEBUTTONDOWN:
                 s = p0_button_proc()
-                if 2 == s:
+                if 5 == s:
+                    break
+                elif 2 == s:
                     # Sky hear
                     first_turn[0] = 2
                     first_hear[0] = 1
@@ -1971,6 +1973,7 @@ def main():
                                             break
                                         else:
                                             handle_drop_done = 5
+                                            break
                         elif 5 == handle_drop_done:
                             if False == button_enable_chk():
                                 handle_drop_done = 1
@@ -2132,6 +2135,8 @@ def main():
                                                     turn_id = did
                                                     check_button = 1
                                                     break
+                                                    
+                                                break
                                 elif 6 == handle_drop_done:
                                     if False == button_enable_chk():
                                         handle_drop_done = 7
