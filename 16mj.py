@@ -1152,6 +1152,7 @@ def draw_host_location():
             
 # here did is drop player id            
 def display_all(win_id = -1, did = -1, akong = None):
+
     fill_background()
     draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
     draw_p123_mj(win_id)
@@ -1697,8 +1698,9 @@ def main():
             if False == p0_is_AI and 0 == turn_id and False == hear_status[turn_id]:
                 select = None
                 ak_select = None
+                                
                 for c in range(player_mj_num[0]):
-                    (mouseX, mouseY) = pygame.mouse.get_pos()
+                    (mouseX, mouseY) = pygame.mouse.get_pos() # using old position first time
                     ii = p_num - player_mj_num[0] + c
                     (x, y) = p0_mjloc_org[ii]
                     if x < mouseX < x + p0_mj_width and y < mouseY < y + t1.get_height():
@@ -1854,7 +1856,6 @@ def main():
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
                 
-                p0_mjloc = copy.deepcopy(p0_mjloc_org)
                 reset_p0_button()
                 did = (turn_id + 1)%4
                 run_once = False

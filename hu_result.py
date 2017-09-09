@@ -11,7 +11,7 @@ class hu_result():
         self.hhu = hhu
         self.table = {
             "莊家": 0,
-            ("連%d拉%d" % (hnum, hnum)): 0,
+            ("連%d拉%d" % (hnum, hnum)): 2 * hnum,
             "自摸": 0,
             "門清": 0,
             "三元台": 0,
