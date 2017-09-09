@@ -1,6 +1,6 @@
 import random, os
-import time 
-import pygame
+import time
+import pygame 
 import math
 import copy
 import hu_result
@@ -73,6 +73,7 @@ mjb_image_filename = 'Image/mjb.gif'
 
 hu_image_filename = 'Image/hu.gif'
 button_image_filename = 'Image/50x50_mjb.gif'
+com_hear_image_filename = 'Image/50x50_hear.gif'
 
 SCREEN_SIZE = (1200, 900) 
 pygame.init()
@@ -152,6 +153,7 @@ mjback4 = pygame.transform.rotate(mjback , -270)
 
 hu_button = pygame.image.load(hu_image_filename).convert()
 button = pygame.image.load(button_image_filename).convert()
+com_hear = pygame.image.load(com_hear_image_filename).convert()
 
 p_num = 16
 mjp = 0
@@ -295,6 +297,7 @@ def index_to_pic(index):
     elif 43 == index:
         return hu_button
     elif 44 == index:
+        #location 0
         return l0
     elif 45 == index:
         return l1
@@ -303,6 +306,7 @@ def index_to_pic(index):
     elif 47 == index:
         return l3
     elif 48 == index:
+        # location red 0
         return lred0
     elif 49 == index:
         return lred1
@@ -312,6 +316,8 @@ def index_to_pic(index):
         return lred3
     elif 52 == index:
         return host_img
+    elif 53 == index:
+        return com_hear
 
 def pid_to_image(pid, index):
     pic = index_to_pic(index)
@@ -1856,7 +1862,6 @@ def main():
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
                 
-                reset_p0_button()
                 did = (turn_id + 1)%4
                 run_once = False
                 br = False
