@@ -1525,8 +1525,8 @@ def main():
                 #dmj[0].append([3, [15]])
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
-                player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 11, 12, 12, 32, 32]
-                player_mj_num[0] = len(player_mj[0])
+                #player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 11, 12, 12, 32, 32]
+                #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
                 player_mj[0].sort()
