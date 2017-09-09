@@ -170,7 +170,7 @@ Add_Delay = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
 eat_index = []
-getmj = -1
+getmj = None
 gethu = False
 east_to_north = []
 #player 0 mj location
@@ -1260,6 +1260,8 @@ def click_p0_button():
     return bs
 
 def handle_p0_sky_hear():
+    global frist_turn
+    global first_hear
     
     check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
     
@@ -1489,6 +1491,7 @@ def main():
                 turn_id = host_id
                 # check_button, 0: ini
                 check_button = 0 #local variable
+                getmj = None
                 gethu = False
                 hear_status = [False] * 4
                 first_hear = [0] * 4
@@ -1522,8 +1525,8 @@ def main():
                 #dmj[0].append([3, [15]])
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
-                #player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 11, 12, 12, 32, 32]
-                #player_mj_num[0] = len(player_mj[0])
+                player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 11, 12, 12, 32, 32]
+                player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
                 player_mj[0].sort()
@@ -1587,7 +1590,7 @@ def main():
                     if event.type == QUIT:
                         exit()
             
-            if 0 == first_turn[turn_id]:
+            if 0 == first_turn[turn_id] and None == getmj:
                 if False == p0_is_AI and 0 == turn_id:
                     handle_p0_sky_hear()
                     
@@ -1659,6 +1662,7 @@ def main():
                         #Ground hear
                             first_turn[turn_id] += 1
                             first_hear[turn_id] = 2
+                    
                 elif -1 == get_done[turn_id]:
                     if None == add_kong_mj:
                         continue
@@ -2190,6 +2194,7 @@ def main():
                     get_done[turn_id] = -1
                 elif 0 == handle_drop_done: 
                     get_done[turn_id] = 0
+                    getmj = None
                     check_button = 0
                     reset_p0_button()
                     turn_id = (turn_id + 1)%4
