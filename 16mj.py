@@ -1730,7 +1730,6 @@ def main():
                 display_all()
                 pygame.display.update()
             
-            if False == p0_is_AI and 0 == turn_id:
                 if get_done[turn_id] != 2:
                     br = False
                     for event in pygame.event.get():
@@ -1855,7 +1854,7 @@ def main():
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
                 
-                p0_mjloc = p0_mjloc_org[:]
+                p0_mjloc = copy.deepcopy(p0_mjloc_org)
                 reset_p0_button()
                 did = (turn_id + 1)%4
                 run_once = False
@@ -2205,7 +2204,7 @@ def main():
                     get_done[turn_id] = 0
                     getmj = None
                     check_button = 0
-                    p0_mjloc = p0_mjloc_org[:]
+                    p0_mjloc = copy.deepcopy(p0_mjloc_org)
                     reset_p0_button()
                     turn_id = (turn_id + 1)%4
                 break
