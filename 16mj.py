@@ -1711,8 +1711,8 @@ def main():
                     (x, y) = p0_get_loc_org
                     if x < mouseX < x + t1.get_width() and y < mouseY < y + t1.get_height():
                         p0_get_loc[1] = p0_get_loc_org[1] - 10
-                        #get mj index is 16(p_num)
-                        select = p_num
+                        #get mj index is 99
+                        select = 99
                 
                 if None == select:
                     p0_mjloc = copy.deepcopy(p0_mjloc_org)
@@ -1741,7 +1741,7 @@ def main():
                             if select != None and button_enable[1] != 2:
                                 ebutton = False
                                 p0_mjloc = copy.deepcopy(p0_mjloc_org)
-                                if p_num == select:
+                                if 99 == select:
                                     drop_mj[turn_id].append(getmj)
                                     ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                     get_done[turn_id] = 2
@@ -1796,7 +1796,7 @@ def main():
                                         get_done[turn_id] = -1
                                         continue
                                             
-                                    elif select != None and select != p_num:
+                                    elif select != None and select != 99:
                                         value = player_mj[turn_id][select]
                                         gi = [select]
                                         for i in range(player_mj_num[turn_id]):
@@ -1854,9 +1854,13 @@ def main():
             pygame.display.update()
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
+                
+                p0_mjloc = p0_mjloc_org
+                reset_p0_button()
                 did = (turn_id + 1)%4
                 run_once = False
                 br = False
+                
                 while True:
                     if did == turn_id:
                         handle_drop_done = 0
@@ -2201,6 +2205,7 @@ def main():
                     get_done[turn_id] = 0
                     getmj = None
                     check_button = 0
+                    p0_mjloc = p0_mjloc_org
                     reset_p0_button()
                     turn_id = (turn_id + 1)%4
                 break
