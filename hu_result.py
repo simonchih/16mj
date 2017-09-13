@@ -10,7 +10,7 @@ class hu_result():
         self.drophu = drophu
         self.hhu = hhu
         self.table = {
-            "莊家": 0,
+            "莊家": self.hosthu(),
             ("連%d拉%d" % (hnum, hnum)): 2 * hnum,
             "自摸": 0,
             "門清": 0,
@@ -51,3 +51,9 @@ class hu_result():
             "槓牌": 0,
             "暗槓": 0
         }
+        
+    def hosthu(self):
+        if self.hnum > 0:
+            return 1
+        else:
+            return 0
