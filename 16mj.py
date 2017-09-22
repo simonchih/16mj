@@ -532,6 +532,7 @@ def check_p0_button(mj, mj_num, myvalue = None, dj = None, value = None, chk_eat
                 button_enable[5] = 1
     elif myvalue != None and 1 == hu(mj, myvalue):
         button_enable[4] = 1
+        button_enable[5] = 1
         enable = True
     elif value != None and 1 == hu(mj, value):
         button_enable[4] = 1
@@ -861,7 +862,7 @@ def drop1_hmj7(turn_id):
             if turn_id == dhid:
                 break
             elif 7 == len(hmj[dhid]):
-                return handle_hu(dhid, -1, False, True)
+                return handle_hu(dhid, turn_id, False, None, True)
             else: 
                 dhid = (dhid + 1) % 4
     
@@ -875,7 +876,7 @@ def hmj7_get1(turn_id):
             if turn_id == dhid:
                 break
             elif 1 == len(hmj[dhid]):
-                return handle_hu(turn_id, -1, False, True)
+                return handle_hu(turn_id, dhid, False, None, True)
             else: 
                 dhid = (dhid + 1) % 4    
             
@@ -911,6 +912,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     
     return hid
 
+# p0 is NOT get hu    
 def handle_p0_hu_only(hid, drop_id):
     global handle_drop_done
     global button_enable
@@ -1534,7 +1536,7 @@ def main():
                 #dmj[0].append([3, [15]])
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
-                #player_mj[0] = [0, 1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 11, 12, 12, 32, 32]
+                #player_mj[0] = [0, 1, 2, 3, 4, 4, 5, 5, 6, 9, 10, 11, 12, 12, 32, 32]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
@@ -1618,7 +1620,7 @@ def main():
                     mjb -= 1
                 
                 if len(hmj[turn_id]) == 8:
-                    winner = handle_hu(turn_id, -1, False, True)
+                    winner = handle_hu(turn_id, -1, False, None, True)
                     break
                 elif hmj7_get1(turn_id) != None:
                     break
@@ -1651,6 +1653,23 @@ def main():
                     elif -1 == get_done[turn_id]:
                         dmj[turn_id].append([2])
                         continue
+                elif True  == hear_status[turn_id] and 1 == button_enable[4]:
+                    br = False
+                    while True:
+                        bselect = click_p0_button()
+                        if 4 == bselect:
+                            reset_p0_button()
+                            winner = handle_hu(turn_id)
+                            br = True
+                            break
+                        elif 5 == bselect:
+                            drop_mj[turn_id].append(getmj)
+                            handle_drop_done = 0
+                            break
+                    
+                    if True == br:
+                        break
+                
             elif True == hear_status[turn_id]:
                 player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id] = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
                     
@@ -1772,6 +1791,7 @@ def main():
                                 if 4 == bselect: # if hu and 0 == turn_id
                                     reset_p0_button()
                                     winner = handle_hu(turn_id)
+                                    br = True
                                     break
                                 elif 2 == button_enable[1]: #if add kong or dark kong
                                     if p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, add_kong_mj) != None:
@@ -1845,7 +1865,7 @@ def main():
                     if False == button_enable_chk():
                         handle_drop_done = 0
                 
-                    bselect = None
+                    #bselect = None
                     bselect = click_p0_button()
                     #if 4 == bselect: # if hu, it seems impossible happen
                     #    reset_p0_button()
@@ -1902,7 +1922,7 @@ def main():
                             check_button = 3
                         if True == button_enable_chk() and handle_drop_done != 4 and handle_drop_done != 5:
                                                      
-                            bselect = None
+                            #bselect = None
                             bselect = click_p0_button()
                             if 2 == button_enable[0]: #pon
                                 pi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
@@ -1990,7 +2010,7 @@ def main():
                                 turn_id = did
                                 break
                             
-                            bselect = None
+                            #bselect = None
                             bselect = click_p0_button()
                             if 5 == bselect: #return
                                 handle_drop_done = 1
@@ -2154,7 +2174,7 @@ def main():
                                         check_button = 1
                                         break
                                     
-                                    bselect = None
+                                    #bselect = None
                                     bselect = click_p0_button()
                                     if 5 == bselect: #return
                                         handle_drop_done = 7
