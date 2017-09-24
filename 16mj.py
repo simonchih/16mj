@@ -1540,7 +1540,7 @@ def main():
                 #dmj[0].append([3, [15]])
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
-                #player_mj[0] = [0, 1, 2, 3, 4, 4, 5, 5, 6, 9, 10, 11, 12, 12, 32, 32]
+                #player_mj[0] = [0, 1, 2, 3, 4, 4, 5, 5, 6, 9, 10, 11, 15, 15, 32, 32]
                 #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
@@ -2085,7 +2085,7 @@ def main():
                         if check_button < 4:
                             check_p0_button(player_mj[did], player_mj_num[did], myvalue = None, dj = None, value = drop_mj[turn_id][-1], chk_eat = True)
                             check_button = 4
-                        if True == button_enable_chk():
+                        if True == button_enable_chk() and button_enable[3] != 0:
                             smj = None
                             while True:
                                 select = select_mj(p0_mjloc_org, did, smj)
