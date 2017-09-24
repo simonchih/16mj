@@ -997,7 +997,7 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
         (x, y) = pmjloc[i]
         screen.blit(pid_to_image(0, pmj[c]), (x, y))
         
-    if 1 == get_done[turn_id] and 0 == turn_id:
+    if 1 == get_done[turn_id] and 0 == turn_id and getmj != None:
         # draw get mj
         screen.blit(pid_to_image(0, getmj), p0_get_loc)
 
@@ -1305,6 +1305,7 @@ def mjAI(tid, getv = None):
     global dmj
     global drop_mj
     global add_kong_mj
+    global getmj
     
     if None == getv:
         tmj = player_mj[tid][:]
@@ -1329,6 +1330,9 @@ def mjAI(tid, getv = None):
             return -1
         
         tmj, tmj_num = insert_mj(getv, player_mj[tid])
+        
+        if 0 == tid:
+            getmj = None
     
     si = dark_kong(tmj, tmj_num)
     if si != -1 and getv != None:
