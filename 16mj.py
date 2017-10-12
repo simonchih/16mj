@@ -1210,13 +1210,12 @@ def draw_p0_button():
             else:
                 screen.blit(write(index_to_btext(i), (0, 0, 0), 30), (x+10, y+5))
     
-def p0_button_proc():
+def p0_button_proc(mouseX, mouseY):
     global button_enable
     global hear_status
 
     l = len(button_loc)
     
-    (mouseX, mouseY) = pygame.mouse.get_pos()
     # hu is 0 or 1, can't be 2
     for i in range(l):
         if button_enable[i] > 0:
@@ -1255,11 +1254,13 @@ def p0_button_proc():
     
 def click_p0_button():
     bs = None
+    (mouseX, mouseY) = pygame.mouse.get_pos()
+    
     for event in pygame.event.get():
         if event.type == QUIT:
             exit()
         elif event.type == MOUSEBUTTONDOWN:
-            bs = p0_button_proc()
+            bs = p0_button_proc(mouseX, mouseY)
             if bs != None:
                 return bs
             
@@ -1275,11 +1276,13 @@ def handle_p0_sky_hear():
     check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
     
     while 1 == button_enable[2]:
+        (mouseX, mouseY) = pygame.mouse.get_pos()
+        
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
             elif event.type == MOUSEBUTTONDOWN:
-                s = p0_button_proc()
+                s = p0_button_proc(mouseX, mouseY)
                 if 5 == s:
                     break
                 elif 2 == s:
@@ -1763,6 +1766,8 @@ def main():
             
                 if get_done[turn_id] != 2:
                     br = False
+                    
+                    (mouseX, mouseY) = pygame.mouse.get_pos()
                     for event in pygame.event.get():
                         if event.type == QUIT:
                             exit()
@@ -1791,7 +1796,7 @@ def main():
                             if True == button_enable_chk():
                                 # handle dark kong
                                 bselect = None
-                                bselect = p0_button_proc()
+                                bselect = p0_button_proc(mouseX, mouseY)
                                 if 4 == bselect: # if hu and 0 == turn_id
                                     reset_p0_button()
                                     winner = handle_hu(turn_id)
@@ -2094,13 +2099,14 @@ def main():
                                 pygame.display.update()
                                 
                                 if 0 == handle_drop_done:
+                                    (mouseX, mouseY) = pygame.mouse.get_pos()
                                     br = False
                                     bselect = None
                                     for event in pygame.event.get():
                                         if event.type == QUIT:
                                             exit()
                                         elif event.type == MOUSEBUTTONDOWN:
-                                            bselect = p0_button_proc()
+                                            bselect = p0_button_proc(mouseX, mouseY)
                                             if select != None and 2 == button_enable[3]: #eat
                                                 if None == smj:
                                                     smj = select
