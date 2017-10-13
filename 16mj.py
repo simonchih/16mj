@@ -147,9 +147,9 @@ host_img = pygame.image.load(host_image_filename).convert()
 mjback = pygame.image.load(mjback_image_filename).convert()
 mjbk   = pygame.image.load(mjb_image_filename).convert()
 
-mjback2 = pygame.transform.rotate(mjback , -90)
-mjback3 = pygame.transform.rotate(mjback , -180)
-mjback4 = pygame.transform.rotate(mjback , -270)
+mjback2 = pygame.transform.rotate(mjback , 90)
+mjback3 = pygame.transform.rotate(mjback , 180)
+mjback4 = pygame.transform.rotate(mjback , 270)
 
 hu_button = pygame.image.load(hu_image_filename).convert()
 button = pygame.image.load(button_image_filename).convert()
@@ -165,8 +165,8 @@ handle_drop_done = -1
 # location of mj number font remains
 renum_loc = (470, 10)
 # 0~3: player 0~3
-mjloc = [(300, 815), (50, 120), (250, 90), (1100, 120)]
-huloc = [(575, 630), (240, 425), (575, 270), (910, 425)]
+mjloc = [(300, 815), (1100, 120), (250, 90), (50, 120)]
+huloc = [(575, 630), (910, 425), (575, 270), (240, 425)]
 p0_is_AI = False
 Add_Delay = True
 p0_get_loc_org = (880, 815)
@@ -188,17 +188,17 @@ first_turn = [0] * 4
 button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
 #0: Disable, 1: Enable, 2: Clicked (for eat and dark kong only)
 button_enable = [0] * 6
-drop_mj_loc = [[(460, 645)]*64, [(220, 320)]*64, [(460, 260)]*64, [(930, 320)]*64]
+drop_mj_loc = [[(460, 645)]*64, [(930, 320)]*64, [(460, 260)]*64, [(220, 320)]*64]
 drop_mj = [[], [], [], []]
-lloc = [(410, 710), (5, 400), (750, 205), (1155, 400)]
-hostloc = [(360, 710), (5, 450), (800, 205), (1155, 450)]
-hmj_loc = [[(460, 700)], [(165, 320)], [(460, 205)], [(985, 320)]]
-htext_loc = [(750, 700), (165, 270), (380, 205), (950, 270)]
+lloc = [(410, 710), (1155, 400), (750, 205), (5, 400)]
+hostloc = [(360, 710), (1155, 450), (800, 205), (5, 450)]
+hmj_loc = [[(460, 700)], [(985, 320)], [(460, 205)], [(165, 320)]]
+htext_loc = [(750, 700), (950, 270), (380, 205), (165, 270)]
 hmj = [[], [], [], []]
 # add kong mj index of dmj
 add_kong_mj = None
 add_kong_loc = [[], [], [], []]
-dmj_loc = [[(280, 755)], [(110, 150)], [(280, 150)], [(1040, 150)]]
+dmj_loc = [[(280, 755)], [(1040, 150)], [(280, 150)], [(110, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
 # if type == 2 (dark kong), NO value property, e.g. [type]
 dmj = [[], [], [], []]
@@ -1480,11 +1480,11 @@ def main():
                         if 0 == pi:
                             drop_mj_loc[pi][i*8] = (x, y - i*55)
                         elif 1 == pi:
-                            drop_mj_loc[pi][i*8] = (x + i*55, y)
+                            drop_mj_loc[pi][i*8] = (x - i*55, y)
                         elif 2 == pi:
                             drop_mj_loc[pi][i*8] = (x, y + i*55)
                         elif 3 == pi:
-                            drop_mj_loc[pi][i*8] = (x - i*55, y)
+                            drop_mj_loc[pi][i*8] = (x + i*55, y)
                 else:
                     (x, y) = drop_mj_loc[pi][i*8+j-1]
                     if 0 == pi or 2 == pi:
@@ -1493,7 +1493,7 @@ def main():
                         drop_mj_loc[pi][i*8+j] = (x, y + p0_mj_width)
                         
     for pi in range(4):
-        if 2 == pi or 3 == pi: # reverse older
+        if 1 == pi or 2 == pi: # reverse older
             drop_mj_loc[pi][0:8] = drop_mj_loc[pi][7::-1]
             for i in range(1, 4):
                 drop_mj_loc[pi][8*i:8*(i+1)] = drop_mj_loc[pi][8*(i+1)-1:8*i-1:-1]
