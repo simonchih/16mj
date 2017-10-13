@@ -1133,8 +1133,12 @@ def draw_hmj():
             
 def draw_drop_mj():
     for pid in range(4):
-        for i in range(len(drop_mj[pid])):
-            screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
+        if 0 == pid or 2 == pid:
+            for i in range(len(drop_mj[pid])):
+                screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
+        else:
+            for i in range(len(drop_mj[pid])-1, -1, -1):
+                screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
         
 def draw_p123_mj(win_id = -1):
     for pid in range(1,4):
