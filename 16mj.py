@@ -1009,15 +1009,6 @@ def draw_mj_column(mj_pic, xy, mj_num, draw_all = -1):
         for y in range(starty, starty + mj_num*mj_pic.get_height(), mj_pic.get_height()):
             screen.blit(mj_pic, (startx, y))
     elif 1 == draw_all:
-        c = 0
-        for y in range(starty, starty + mj_num*p0_mj_width, p0_mj_width):
-            screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
-            c += 1
-        
-        if True == gethu:
-            screen.blit(pid_to_image(draw_all, getmj), (startx, starty + gap + t1.get_width() + (mj_num-1)*p0_mj_width))
-            
-    elif 3 == draw_all: # reverse older
         c = mj_num - 1
         for y in range(starty + (mj_num-1)*p0_mj_width, starty - 1, (-1)*p0_mj_width):
             screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
@@ -1025,6 +1016,15 @@ def draw_mj_column(mj_pic, xy, mj_num, draw_all = -1):
         
         if True == gethu:
             screen.blit(pid_to_image(draw_all, getmj), (startx, starty - gap - t1.get_width()))
+            
+    elif 3 == draw_all: # reverse older
+        c = 0
+        for y in range(starty, starty + mj_num*p0_mj_width, p0_mj_width):
+            screen.blit(pid_to_image(draw_all, player_mj[draw_all][c]), (startx, y))
+            c += 1
+        
+        if True == gethu:
+            screen.blit(pid_to_image(draw_all, getmj), (startx, starty + gap + t1.get_width() + (mj_num-1)*p0_mj_width))
 
 def draw_mj_row(mj_pic, xy, mj_num, draw_all = -1):
     (startx, starty) = xy
@@ -1053,7 +1053,10 @@ def display_dark_kong(pid, loc):
             screen.blit(pid_to_image(pid, 42), (x + i*p0_mj_width, y))
         
         screen.blit(pid_to_image(pid, 42), (x + p0_mj_width, y))
-    elif 1 == pid or 3 == pid:
+    elif 1 == pid:
+        for i in range(2, -1, -1):
+            screen.blit(pid_to_image(pid, 42), (x, y + i*p0_mj_width))
+    elif 3 == pid:
         for i in range(3):
             screen.blit(pid_to_image(pid, 42), (x, y + i*p0_mj_width))
         
@@ -1066,7 +1069,10 @@ def display_show_kong(pid, value, loc):
             screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
         
         screen.blit(pid_to_image(pid, value), (x + p0_mj_width, y))
-    elif 1 == pid or 3 == pid:
+    elif 1 == pid:
+        for i in range(2, -1, -1):
+            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
+    elif 3 == pid:
         for i in range(3):
             screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
         
@@ -1080,17 +1086,17 @@ def display_front_eat(pid, fmj, middle, loc):
         screen.blit(pid_to_image(0, middle), (x + p0_mj_width, y))
         screen.blit(pid_to_image(0, fmj[1]), (x + 2*p0_mj_width, y))
     elif 1 == pid:
-        screen.blit(pid_to_image(1, fmj[0]), (x, y))
-        screen.blit(pid_to_image(1, middle), (x, y + p0_mj_width))
         screen.blit(pid_to_image(1, fmj[1]), (x, y + 2*p0_mj_width))
+        screen.blit(pid_to_image(1, middle), (x, y + p0_mj_width))
+        screen.blit(pid_to_image(1, fmj[0]), (x, y))
     elif 2 == pid:
         screen.blit(pid_to_image(2, fmj[1]), (x + 2*p0_mj_width, y))
         screen.blit(pid_to_image(2, middle), (x + p0_mj_width, y))
         screen.blit(pid_to_image(2, fmj[0]), (x, y))
     elif 3 == pid:
-        screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))
-        screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
         screen.blit(pid_to_image(3, fmj[0]), (x, y))
+        screen.blit(pid_to_image(3, middle), (x, y + p0_mj_width))
+        screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))        
         
 def display_pon(pid, value, loc):            
     (x, y) = loc
@@ -1101,10 +1107,10 @@ def display_pon(pid, value, loc):
          for i in range(2, -1, -1):
             screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
     elif 1 == pid:
-        for i in range(3):
+        for i in range(2, -1, -1):
             screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))      
     elif 3 == pid:
-        for i in range(2, -1, -1):
+        for i in range(3):
             screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
     
 def draw_dmj(win_id):
@@ -1128,8 +1134,12 @@ def draw_dmj(win_id):
         
 def draw_hmj():
     for pid in range(4):
-        for i in range(len(hmj[pid])):
-            screen.blit(pid_to_image(pid, hmj[pid][i]), hmj_loc[pid][i])
+        if 0 == pid or 2 == pid:
+            for i in range(len(hmj[pid])):
+                screen.blit(pid_to_image(pid, hmj[pid][i]), hmj_loc[pid][i])
+        elif 1 == pid or 3 == pid:
+            for i in range(len(hmj[pid])-1, -1, -1):
+                screen.blit(pid_to_image(pid, hmj[pid][i]), hmj_loc[pid][i])
             
 def draw_drop_mj():
     for pid in range(4):
@@ -1501,7 +1511,7 @@ def main():
     # end assign drop_mj_loc
 
     while True:
-        while (mjb - mjp + 1) > 0:
+        while (mjb - mjp) >= 16:
             
             if 1 == first:
                 # winner: -1, ini. 0~3: winner id
@@ -1524,11 +1534,17 @@ def main():
                 player_mj_num = [p_num, p_num, p_num, p_num]
                 
                 random.shuffle(all_mj)
-                for i in range(0, p_num*4, 4):
-                    player_mj[turn_id][i//4] = all_mj[i]
-                    player_mj[(turn_id+1)%4][i//4] = all_mj[i+1]
-                    player_mj[(turn_id+2)%4][i//4] = all_mj[i+2]
-                    player_mj[(turn_id+3)%4][i//4] = all_mj[i+3]
+                for i in range(0, p_num, 4):
+                    j = i//4
+                    for pid in range(4):
+                        if 0 == pid:
+                            player_mj[turn_id][i:i+4] = all_mj[p_num*j:p_num*j+4]
+                        elif 1 == pid:
+                            player_mj[(turn_id+1)%4][i:i+4] = all_mj[p_num*j+4:p_num*j+8]
+                        elif 2 == pid:
+                            player_mj[(turn_id+2)%4][i:i+4] = all_mj[p_num*j+8:p_num*j+12]
+                        elif 3 == pid:
+                            player_mj[(turn_id+3)%4][i:i+4] = all_mj[p_num*j+12:p_num*j+16]
                 player_mj_num = [p_num, p_num, p_num, p_num]
                 p0_mjloc_org = copy.deepcopy(p0_mjloc_ini)
                 p0_mjloc = copy.deepcopy(p0_mjloc_ini)
