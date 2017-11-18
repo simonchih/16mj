@@ -162,9 +162,12 @@ turn_id = 0
 host_id = 0
 winner = -1
 host_num = 0
+open_door = 0
 handle_drop_done = -1
 # location of mj number font remains
 renum_loc = (470, 10)
+# open door loc
+op_loc = (250, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (1100, 120), (250, 90), (50, 120)]
 huloc = [(575, 630), (910, 425), (575, 270), (240, 425)]
@@ -320,6 +323,17 @@ def index_to_pic(index):
     elif 53 == index:
         return com_hear
 
+def op_index_to_text(opi):
+    # east to north
+    if 0 == opi:
+        return "東"
+    elif 1 == opi:
+        return "南"
+    elif 2 == opi:
+        return "西"
+    elif 3 == opi:
+        return "北"
+        
 def pid_to_image(pid, index):
     pic = index_to_pic(index)
 
@@ -895,6 +909,11 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     gethu = get_hu
     winner = hid
     
+    # debug only
+    if hid < 0 or hid > 3:
+        print("Crash!!!, hid=%d"%hid)
+    # end debug only
+    
     display_all(hid, drop_id, akong)
     pygame.display.update()
     if True == Add_Delay:
@@ -904,14 +923,14 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
         host_num += 1
     
     if -1 == drop_id: 
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], getmj, first_hear[hid], None, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], open_door, getmj, first_hear[hid], None, hhu)
     else:
         if akong != None:
             dp = dmj[drop_id][akong][1][0]
         else:
             dp = drop_mj[drop_id][-1]
         
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], None, first_hear[hid], dp, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], open_door, None, first_hear[hid], dp, hhu)
     
     return hid
 
@@ -1171,6 +1190,10 @@ def draw_host_location():
         if l == host_id:
             screen.blit(pid_to_image(l, 52), hostloc[l])
             
+def draw_text():
+    screen.blit(write(u"門風%s"%op_index_to_text(open_door),(255, 255, 255)), op_loc)
+    screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
+            
 # here did is drop player id            
 def display_all(win_id, did = -1, akong = None):
 
@@ -1183,7 +1206,8 @@ def display_all(win_id, did = -1, akong = None):
     draw_p0_button()
     draw_host_location()
     draw_hu(win_id)
-    screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
+    draw_text()
+    
     if did != -1:
         if akong != None:
             (x, y) = add_kong_loc[did][akong]
@@ -1411,6 +1435,7 @@ def main():
     global first_turn
     global first_hear
     global winner
+    global open_door
     
     first = 1
     p0_mjloc_ini = []
@@ -1520,6 +1545,7 @@ def main():
             if 1 == first:
                 # winner: -1, ini. 0~3: winner id
                 winner = -1
+                open_door = random.randint(0, 3) #0 <= open_door <= 3
                 turn_id = host_id
                 # check_button, 0: ini
                 check_button = 0 #local variable
@@ -1564,7 +1590,7 @@ def main():
                 #dmj[0].append([3, [4]])
                 #dmj[0].append([3, [13]])
                 #player_mj[0] = [0, 1, 2, 3, 4, 4, 5, 5, 6, 9, 10, 11, 15, 15, 32, 32]
-                #player_mj_num[0] = len(player_mj[0])
+                #player_mj_num[0] = len(player_mj[2])
                 #end temp
                 
                 player_mj[0].sort()
@@ -1613,7 +1639,7 @@ def main():
 
             # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue. 8: all done to break. (for return button)
             handle_drop_done = -1
-            add_kong_mj = None
+            add_kong_mj = None            
             
             if True == p0_is_AI:
                 # auto debug only
@@ -2275,7 +2301,7 @@ def main():
         first = 1
         mjp = 0
         mjb = 143
-        print("End Game")
+        #print("End Game")
     exit()
 		
 if __name__ == "__main__":
