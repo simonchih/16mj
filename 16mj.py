@@ -162,12 +162,12 @@ turn_id = 0
 host_id = 0
 winner = -1
 host_num = 0
-open_door = 0
+circle = 0
 handle_drop_done = -1
 # location of mj number font remains
 renum_loc = (470, 10)
 # open door loc
-op_loc = (250, 10)
+wind_loc = (250, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (1100, 120), (250, 90), (50, 120)]
 huloc = [(575, 630), (910, 425), (575, 270), (240, 425)]
@@ -179,6 +179,7 @@ eat_index = []
 getmj = None
 gethu = False
 east_to_north = []
+player_door = [0] * 4
 #player 0 mj location
 p0_mjloc = []
 # 2: won't show get mj, 1:get done, 0:get from mjp, -1: get from mjb 
@@ -323,7 +324,7 @@ def index_to_pic(index):
     elif 53 == index:
         return com_hear
 
-def op_index_to_text(opi):
+def wind_index_to_text(opi):
     # east to north
     if 0 == opi:
         return "東"
@@ -923,14 +924,14 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
         host_num += 1
     
     if -1 == drop_id: 
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], open_door, getmj, first_hear[hid], None, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, getmj, first_hear[hid], None, hhu)
     else:
         if akong != None:
             dp = dmj[drop_id][akong][1][0]
         else:
             dp = drop_mj[drop_id][-1]
         
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], open_door, None, first_hear[hid], dp, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, None, first_hear[hid], dp, hhu)
     
     return hid
 
@@ -1191,7 +1192,7 @@ def draw_host_location():
             screen.blit(pid_to_image(l, 52), hostloc[l])
             
 def draw_text():
-    screen.blit(write(u"門風%s"%op_index_to_text(open_door),(255, 255, 255)), op_loc)
+    screen.blit(write(u"%s風%s局"%(wind_index_to_text(circle), wind_index_to_text(player_door[host_id])), (255, 255, 255)), wind_loc)
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
             
 # here did is drop player id            
@@ -1435,7 +1436,7 @@ def main():
     global first_turn
     global first_hear
     global winner
-    global open_door
+    global circle
     
     first = 1
     p0_mjloc_ini = []
@@ -1451,6 +1452,15 @@ def main():
             east_to_north.append(ei)
             ei = (ei + 1) % 4
     # end assign east_to_north
+    
+    # assign player_door
+    
+    # w: 0~3 is east, south, west, north
+    w = 0
+    for p in east_to_north:
+        player_door[p] = w
+        w += 1
+    # end assign player_door
     
     # assign all mj
     for i in range(34):
@@ -1545,7 +1555,6 @@ def main():
             if 1 == first:
                 # winner: -1, ini. 0~3: winner id
                 winner = -1
-                open_door = random.randint(0, 3) #0 <= open_door <= 3
                 turn_id = host_id
                 # check_button, 0: ini
                 check_button = 0 #local variable
@@ -2297,6 +2306,8 @@ def main():
         if winner != -1 and host_id != winner:
             host_num = 0
             host_id = (host_id + 1)%4
+            if host_id == east_to_north[0]:
+                circle = (circle + 1)%4
             
         first = 1
         mjp = 0
