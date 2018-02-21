@@ -13,8 +13,8 @@ class hu_result():
         self.table = {
             "莊家": self.hosthu(),
             ("連%d拉%d" % (hnum, hnum)): 2 * hnum,
-            "自摸": 0,
-            "門清": 0,
+            "自摸": self.selfhu(),
+            "門清": self.dmjclear(),
             "三元台": 0,
             "圈風台": 0,
             "門風台": 0,
@@ -58,3 +58,20 @@ class hu_result():
             return 1
         else:
             return 0
+            
+    def selfhu(self):
+        if None == self.drophu:
+            return 1
+        else:
+            return 0
+            
+    def dmjclear(self):
+        if 0 == len(self.dj):
+            return 1
+        else:
+            for tv in self.dj:
+                type = tv[0]
+                if type != 2: # dmj type is not dark kong
+                    return 0
+                    
+            return 1
