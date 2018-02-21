@@ -28,13 +28,13 @@ class hu_result():
             "花槓": 0,
             "全求人": 0,
             "平胡": 0,
-            "三暗刻": 0,
+            "三暗刻": self.same_color_bundle(3),
             "門清自摸": 0,
             "對對胡": 0,
             "混一色": 0,
             "小三元": 0,
-            "四暗刻": 0,
-            "五暗刻": 0,
+            "四暗刻": self.same_color_bundle(4),
+            "五暗刻": self.same_color_bundle(5),
             "清一色": 0,
             "小四喜": 0,
             "大三元": 0,
@@ -75,3 +75,28 @@ class hu_result():
                     return 0
                     
             return 1
+    
+    def cal_same_color(self):
+        bundle_number = 0
+        i = 0
+        while(i+2 < len(self.mj)):
+            if self.mj[i] == self.mj[i+1] == self.mj[i+2]:
+                i += 3
+                bundle_number += 1
+                continue
+            i += 1
+                
+        return bundle_number
+        
+    def same_color_bundle(self, n):
+        if n == self.cal_same_color():
+            if 3 == n:
+                return 2
+            elif 4 == n:
+                return 5
+            elif 5 == n:
+                return 8
+            else:
+                return 0
+        else:
+            return 0
