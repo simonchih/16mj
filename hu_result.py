@@ -87,6 +87,13 @@ class hu_result():
     
     def cal_same_color(self):
         bundle_number = 0
+        
+        # Calculate dark kong
+        for tv in self.dj:
+            type = tv[0]
+            if 2 == type: #dmj type is dark kong
+                bundle_number += 1
+        
         i = 0
         while(i+2 < len(self.fmj)):
             if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
