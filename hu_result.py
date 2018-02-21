@@ -10,6 +10,15 @@ class hu_result():
         self.first_hear = first_hear
         self.drophu = drophu
         self.hhu = hhu
+        
+        self.fmj = self.mj[:]
+        if None == getmj:
+            self.fmj.append(drophu)
+            self.fmj.sort()
+        else:
+            self.fmj.append(getmj)
+            self.fmj.sort()
+            
         self.table = {
             "莊家": self.hosthu(),
             ("連%d拉%d" % (hnum, hnum)): 2 * hnum,
@@ -79,8 +88,8 @@ class hu_result():
     def cal_same_color(self):
         bundle_number = 0
         i = 0
-        while(i+2 < len(self.mj)):
-            if self.mj[i] == self.mj[i+1] == self.mj[i+2]:
+        while(i+2 < len(self.fmj)):
+            if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
                 i += 3
                 bundle_number += 1
                 continue
