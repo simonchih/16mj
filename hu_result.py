@@ -24,7 +24,7 @@ class hu_result():
             ("連%d拉%d" % (hnum, hnum)): 2 * hnum,
             "自摸": self.selfhu(),
             "門清": self.dmjclear(),
-            "三元台": 0,
+            "三元台": self.dragons(2),
             "圈風台": 0,
             "門風台": 0,
             "花牌": 0,
@@ -41,12 +41,12 @@ class hu_result():
             "門清自摸": 0,
             "對對胡": 0,
             "混一色": 0,
-            "小三元": 0,
+            "小三元": self.dragons(1),
             "四暗刻": self.same_color_bundle(4),
             "五暗刻": self.same_color_bundle(5),
             "清一色": 0,
             "小四喜": 0,
-            "大三元": 0,
+            "大三元": self.dragons(0),
             "七搶一": 0,
             "八仙過海": 0,
             "天聽": 0,
@@ -116,3 +116,55 @@ class hu_result():
                 return 0
         else:
             return 0
+            
+    def cal_dragons(self):
+        dpair = 0
+        dseq = 0
+        
+        for tv in self.dj:
+            t = tv[0]
+            v = tv[1][0]
+            if 1 == t or 2 == t or 3 == t:
+                if 31 == v or 32 == v or 33 == v:
+                    dseq += 1
+                    
+        i = 0
+        while i+1 < len(self.fmj):
+            if i+2 < len(self.fmj):
+                if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2] and (31 == self.fmj[i] or 32 == self.fmj[i] or 33 == self.fmj[i]):
+                    dseq += 1
+                    i += 3
+                    continue
+                elif self.fmj[i] == self.fmj[i+1] and (31 == self.fmj[i] or 32 == self.fmj[i] or 33 == self.fmj[i]):
+                    dpair += 1
+                    i += 2
+                    continue
+            else:
+                if self.fmj[i] == self.fmj[i+1] and (31 == self.fmj[i] or 32 == self.fmj[i] or 33 == self.fmj[i]):
+                    dpair += 1
+                    i += 2
+                    continue
+            i += 1
+        
+        return dseq, dpair
+        
+    # t = 0, big dragons. t = 1, little dragons. t = 2, dragons.
+    def dragons(self, t):
+        dseq, dpair = self.cal_dragons()
+        if 0 == t:
+            if 3 == dseq:
+                return 1
+            else:
+                return 0
+        elif 1 == t:
+            if 2 == dseq and 1 == dpair:
+                return 1
+            else:
+                return 0
+        elif 2 == t:
+            if 1 == dseq:
+                return 1
+            elif 2 == dseq and 0 == dpair:
+                return 2
+            else:
+                return 0

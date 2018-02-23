@@ -205,7 +205,7 @@ add_kong_mj = None
 add_kong_loc = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(1040, 150)], [(280, 150)], [(110, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
-# if type == 2 (dark kong), NO value property, e.g. [type]
+# if type == 2 (dark kong), Only one value property, e.g. [type, [v]]
 dmj = [[], [], [], []]
 p0_mj_width = t1.get_width()-10
 player_mj_num = [p_num, p_num, p_num, p_num]
@@ -594,6 +594,7 @@ def p0_add_kong(dj, mj, gmj, dindex):
 
 def hear_dark_kong(mj, mj_num, gmj, tloc):
     gdone = 2
+    dark_kong_value = None
     
     tmj, tmj_num = insert_mj(gmj, mj)
     
@@ -601,15 +602,16 @@ def hear_dark_kong(mj, mj_num, gmj, tloc):
     if di != -1:
         temp_mj = list(filter(lambda a: a != tmj[di], tmj))
         temp_mj_num = len(temp_mj)
+        dark_kong_value = tmj[di]
         if 1 == hear(temp_mj, temp_mj_num):
             gdone = -1
             screen.blit(write(u"暗槓", (0, 0, 255)), tloc)
             pygame.display.update()
             if True == Add_Delay:
                 time.sleep(1)      
-            return temp_mj, temp_mj_num, gdone 
+            return temp_mj, temp_mj_num, gdone, dark_kong_value 
     
-    return mj, mj_num, gdone
+    return mj, mj_num, gdone, dark_kong_value
     
 # -1: Can't kong, 0~mj_num - 4: start of mj index 
 def dark_kong(mj, mj_num):
@@ -1383,7 +1385,7 @@ def mjAI(tid, getv = None):
             time.sleep(1)        
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
-        dmj[tid].append([2])
+        dmj[tid].append([2, [tmj[si]]])
         return -1
     
     block = [0] * tmj_num
@@ -1707,13 +1709,13 @@ def main():
             if False == p0_is_AI and 0 == turn_id:
                 # button_enable[4] to check hu, 0: NOT hu, 1:hu
                 if True == hear_status[turn_id] and 0 == button_enable[4]:
-                    player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id] = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
+                    player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id], dk_value = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
                     
                     if 2 == get_done[turn_id]:
                         drop_mj[turn_id].append(getmj)
                         handle_drop_done = 0
-                    elif -1 == get_done[turn_id]:
-                        dmj[turn_id].append([2])
+                    elif -1 == get_done[turn_id] and dk_value != None:
+                        dmj[turn_id].append([2, [dk_value]])
                         continue
                 elif True  == hear_status[turn_id] and 1 == button_enable[4]:
                     br = False
@@ -1733,13 +1735,13 @@ def main():
                         break
                 
             elif True == hear_status[turn_id]:
-                player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id] = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
+                player_mj[turn_id], player_mj_num[turn_id], get_done[turn_id], dk_value = hear_dark_kong(player_mj[turn_id], player_mj_num[turn_id], getmj, htext_loc[turn_id])
                     
                 if 2 == get_done[turn_id]:
                     drop_mj[turn_id].append(getmj)
                     handle_drop_done = 0
-                elif -1 == get_done[turn_id]:
-                    dmj[turn_id].append([2])
+                elif -1 == get_done[turn_id] and dk_value != None:
+                    dmj[turn_id].append([2, [dk_value]])
                     continue
             else: # For AI player 1~3, check hu before
                 get_done[turn_id] = mjAI(turn_id, getmj)
@@ -1906,7 +1908,7 @@ def main():
                                             for i in gi:
                                                 del player_mj[turn_id][i]
                                             player_mj_num[turn_id] = len(player_mj[turn_id])
-                                            dmj[turn_id].append([2])
+                                            dmj[turn_id].append([2, [gi[0]]])
                                             get_done[turn_id] = -1
                                             reset_p0_button()
                                             break
@@ -1919,7 +1921,7 @@ def main():
                                             for i in gi:
                                                 del player_mj[turn_id][i]
                                             player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
-                                            dmj[turn_id].append([2])
+                                            dmj[turn_id].append([2, [gi[0]]])
                                             get_done[turn_id] = -1
                                             reset_p0_button()
                                             break
