@@ -926,14 +926,14 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
         host_num += 1
     
     if -1 == drop_id: 
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[host_id], getmj, first_hear[hid], None, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], getmj, first_hear[hid], None, hhu)
     else:
         if akong != None:
             dp = dmj[drop_id][akong][1][0]
         else:
             dp = drop_mj[drop_id][-1]
         
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[host_id], None, first_hear[hid], dp, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], None, first_hear[hid], dp, hhu)
     
     return hid
 
