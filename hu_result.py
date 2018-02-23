@@ -1,3 +1,70 @@
+from p16mj import next_two_not_block
+from p16mj import next_two_not_blsame
+
+def insert_mj(mjv, mj):
+    return_mj = mj[:]
+    for i, v in enumerate(return_mj):
+        if mjv <= v:
+            return_mj = return_mj[:i] + [mjv] + return_mj[i:]
+            return return_mj, len(return_mj)
+    
+    return_mj.append(mjv)
+    return return_mj, len(return_mj)
+
+# rturn 1: hu, 0: NOT hu, mj must sort   
+def hu(pmj, value):
+
+    mj, mj_num = insert_mj(value, pmj)
+    block = [0] * mj_num
+    
+    c = 0
+    while c < mj_num:
+        if mj_num - 1 == c:
+            break
+        #check pair
+        if mj[c] == mj[c+1]:
+            block[c] = 1
+            block[c+1] = 1
+            i = 0
+            
+            # mj_hu 1:hu, 0:NOT hu
+            mj_hu = 1
+            while i < mj_num:
+                if 1 == block[i]:
+                    i += 1
+                    continue
+                
+                n1, n2 = next_two_not_block(block, mj_num, i+1)
+                
+                if n1 != -1 and n2 != -1:
+                    if mj[i] == mj[n1] == mj[n2]:
+                        block[i] = block[n1] = block[n2] = 1
+                        i += 1
+                        continue
+                    else:
+                        m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
+                        
+                        if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
+                            block[i] = block[m1] = block[m2] = 1
+                            i += 1
+                            continue
+                        else:
+                            mj_hu = 0
+                            break
+                else:
+                    mj_hu = 0
+                    break
+                    
+            if 1 == mj_hu:
+                return 1
+                
+            block = [0] * mj_num
+            c += 2
+            
+        c += 1
+    
+    return 0
+
 class hu_result():
     def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, door, getmj = None, first_hear = 0, drophu = None, hhu = False):
         self.mj = mj
@@ -28,7 +95,7 @@ class hu_result():
             "三元台": self.dragons(2),
             "圈風台": self.wind_tai(0),
             "門風台": self.wind_tai(1),
-            "花牌": 0,
+            "花牌": self.flower_tai(),
             "獨聽": 0,
             "搶槓": 0,
             "槓上開花": 0,
@@ -201,3 +268,37 @@ class hu_result():
             i += 1
         
         return 0
+        
+    def flower_tai(self):
+        htai = 0
+        # east to north
+        if 0 == self.door:
+            for hv in self.hj:
+                if 34 == hv:
+                    htai += 1
+                elif 38 == hv:
+                    htai += 1
+            return htai
+        elif 1 == self.door:
+            for hv in self.hj:
+                if 35 == hv:
+                    htai += 1
+                elif 39 == hv:
+                    htai += 1
+            return htai
+        elif 2 == self.door:
+            for hv in self.hj:
+                if 36 == hv:
+                    htai += 1
+                elif 40 == hv:
+                    htai += 1
+            return htai
+        elif 3 == self.door:
+            for hv in self.hj:
+                if 37 == hv:
+                    htai += 1
+                elif 41 == hv:
+                    htai += 1
+            return htai
+        else:
+            return 0

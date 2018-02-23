@@ -502,10 +502,10 @@ def check_p0_button(mj, mj_num, myvalue = None, dj = None, value = None, chk_eat
 
     if False == hear_status[0]:
         if True == chk_huonly:
-            if myvalue != None and 1 == hu(mj, myvalue):
+            if myvalue != None and 1 == hu_result.hu(mj, myvalue):
                 button_enable[4] = 1
                 enable = True
-            elif value != None and 1 == hu(mj, value):
+            elif value != None and 1 == hu_result.hu(mj, value):
                 button_enable[4] = 1
                 button_enable[5] = 1
                 enable = True
@@ -516,7 +516,7 @@ def check_p0_button(mj, mj_num, myvalue = None, dj = None, value = None, chk_eat
                 button_enable[5] = 1
                 enable = True
         elif None == value: # myvalue != None
-            temp_mj, temp_mj_num = insert_mj(myvalue, mj)
+            temp_mj, temp_mj_num = hu_result.insert_mj(myvalue, mj)
             if dark_kong(temp_mj, temp_mj_num) != -1:
                 button_enable[1] = 1
                 enable = True
@@ -525,7 +525,7 @@ def check_p0_button(mj, mj_num, myvalue = None, dj = None, value = None, chk_eat
                 button_enable[1] = 1
                 enable = True
                 
-            if 1 == hu(mj, myvalue):
+            if 1 == hu_result.hu(mj, myvalue):
                 button_enable[4] = 1
                 enable = True
         else: # value != None
@@ -543,14 +543,14 @@ def check_p0_button(mj, mj_num, myvalue = None, dj = None, value = None, chk_eat
                 button_enable[5] = 1
                 enable = True
             
-            if 1 == hu(mj, value):
+            if 1 == hu_result.hu(mj, value):
                 button_enable[4] = 1
                 button_enable[5] = 1
-    elif myvalue != None and 1 == hu(mj, myvalue):
+    elif myvalue != None and 1 == hu_result.hu(mj, myvalue):
         button_enable[4] = 1
         button_enable[5] = 1
         enable = True
-    elif value != None and 1 == hu(mj, value):
+    elif value != None and 1 == hu_result.hu(mj, value):
         button_enable[4] = 1
         button_enable[5] = 1
         enable = True
@@ -571,7 +571,7 @@ def add_kong(dj, value):
 # return None if player can't add kong
 def player_add_kong(dj, mj, gmj):
     if gmj != None:
-        tmj, tmj_num = insert_mj(gmj, mj)
+        tmj, tmj_num = hu_result.insert_mj(gmj, mj)
         
     for i in range(tmj_num):
         aki = add_kong(dj, tmj[i])
@@ -584,7 +584,7 @@ def p0_add_kong(dj, mj, gmj, dindex):
     if None == dindex:
         return None
     elif gmj != None:
-        tmj, tmj_num = insert_mj(gmj, mj)
+        tmj, tmj_num = hu_result.insert_mj(gmj, mj)
         
     for i in range(tmj_num):
         if 3 == dj[dindex][0] and tmj[i] == dj[dindex][1][0]:
@@ -596,7 +596,7 @@ def hear_dark_kong(mj, mj_num, gmj, tloc):
     gdone = 2
     dark_kong_value = None
     
-    tmj, tmj_num = insert_mj(gmj, mj)
+    tmj, tmj_num = hu_result.insert_mj(gmj, mj)
     
     di = dark_kong(tmj, tmj_num)
     if di != -1:
@@ -817,60 +817,6 @@ def hear(mj, mj_num):
         c += 1
     
     return 0
-    
-# rturn 1: hu, 0: NOT hu, mj must sort   
-def hu(pmj, value):
-
-    mj, mj_num = insert_mj(value, pmj)
-    block = [0] * mj_num
-    
-    c = 0
-    while c < mj_num:
-        if mj_num - 1 == c:
-            break
-        #check pair
-        if mj[c] == mj[c+1]:
-            block[c] = 1
-            block[c+1] = 1
-            i = 0
-            
-            # mj_hu 1:hu, 0:NOT hu
-            mj_hu = 1
-            while i < mj_num:
-                if 1 == block[i]:
-                    i += 1
-                    continue
-                
-                n1, n2 = next_two_not_block(block, mj_num, i+1)
-                
-                if n1 != -1 and n2 != -1:
-                    if mj[i] == mj[n1] == mj[n2]:
-                        block[i] = block[n1] = block[n2] = 1
-                        i += 1
-                        continue
-                    else:
-                        m1, m2 = next_two_not_blsame(block, mj_num, i+1, mj, mj[i])
-                        
-                        if m1 != -1 and m2 != -1 and mj[i] < 27 and mj[i]//9 == mj[m1]//9 == mj[m2]//9 and mj[i]+1 == mj[m1] and mj[m1]+1 == mj[m2]:
-                            block[i] = block[m1] = block[m2] = 1
-                            i += 1
-                            continue
-                        else:
-                            mj_hu = 0
-                            break
-                else:
-                    mj_hu = 0
-                    break
-                    
-            if 1 == mj_hu:
-                return 1
-                
-            block = [0] * mj_num
-            c += 2
-            
-        c += 1
-    
-    return 0
 
 # Output: None, 0~3    
 def drop1_hmj7(turn_id):    
@@ -1001,16 +947,6 @@ def proc_add_hmj(pid, get = False, value = -1):
             time.sleep(1)
     
     return tget_num
-
-def insert_mj(mjv, mj):
-    return_mj = mj[:]
-    for i, v in enumerate(return_mj):
-        if mjv <= v:
-            return_mj = return_mj[:i] + [mjv] + return_mj[i:]
-            return return_mj, len(return_mj)
-    
-    return_mj.append(mjv)
-    return return_mj, len(return_mj)
 
 def draw_hu(win_id):
     if win_id >= 0:
@@ -1372,7 +1308,7 @@ def mjAI(tid, getv = None):
             add_kong_mj = aki
             return -1
         
-        tmj, tmj_num = insert_mj(getv, player_mj[tid])
+        tmj, tmj_num = hu_result.insert_mj(getv, player_mj[tid])
         
         if 0 == tid:
             getmj = None
@@ -1618,7 +1554,7 @@ def main():
                             p4_noh[pid] = 1
                         else:
                             for j in range(get_num):
-                                player_mj[pid], player_mj_num[pid] = insert_mj(all_mj[mjb], player_mj[pid])
+                                player_mj[pid], player_mj_num[pid] = hu_result.insert_mj(all_mj[mjb], player_mj[pid])
                                 mjb -= 1
                 
                 first = 0
@@ -1697,7 +1633,7 @@ def main():
                             check_button = 1
                     else:
                         # Check hu
-                        if 1 == hu(player_mj[turn_id], getmj):
+                        if 1 == hu_result.hu(player_mj[turn_id], getmj):
                             winner = handle_hu(turn_id)
                             break
                 elif drop1_hmj7(turn_id) != None:
@@ -1774,7 +1710,7 @@ def main():
                                     break
                                 else:
                                     did = (did + 1) % 4
-                            elif 1 == hu(player_mj[did], dmj[turn_id][add_kong_mj][1][0]):
+                            elif 1 == hu_result.hu(player_mj[did], dmj[turn_id][add_kong_mj][1][0]):
                                 winner = handle_hu(did, turn_id, False, add_kong_mj)
                                 br = True
                                 break
@@ -1841,7 +1777,7 @@ def main():
                                 else: # select != None:
                                     drop_mj[turn_id].append(player_mj[turn_id][select])
                                     del player_mj[turn_id][select]
-                                    player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
+                                    player_mj[turn_id], player_mj_num[turn_id] = hu_result.insert_mj(getmj, player_mj[turn_id])
                                     ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                     get_done[turn_id] = 2
                                     first_turn[turn_id] += 1
@@ -1877,7 +1813,7 @@ def main():
                                         while True:
                                             if did == turn_id:
                                                 break
-                                            elif 1 == hu(player_mj[did], dmj[turn_id][add_kong_mj][1][0]):
+                                            elif 1 == hu_result.hu(player_mj[did], dmj[turn_id][add_kong_mj][1][0]):
                                                 winner = handle_hu(did, turn_id, get_hu = False, akong = add_kong_mj)
                                                 br = True
                                                 break
@@ -1920,7 +1856,7 @@ def main():
                                                 
                                             for i in gi:
                                                 del player_mj[turn_id][i]
-                                            player_mj[turn_id], player_mj_num[turn_id] = insert_mj(getmj, player_mj[turn_id])
+                                            player_mj[turn_id], player_mj_num[turn_id] = hu_result.insert_mj(getmj, player_mj[turn_id])
                                             dmj[turn_id].append([2, [gi[0]]])
                                             get_done[turn_id] = -1
                                             reset_p0_button()
@@ -1971,7 +1907,7 @@ def main():
                                     else:
                                         hid = (hid + 1)%4
                             # Check hu for p1~3
-                            elif 1 == hu(player_mj[hid], drop_mj[turn_id][-1]):
+                            elif 1 == hu_result.hu(player_mj[hid], drop_mj[turn_id][-1]):
                                 winner = handle_hu(hid, turn_id, False)
                                 br = True
                                 break
