@@ -1,11 +1,12 @@
 class hu_result():
-    def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, getmj = None, first_hear = 0, drophu = None, hhu = False):
+    def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, door, getmj = None, first_hear = 0, drophu = None, hhu = False):
         self.mj = mj
         self.dj = dmj
         self.hnum = hnum
         self.ft = first_turn
         self.hj = hmj
         self.circle = circle
+        self.door = door
         self.gethu = getmj
         self.first_hear = first_hear
         self.drophu = drophu
@@ -25,8 +26,8 @@ class hu_result():
             "自摸": self.selfhu(),
             "門清": self.dmjclear(),
             "三元台": self.dragons(2),
-            "圈風台": 0,
-            "門風台": 0,
+            "圈風台": self.wind_tai(0),
+            "門風台": self.wind_tai(1),
             "花牌": 0,
             "獨聽": 0,
             "搶槓": 0,
@@ -168,3 +169,35 @@ class hu_result():
                 return 2
             else:
                 return 0
+                
+    def wind_index_to_value(self, c):
+        if 0 == c:
+            return 27
+        elif 1 == c:
+            return 28
+        elif 2 == c:
+            return 29
+        elif 3 == c:
+            return 30
+    
+    # mode = 0, for circle tai. mode = 1, for door tai
+    def wind_tai(self, mode):
+        if 0 == mode:
+            wv = self.wind_index_to_value(self.circle)
+        elif 1 == mode:
+            wv = self.wind_index_to_value(self.door)
+    
+        for tv in self.dj:
+            t = tv[0]
+            v = tv[1][0]
+            if 1 == t or 2 == t or 3 == t:
+                if wv == v:
+                    return 1
+        
+        i = 0
+        while i+2 < len(self.fmj):
+            if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2] and wv == self.fmj[i]:
+                return 1
+            i += 1
+        
+        return 0
