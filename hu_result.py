@@ -81,11 +81,9 @@ class hu_result():
         
         self.fmj = self.mj[:]
         if None == getmj:
-            self.fmj.append(drophu)
-            self.fmj.sort()
+            insert_mj(drophu, self.fmj)
         else:
-            self.fmj.append(getmj)
-            self.fmj.sort()
+            insert_mj(getmj, self.fmj)
             
         self.table = {
             "莊家": self.hosthu(),
