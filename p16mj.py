@@ -202,8 +202,8 @@ htext_loc = [(750, 700), (950, 270), (380, 205), (165, 270)]
 hmj = [[], [], [], []]
 # add kong mj index of dmj
 add_kong_mj = None
-bool_akong = False
 bool_pre_kong = False
+bool_last_one = False
 add_kong_loc = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(1040, 150)], [(280, 150)], [(110, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
@@ -874,7 +874,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
         host_num += 1
     
     if -1 == drop_id: 
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], getmj, first_hear[hid], None, hhu, False, bool_pre_kong)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], bool_last_one, getmj, first_hear[hid], None, hhu, False, bool_pre_kong)
     else:
         if akong != None:
             dp = dmj[drop_id][akong][1][0]
@@ -883,7 +883,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
             dp = drop_mj[drop_id][-1]
             bool_akong = False
         
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], None, first_hear[hid], dp, hhu, bool_akong, False)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], bool_last_one, None, first_hear[hid], dp, hhu, bool_akong, False)
     
     return hid
 
@@ -1379,6 +1379,8 @@ def main():
     global first_hear
     global winner
     global circle
+    global bool_pre_kong
+    global bool_last_one
     
     first = 1
     p0_mjloc_ini = []
@@ -1502,8 +1504,8 @@ def main():
                 check_button = 0 #local variable
                 getmj = None
                 gethu = False
-                bool_akong = False
                 bool_pre_kong = False
+                bool_last_one = False
                 hear_status = [False] * 4
                 first_hear = [0] * 4
                 first_turn = [0] * 4
@@ -1618,6 +1620,10 @@ def main():
                     first_hear[turn_id] = 1
             
             if 0 == get_done[turn_id] or -1 == get_done[turn_id]:
+                # check if last one
+                if 16 == (mjb - mjp):
+                    bool_last_one = True
+                
                 if 0 == get_done[turn_id]:
                     bool_pre_kong = False
                     getmj = all_mj[mjp]
@@ -1647,6 +1653,9 @@ def main():
                         else:
                             bool_pre_kong = False
                 elif drop1_hmj7(turn_id) != None:
+                    if (mjb - mjp) >= 16:
+                        getmj = all_mj[mjb]
+                        mjb -= 1
                     break
                 else:
                     get_done[turn_id] = -1

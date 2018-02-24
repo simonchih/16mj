@@ -66,14 +66,18 @@ def hu(pmj, value):
     return 0
 
 class hu_result():
-    def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, door, getmj = None, first_hear = 0, drophu = None, hhu = False, bool_akong = False, bool_pkong = False):
+    def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, door, bool_last, getmj = None, first_hear = 0, drophu = None, hhu = False, bool_akong = False, bool_pkong = False):
         self.mj = mj
         self.dj = dmj
         self.hnum = hnum
         self.ft = first_turn
-        self.hj = hmj
+        
+        self.hj = hmj[:]
+        self.hj.sort()
+        
         self.circle = circle
         self.door = door
+        self.last = bool_last
         self.gethu = getmj
         self.first_hear = first_hear
         self.drophu = drophu
@@ -100,9 +104,9 @@ class hu_result():
             "搶槓": self.capture_kong(),
             "槓上開花": self.kong_hu(),
             "半求人": self.need_others(0),
-            "海底撈月": 0,
-            "河底撈魚": 0,
-            "花槓": 0,
+            "海底撈月": self.last_hu(0),
+            "河底撈魚": self.last_hu(1),
+            "花槓": self.flower_kong(),
             "全求人": self.need_others(1),
             "平胡": 0,
             "三暗刻": self.same_color_bundle(3),
@@ -115,8 +119,8 @@ class hu_result():
             "清一色": 0,
             "小四喜": 0,
             "大三元": self.dragons(0),
-            "七搶一": 0,
-            "八仙過海": 0,
+            "七搶一": self.seven_hhu(),
+            "八仙過海": self.eight_hhu(),
             "天聽": 0,
             "地聽": 0,
             "字一色": 0,
@@ -137,12 +141,18 @@ class hu_result():
             return 0
             
     def selfhu(self):
+        if True == self.hhu:
+            return 0
+    
         if None == self.drophu:
             return 1
         else:
             return 0
             
     def dmjclear(self):
+        if True == self.hhu:
+            return 0
+    
         if 0 == len(self.dj):
             return 1
         else:
@@ -173,6 +183,9 @@ class hu_result():
         return bundle_number
         
     def same_color_bundle(self, n):
+        if True == self.hhu:
+            return 0
+        
         if n == self.cal_same_color():
             if 3 == n:
                 return 2
@@ -218,6 +231,9 @@ class hu_result():
         
     # t = 0, big dragons. t = 1, little dragons. t = 2, dragons.
     def dragons(self, t):
+        if True == self.hhu:
+            return 0
+        
         dseq, dpair = self.cal_dragons()
         if 0 == t:
             if 3 == dseq:
@@ -249,6 +265,9 @@ class hu_result():
     
     # mode = 0, for circle tai. mode = 1, for door tai
     def wind_tai(self, mode):
+        if True == self.hhu:
+            return 0
+        
         if 0 == mode:
             wv = self.wind_index_to_value(self.circle)
         elif 1 == mode:
@@ -271,6 +290,12 @@ class hu_result():
         
     def flower_tai(self):
         htai = 0
+        
+        if True == self.hhu:
+            return 0
+        elif self.flower_kong() > 0:
+            return 0
+        
         # east to north
         if 0 == self.door:
             for hv in self.hj:
@@ -304,6 +329,10 @@ class hu_result():
             return 0
             
     def single_hear(self):
+        if True == self.hhu:
+            return 0
+        
+        # for NOT duplicate need_others
         if 1 == len(self.mj):
             return 0
     
@@ -321,12 +350,18 @@ class hu_result():
         return 1
         
     def capture_kong(self):
+        if True == self.hhu:
+            return 0
+        
         if True == self.bkong:
             return 1
         else:
             return 0
             
     def kong_hu(self):
+        if True == self.hhu:
+            return 0
+        
         if True == self.bpkong:
             return 1
         else:
@@ -334,6 +369,9 @@ class hu_result():
     
     # m = 0 for half need others, m = 1 for complete need others
     def need_others(self, m):
+        if True == self.hhu:
+            return 0
+        
         if 1 == len(self.mj):
             if 0 == m:
                 if None == self.gethu:
@@ -346,3 +384,40 @@ class hu_result():
                 else:
                     return 0
         return 0
+        
+    # m = 0, for sea hu. m = 1 for river hu.
+    def last_hu(self, m):        
+        if True == self.last:
+            if 0 == m:
+                if self.gethu != None:
+                    return 1
+            elif 1 == m:
+                if None == self.gethu and self.drophu != None:
+                    return 1
+        
+        return 0
+    
+    def flower_kong(self):
+        if True == self.hhu:
+            return 0
+    
+        length = len(self.hj)
+        for i in range(length):
+            if 34 == self.hj[i] and i+3 < length:
+                if 35 == self.hj[i+1] and 36 == self.hj[i+2] and 37 == self.hj[i+3]:
+                    return 2
+            if 38 == self.hj[i] and i+3 < length:
+                if 39 == self.hj[i+1] and 40 == self.hj[i+2] and 41 == self.hj[i+3]:
+                    return 2
+            
+        return 0
+        
+    def eight_hhu(self):
+        if 8 == len(self.hj):
+            return 16
+    
+    def seven_hhu(self):
+        if 7 == len(self.hj) and True == self.hhu:
+            return 8
+        else:
+            return 0
