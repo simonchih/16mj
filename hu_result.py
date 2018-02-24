@@ -99,11 +99,11 @@ class hu_result():
             "獨聽": self.single_hear(),
             "搶槓": self.capture_kong(),
             "槓上開花": self.kong_hu(),
-            "半求人": 0,
+            "半求人": self.need_others(0),
             "海底撈月": 0,
             "河底撈魚": 0,
             "花槓": 0,
-            "全求人": 0,
+            "全求人": self.need_others(1),
             "平胡": 0,
             "三暗刻": self.same_color_bundle(3),
             "門清自摸": 0,
@@ -304,6 +304,9 @@ class hu_result():
             return 0
             
     def single_hear(self):
+        if 1 == len(self.mj):
+            return 0
+    
         if None == self.gethu:
             last_mj = self.drophu
         else:
@@ -328,3 +331,18 @@ class hu_result():
             return 1
         else:
             return 0
+    
+    # m = 0 for half need others, m = 1 for complete need others
+    def need_others(self, m):
+        if 1 == len(self.mj):
+            if 0 == m:
+                if None == self.gethu:
+                    return 0
+                else:
+                    return 2
+            elif 1 == m:
+                if None == self.gethu:
+                    return 2
+                else:
+                    return 0
+        return 0
