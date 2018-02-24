@@ -111,7 +111,7 @@ class hu_result():
             "平胡": self.pean_hu(),
             "三暗刻": self.same_color_bundle(3),
             "門清自摸": self.clear_selfhu(),
-            "對對胡": 0,
+            "對對胡": self.pphu(),
             "混一色": 0,
             "小三元": self.dragons(1),
             "四暗刻": self.same_color_bundle(4),
@@ -175,6 +175,17 @@ class hu_result():
         else:
             return 0
     
+    def cal_scolor_fmj(self):
+        i = 0
+        bn = 0
+        while(i+2 < len(self.fmj)):
+            if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
+                i += 3
+                bn += 1
+                continue
+            i += 1
+        return bn
+    
     def cal_same_color(self):
         bundle_number = 0
         
@@ -183,16 +194,8 @@ class hu_result():
             type = tv[0]
             if 2 == type: #dmj type is dark kong
                 bundle_number += 1
-        
-        i = 0
-        while(i+2 < len(self.fmj)):
-            if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
-                i += 3
-                bundle_number += 1
-                continue
-            i += 1
                 
-        return bundle_number
+        return self.cal_scolor_fmj() + bundle_number
         
     def same_color_bundle(self, n):
         if True == self.hhu:
@@ -209,7 +212,27 @@ class hu_result():
                 return 0
         else:
             return 0
-            
+    
+    # Precondition: assume fmj is hu
+    def pphu(self):
+        if True == self.hhu:
+            return 0
+    
+        p1 = 0
+        for tv in self.dj:
+            t = tv[0]
+            # Assume t = 0~3
+            if 0 == t:
+                return 0
+            else:
+                p1 += 1
+                
+        p2 = self.cal_scolor_fmj()
+        if 5 == p1 + p2:
+            return 4
+        else:
+            return 0
+    
     def cal_dragons(self):
         dpair = 0
         dseq = 0

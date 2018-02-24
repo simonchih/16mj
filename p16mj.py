@@ -821,13 +821,21 @@ def hear(mj, mj_num):
     return 0
 
 # Output: None, 0~3    
-def drop1_hmj7(turn_id):    
+def drop1_hmj7(turn_id):
+    global mjp
+    global mjb
+    global getmj
+    
     if 1 == len(hmj[turn_id]):
         dhid = (turn_id + 1) % 4
         while True:
             if turn_id == dhid:
                 break
             elif 7 == len(hmj[dhid]):
+                if (mjb - mjp) >= 16:
+                        # this getmj for turn_id, NOT winner id (dhid)
+                        getmj = all_mj[mjb]
+                        mjb -= 1
                 return handle_hu(dhid, turn_id, False, None, True)
             else: 
                 dhid = (dhid + 1) % 4
@@ -1653,9 +1661,6 @@ def main():
                         else:
                             bool_pre_kong = False
                 elif drop1_hmj7(turn_id) != None:
-                    if (mjb - mjp) >= 16:
-                        getmj = all_mj[mjb]
-                        mjb -= 1
                     break
                 else:
                     get_done[turn_id] = -1
