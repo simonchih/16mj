@@ -80,10 +80,10 @@ class hu_result():
         self.hhu = hhu
         
         self.fmj = self.mj[:]
-        if None == getmj:
-            insert_mj(drophu, self.fmj)
+        if None == self.gethu:
+            insert_mj(self.drophu, self.fmj)
         else:
-            insert_mj(getmj, self.fmj)
+            insert_mj(self.gethu, self.fmj)
             
         self.table = {
             "莊家": self.hosthu(),
@@ -94,7 +94,7 @@ class hu_result():
             "圈風台": self.wind_tai(0),
             "門風台": self.wind_tai(1),
             "花牌": self.flower_tai(),
-            "獨聽": 0,
+            "獨聽": self.single_hear(),
             "搶槓": 0,
             "槓上開花": 0,
             "半求人": 0,
@@ -300,3 +300,17 @@ class hu_result():
             return htai
         else:
             return 0
+            
+    def single_hear(self):
+        if None == self.gethu:
+            last_mj = self.drophu
+        else:
+            last_mj = self.gethu
+        
+        for i in range(31):
+            if last_mj == i:
+                continue
+            elif 1 == hu(self.mj, i):
+                return 0
+                
+        return 1
