@@ -66,7 +66,7 @@ def hu(pmj, value):
     return 0
 
 class hu_result():
-    def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, door, getmj = None, first_hear = 0, drophu = None, hhu = False):
+    def __init__(self, mj, dmj, hnum, first_turn, hmj, circle, door, getmj = None, first_hear = 0, drophu = None, hhu = False, bool_akong = False):
         self.mj = mj
         self.dj = dmj
         self.hnum = hnum
@@ -78,6 +78,7 @@ class hu_result():
         self.first_hear = first_hear
         self.drophu = drophu
         self.hhu = hhu
+        self.bkong = bool_akong
         
         self.fmj = self.mj[:]
         if None == self.gethu:
@@ -95,7 +96,7 @@ class hu_result():
             "門風台": self.wind_tai(1),
             "花牌": self.flower_tai(),
             "獨聽": self.single_hear(),
-            "搶槓": 0,
+            "搶槓": self.capture_kong(),
             "槓上開花": 0,
             "半求人": 0,
             "海底撈月": 0,
@@ -314,3 +315,9 @@ class hu_result():
                 return 0
                 
         return 1
+        
+    def capture_kong(self):
+        if True == self.bkong:
+            return 1
+        else:
+            return 0

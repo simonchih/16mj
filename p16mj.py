@@ -202,6 +202,7 @@ htext_loc = [(750, 700), (950, 270), (380, 205), (165, 270)]
 hmj = [[], [], [], []]
 # add kong mj index of dmj
 add_kong_mj = None
+bool_akong = False
 add_kong_loc = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(1040, 150)], [(280, 150)], [(110, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
@@ -872,14 +873,16 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
         host_num += 1
     
     if -1 == drop_id: 
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], getmj, first_hear[hid], None, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], getmj, first_hear[hid], None, hhu, False)
     else:
         if akong != None:
             dp = dmj[drop_id][akong][1][0]
+            bool_akong = True
         else:
             dp = drop_mj[drop_id][-1]
+            bool_akong = False
         
-        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], None, first_hear[hid], dp, hhu)
+        result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], None, first_hear[hid], dp, hhu, bool_akong)
     
     return hid
 
@@ -1498,6 +1501,7 @@ def main():
                 check_button = 0 #local variable
                 getmj = None
                 gethu = False
+                bool_akong = False
                 hear_status = [False] * 4
                 first_hear = [0] * 4
                 first_turn = [0] * 4
