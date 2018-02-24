@@ -108,7 +108,7 @@ class hu_result():
             "河底撈魚": self.last_hu(1),
             "花槓": self.flower_kong(),
             "全求人": self.need_others(1),
-            "平胡": 0,
+            "平胡": self.pean_hu(),
             "三暗刻": self.same_color_bundle(3),
             "門清自摸": 0,
             "對對胡": 0,
@@ -388,6 +388,12 @@ class hu_result():
     # m = 0, for sea hu. m = 1 for river hu.
     def last_hu(self, m):        
         if True == self.last:
+            if True == self.hhu:
+                if 0 == m and 8 == len(self.hj):
+                    return 1
+                elif 1 == m and 7 == len(self.hj):
+                    return 1
+            
             if 0 == m:
                 if self.gethu != None:
                     return 1
@@ -421,3 +427,66 @@ class hu_result():
             return 8
         else:
             return 0
+    
+    # check word in mj, 0 for NO word, 1 for word. 
+    def check_word(self, mjlist):
+        for c in mjlist:
+            if 26 < c < 34:
+                return 1
+        return 0
+    
+    # 0 for NO word, 1 has word
+    def is_word(self):
+        nword = self.check_word(self.fmj)
+        if 1 == nword:
+            return 1
+        for tv in self.dj:
+            v = tv[1][0]
+            nword = self.check_word([v])
+            if 1 == nword:
+                break
+        
+        return nword
+    
+    # return 0 if have pair and NO same color bundle, 1 for other wise
+    # precondition: mj must hear
+    def is_same_color():
+        for tv in self.dj:
+            t = tv[0]
+            if 1 == t or 2 == t or 3 == t:
+                return 1
+    
+        pair = False
+        i = 0
+        while i+1 < len(self.mj):
+            if False == pair and self.mj[i] == self.mj[i+1]:
+                pair = True
+                i += 2
+            #elif two pair
+            elif self.mj[i] == self.mj[i+1]:
+                return 1
+            else:
+                i += 1
+    
+        # must have pair
+        if True == pair:
+            return 0
+        else:
+            return 1
+    
+    def pean_hu(self):
+        if True == self.hhu:
+            return 0
+        
+        if 1 == self.is_word():
+            return 0
+        elif len(self.hj) > 0:
+            return 0
+        elif 1 == self.is_same_color():
+            return 0
+        elif self.single_hear() > 0:
+            return 0
+        elif self.selfhu() > 0:
+            return 0
+        else:
+            return 2
