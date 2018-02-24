@@ -110,7 +110,7 @@ class hu_result():
             "全求人": self.need_others(1),
             "平胡": self.pean_hu(),
             "三暗刻": self.same_color_bundle(3),
-            "門清自摸": 0,
+            "門清自摸": self.clear_selfhu(),
             "對對胡": 0,
             "混一色": 0,
             "小三元": self.dragons(1),
@@ -140,7 +140,7 @@ class hu_result():
         else:
             return 0
             
-    def selfhu(self):
+    def p_selfhu(self):
         if True == self.hhu:
             return 0
     
@@ -149,7 +149,7 @@ class hu_result():
         else:
             return 0
             
-    def dmjclear(self):
+    def p_dmjclear(self):
         if True == self.hhu:
             return 0
     
@@ -162,6 +162,18 @@ class hu_result():
                     return 0
                     
             return 1
+    
+    def selfhu(self):
+        if 0 == self.clear_selfhu():
+            return self.p_selfhu()
+        else:
+            return 0
+            
+    def dmjclear(self):
+        if 0 == self.clear_selfhu():
+            return self.p_dmjclear()
+        else:
+            return 0
     
     def cal_same_color(self):
         bundle_number = 0
@@ -450,7 +462,7 @@ class hu_result():
     
     # return 0 if have pair and NO same color bundle, 1 for other wise
     # precondition: mj must hear
-    def is_same_color():
+    def is_same_color(self):
         for tv in self.dj:
             t = tv[0]
             if 1 == t or 2 == t or 3 == t:
@@ -490,3 +502,9 @@ class hu_result():
             return 0
         else:
             return 2
+            
+    def clear_selfhu(self):
+        if self.p_selfhu() > 0 and self.p_dmjclear() > 0:
+            return 3
+        else:
+            return 0
