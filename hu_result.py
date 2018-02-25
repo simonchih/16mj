@@ -502,6 +502,8 @@ class hu_result():
     def eight_hhu(self):
         if 8 == len(self.hj):
             return 16
+        else:
+            return 0
     
     def seven_hhu(self):
         if 7 == len(self.hj) and True == self.hhu:

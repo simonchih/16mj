@@ -164,6 +164,8 @@ winner = -1
 host_num = 0
 circle = 0
 handle_drop_done = -1
+# display tai. 0: ini and normal display. 1: calculate tai. 2: ready to set calc_tai 0 
+calc_tai = 0
 # location of mj number font remains
 renum_loc = (470, 10)
 # open door loc
@@ -178,6 +180,8 @@ Add_Delay = True
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
 eat_index = []
+#dict: calculate tai result
+result = {}
 getmj = None
 gethu = False
 east_to_north = []
@@ -866,6 +870,8 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     global first_turn
     global gethu
     global winner
+    global result
+    global calc_tai
     
     gethu = get_hu
     winner = hid
@@ -897,6 +903,9 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
         
         result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], bool_last_one, None, first_hear[hid], dp, hhu, bool_akong, False)
     
+    calc_tai = 1
+    display_all(hid, drop_id, akong)
+    pygame.display.update()
     return hid
 
 # p0 is NOT get hu    
@@ -1157,30 +1166,117 @@ def draw_hear():
 def draw_text():
     screen.blit(write(u"%s風%s局"%(wind_index_to_text(circle), wind_index_to_text(player_door[host_id])), (255, 255, 255)), wind_loc)
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
+
+def draw_ctai(r):
+    (x, y)= (50, 290)
+    (mx, my) = (300, 200) # for mj loc
+    (dx, dy) = (300, 140) # for dj loc
+    (hx, hy) = (300, 80) #for hj loc
+    
+    i = 0
+    s = 0
+    gap = 5
+    
+    for c in range(len(r.hj)):
+        screen.blit(pid_to_image(0, r.hj[c]), (hx, hy))
+        hx += p0_mj_width
+    
+    for tv in r.dj:
+        t = tv[0]
+        v = tv[1]
+        if 0 == t:
+            display_front_eat(0, v, v[2], (dx, dy))
+        elif 1 == t or 2 == t:
+            display_show_kong(0, v[0], (dx, dy))
+        elif 3 == t:
+            display_pon(0, v[0], (dx, dy))
             
+        dx += 2*p0_mj_width + mjbk.get_width() + gap
+    
+    for c in range(len(r.mj)):
+        screen.blit(pid_to_image(0, r.mj[c]), (mx, my))
+        mx += p0_mj_width
+        
+    if r.gethu != None:
+        # draw get mj
+        screen.blit(pid_to_image(0, r.gethu), (mx+10, my))
+    elif r.drophu != None:
+        screen.blit(pid_to_image(0, r.drophu), (mx+10, my))
+    
+    for key, value in r.table.items():
+        if value != 0:
+            s += value
+            screen.blit(write(u"%s: %2d台\n"%(key, value), (255, 255, 255)), (x, y))
+            if 0 == i%3:
+                x = 450
+            elif 1 == i%3:
+                x = 850
+            else:
+                y += 40
+                x = 50
+            i += 1
+        
+    screen.blit(write(u"總共: %3d台\n"%s, (255, 255, 255)), (850, y+40))
+    
 # here did is drop player id            
 def display_all(win_id, did = -1, akong = None):
-
-    fill_background()
-    draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
-    draw_p123_mj(win_id)
-    draw_dmj(win_id)
-    draw_hmj()
-    draw_drop_mj()
-    draw_p0_button()
-    draw_host_location()
-    draw_hear()
-    draw_hu(win_id)
-    draw_text()
+    global calc_tai
     
-    if did != -1:
-        if akong != None:
-            (x, y) = add_kong_loc[did][akong]
-            p = pid_to_image(did, dmj[did][akong][1][0]) 
-        else:
-            (x, y) = drop_mj_loc[did][len(drop_mj[did])-1]
-            p = pid_to_image(did, drop_mj[did][-1])
-        pygame.draw.rect(screen, (0xff, 0, 0), (x, y, p.get_width(), p.get_height()), 3)
+    fill_background()
+    
+    if 0 == calc_tai:
+        draw_p0_mj(player_mj[0], p0_mjloc, player_mj_num[0])
+        draw_p123_mj(win_id)
+        draw_dmj(win_id)
+        draw_hmj()
+        draw_drop_mj()
+        draw_p0_button()
+        draw_host_location()
+        draw_hear()
+        draw_hu(win_id)
+        draw_text()
+    
+        if did != -1:
+            if akong != None:
+                (x, y) = add_kong_loc[did][akong]
+                p = pid_to_image(did, dmj[did][akong][1][0]) 
+            else:
+                (x, y) = drop_mj_loc[did][len(drop_mj[did])-1]
+                p = pid_to_image(did, drop_mj[did][-1])
+            pygame.draw.rect(screen, (0xff, 0, 0), (x, y, p.get_width(), p.get_height()), 3)
+    elif 1 == calc_tai:
+        # Test temp
+        #result = hu_result.hu_result([1,1,2,3,4,4,4,4,5,6], [[0, [6,8,7]], [2, [0,0,0]]], 0, 1, [34, 35, 36], 0, 0, False, 1, 0, None, False, False, False)
+        # End test temp
+        
+        (bx, by) = (575, 820)  #for button loc
+        fill_background()
+        pygame.draw.rect(screen, (0, 0, 0), (20, 20, 1160, 860), 3)
+        draw_ctai(result)
+        while 1 == calc_tai:
+            # draw back button
+            screen.blit(button, (bx, by))
+            (mouseX, mouseY) = pygame.mouse.get_pos()
+            if bx < mouseX < bx + button.get_width() and by < mouseY < by + button.get_height():
+                screen.blit(write(index_to_btext(5), (0, 255, 0), 30), (bx+10, by+5))
+            else:
+                screen.blit(write(index_to_btext(5), (0, 0, 0), 30), (bx+10, by+5))
+            
+            pygame.display.update()
+            
+            if True == p0_is_AI:
+                if True == Add_Delay:
+                    time.sleep(5)
+                calc_tai = 2
+                break
+            
+            for event in pygame.event.get():    
+                if event.type == QUIT:
+                    exit()
+                elif event.type == MOUSEBUTTONDOWN:
+                    if bx < mouseX < bx + button.get_width() and by < mouseY < by + button.get_height():
+                        calc_tai = 2
+                        break
 
 def index_to_btext(index):
     if 0 == index:
@@ -1403,6 +1499,7 @@ def main():
     global circle
     global bool_pre_kong
     global bool_last_one
+    global calc_tai
     
     first = 1
     p0_mjloc_ini = []
@@ -1521,6 +1618,9 @@ def main():
             if 1 == first:
                 # winner: -1, ini. 0~3: winner id
                 winner = -1
+                # 0:ini, 1:tai, 2:ready to 0(ini)
+                calc_tai = 0 
+                
                 turn_id = host_id
                 # check_button, 0: ini
                 check_button = 0 #local variable
