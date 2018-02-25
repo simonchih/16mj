@@ -112,28 +112,71 @@ class hu_result():
             "三暗刻": self.same_color_bundle(3),
             "門清自摸": self.clear_selfhu(),
             "對對胡": self.pphu(),
-            "混一色": 0,
+            "混一色": self.one_color_word(),
             "小三元": self.dragons(1),
             "四暗刻": self.same_color_bundle(4),
             "五暗刻": self.same_color_bundle(5),
-            "清一色": 0,
-            "小四喜": 0,
+            "清一色": self.all_one_color(),
+            "小四喜": self.little_four_happy(),
             "大三元": self.dragons(0),
             "七搶一": self.seven_hhu(),
             "八仙過海": self.eight_hhu(),
-            "天聽": 0,
-            "地聽": 0,
-            "字一色": 0,
-            "大四喜": 0,
-            "地胡": 0,
-            "天胡": 0,
-            "人胡": 0,
-            "見花見台": 0,
-            "見風見台": 0,
-            "槓牌": 0,
-            "暗槓": 0
+            "天聽": self.mjhear(0),
+            "地聽": self.mjhear(1),
+            "字一色": self.one_word(),
+            "大四喜": self.big_four_happy(),
+            "地胡": self.ghu(),
+            "天胡": self.skyhu(),
+            "人胡": self.humanhu()
+            #"見花見台": 0,
+            #"見風見台": 0,
+            #"槓牌": 0,
+            #"暗槓": 0
         }
         
+    def ghu(self):
+        if self.skyhu() > 0:
+            return 0
+        elif 0 == self.ft:
+            if None == self.drophu:
+                return 16
+            else:
+                return 0
+        else:
+            return 0
+    
+    def humanhu(self):
+        if self.skyhu() > 0:
+            return 0
+        elif 0 == self.ft:
+            if self.drophu != None:
+                return 16
+            else:
+                return 0
+        else:
+            return 0
+    
+    def skyhu(self):
+        if 0 == self.ft and self.hnum > 0:
+            return 24
+        else:
+            return 0
+    
+    def mjhear(self, m):
+        if self.skyhu() > 0:
+            return 0
+        
+        # sky hear
+        if 0 == m:
+            if 1 == self.first_hear:
+                return 8
+        # ground hear
+        elif 1 == m:
+            if 2 == self.first_hear:
+                return 4
+        
+        return 0
+    
     def hosthu(self):
         if self.hnum > 0:
             return 1
@@ -170,6 +213,9 @@ class hu_result():
             return 0
             
     def dmjclear(self):
+        if self.skyhu() > 0:
+            return 0
+    
         if 0 == self.clear_selfhu():
             return self.p_dmjclear()
         else:
@@ -463,7 +509,7 @@ class hu_result():
         else:
             return 0
     
-    # check word in mj, 0 for NO word, 1 for word. 
+    # check word in mjlist, 0 for NO word, 1 for word. 
     def check_word(self, mjlist):
         for c in mjlist:
             if 26 < c < 34:
@@ -529,5 +575,186 @@ class hu_result():
     def clear_selfhu(self):
         if self.p_selfhu() > 0 and self.p_dmjclear() > 0:
             return 3
+        else:
+            return 0
+            
+    # check word in mjlist, 0 for NOT all word, 1 for all word. 
+    def check_all_word(self, mjlist):
+        for c in mjlist:
+            if c < 27 or c > 33:
+                return 0
+        return 1
+    # 1 for all word, 0 for NOT all word
+    def all_word(self):
+        aword = self.check_all_word(self.fmj)
+        if 0 == aword:
+            return 0
+        for tv in self.dj:
+            t = tv[0]
+            v = tv[1][0] 
+            # word type is NOT sequence
+            if 0 == t:
+                return 0
+            aword = self.check_all_word([v])
+            if 0 == aword:
+                break
+        
+        return aword
+    
+    # 1: for one color, 0: NOT one color
+    def one_color(self):
+        c = self.fmj[0]
+        if c > 26:
+            return 0
+        
+        # assume len(self.fmj) >= 2
+        for i in range(1, len(self.fmj)):
+            if c//9 != self.fmj[i]//9:
+                return 0
+                
+        for tv in self.dj:
+            t = tv[0]
+            v = tv[1][0]
+            if 0 == t:
+                for v in tv[1]:
+                    if c//9 != v//9:
+                        return 0
+            elif c//9 != v//9:
+                return 0
+                    
+        return 1
+    
+    def all_one_color(self):
+        if True == self.hhu:
+            return 0
+    
+        # all word for one word
+        if 1 == self.all_word():
+            return 0
+        elif 1 == self.one_color():
+            return 8
+        else:
+            return 0
+    
+    def one_word(self):
+        if True == self.hhu:
+            return 0
+        
+        if 1 == self.all_word():
+            return 8
+        else:
+            return 0
+    
+    # 1: one color or word, 0: NOT
+    def one_color_word(self):
+        if True == self.hhu:
+            return 0
+            
+        if self.all_one_color() > 0:
+            return 0
+            
+        c = None
+        for v in self.fmj:
+            if 26 < v < 34:
+                continue
+            elif None == c:
+                c = v
+            elif c//9 != v//9:
+                return 0
+        
+        for tv in self.dj:
+            v = tv[1][0]
+            if 26 < v < 34:
+                continue
+            elif None == c:
+                c = v
+            elif c//9 != v//9:
+                return 0
+                
+        return 1
+        
+    def big_four_happy(self):
+        if True == self.hhu:
+            return 0
+            
+        i = 0
+        fnum = 0
+        while i+2 < len(self.fmj):
+            # if f1~f4
+            if 26 < self.fmj[i] < 31:
+                if i+3 < len(self.fmj):
+                    if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2] == self.fmj[i+3]:
+                        i += 4
+                        fnum += 1
+                        continue
+                    elif self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
+                        i += 3
+                        fnum += 1
+                        continue
+                elif i+2 < len(self.fmj):
+                    if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
+                        i += 3
+                        fnum += 1
+                        continue                
+            i += 1
+
+        for tv in self.dj:
+            v = tv[1][0]
+            if 26 < v < 31:
+                fnum += 1
+        
+        if 4 == fnum:
+            return 16
+        else:
+            return 0
+            
+    def little_four_happy(self):
+        if True == self.hhu:
+            return 0
+        
+        if self.big_four_happy() > 0:
+            return 0
+            
+        i = 0
+        fnum = 0
+        while i+1 < len(self.fmj):
+            # if f1~f4
+            if 26 < self.fmj[i] < 31:
+                if i+3 < len(self.fmj):
+                    if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2] == self.fmj[i+3]:
+                        i += 4
+                        fnum += 1
+                        continue
+                    elif self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
+                        i += 3
+                        fnum += 1
+                        continue
+                    elif self.fmj[i] == self.fmj[i+1]:
+                        i += 2
+                        fnum += 1
+                        continue
+                elif i+2 < len(self.fmj):
+                    if self.fmj[i] == self.fmj[i+1] == self.fmj[i+2]:
+                        i += 3
+                        fnum += 1
+                        continue 
+                    elif self.fmj[i] == self.fmj[i+1]:
+                        i += 2
+                        fnum += 1
+                        continue
+                elif i+1 < len(self.fmj):
+                    if self.fmj[i] == self.fmj[i+1]:
+                        i += 2
+                        fnum += 1
+                        continue
+            i += 1
+
+        for tv in self.dj:
+            v = tv[1][0]
+            if 26 < v < 31:
+                fnum += 1
+        
+        if 4 == fnum:
+            return 8
         else:
             return 0

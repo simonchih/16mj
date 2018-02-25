@@ -171,6 +171,8 @@ wind_loc = (250, 10)
 # 0~3: player 0~3
 mjloc = [(300, 815), (1100, 120), (250, 90), (50, 120)]
 huloc = [(575, 630), (910, 425), (575, 270), (240, 425)]
+# only for first_hear
+hear_loc = [(1100, 800), (1150, 70), (180, 40), (10, 800)]
 p0_is_AI = False
 Add_Delay = True
 p0_get_loc_org = (880, 815)
@@ -880,6 +882,8 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     
     if hid == host_id:
         host_num += 1
+    else:
+        host_num = 0
     
     if -1 == drop_id: 
         result = hu_result.hu_result(player_mj[hid], dmj[hid], host_num, first_turn[hid], hmj[hid], circle, player_door[hid], bool_last_one, getmj, first_hear[hid], None, hhu, False, bool_pre_kong)
@@ -1141,6 +1145,15 @@ def draw_host_location():
         if l == host_id:
             screen.blit(pid_to_image(l, 52), hostloc[l])
             
+def draw_hear():
+    for i, h in enumerate(first_hear):
+        if 0 == i:
+            continue
+        elif h != 0:
+            screen.blit(button, hear_loc[i])
+            (x, y) = hear_loc[i]
+            screen.blit(write(index_to_btext(2), (255, 0, 0), 30), (x+10, y+5))
+    
 def draw_text():
     screen.blit(write(u"%s風%s局"%(wind_index_to_text(circle), wind_index_to_text(player_door[host_id])), (255, 255, 255)), wind_loc)
     screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
@@ -1156,6 +1169,7 @@ def display_all(win_id, did = -1, akong = None):
     draw_drop_mj()
     draw_p0_button()
     draw_host_location()
+    draw_hear()
     draw_hu(win_id)
     draw_text()
     
@@ -2268,7 +2282,8 @@ def main():
                 break
         
         if winner != -1 and host_id != winner:
-            host_num = 0
+            # host_num set to 0 in handle_hu
+            #host_num = 0
             host_id = (host_id + 1)%4
             if host_id == east_to_north[0]:
                 circle = (circle + 1)%4
