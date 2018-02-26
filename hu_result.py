@@ -422,7 +422,7 @@ class hu_result():
         else:
             last_mj = self.gethu
         
-        for i in range(31):
+        for i in range(34):
             if last_mj == i:
                 continue
             elif 1 == hu(self.mj, i):
