@@ -198,6 +198,8 @@ first_turn = [0] * 4
 #button loc
 button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
 #0: Disable, 1: Enable, 2: Clicked (for eat and dark kong only)
+# button_enable[0]: pon, button_enable[1]: kong, button_enable[2]: hear
+# button_enable[3]: eat, button_enable[4]: hu, button_enable[5]: back
 button_enable = [0] * 6
 drop_mj_loc = [[(460, 645)]*64, [(930, 320)]*64, [(460, 260)]*64, [(220, 320)]*64]
 drop_mj = [[], [], [], []]
@@ -1790,6 +1792,11 @@ def main():
                     if 2 == get_done[turn_id]:
                         drop_mj[turn_id].append(getmj)
                         handle_drop_done = 0
+                        
+                        display_all(winner)
+                        pygame.display.update()
+                        if True == Add_Delay:
+                            time.sleep(1) 
                     elif -1 == get_done[turn_id] and dk_value != None:
                         dmj[turn_id].append([2, [dk_value]])
                         continue
@@ -1805,6 +1812,11 @@ def main():
                         elif 5 == bselect:
                             drop_mj[turn_id].append(getmj)
                             handle_drop_done = 0
+                            
+                            display_all(winner)
+                            pygame.display.update()
+                            if True == Add_Delay:
+                                time.sleep(1) 
                             break
                     
                     if True == br:
@@ -1816,6 +1828,11 @@ def main():
                 if 2 == get_done[turn_id]:
                     drop_mj[turn_id].append(getmj)
                     handle_drop_done = 0
+                    
+                    display_all(winner)
+                    pygame.display.update()
+                    if True == Add_Delay:
+                        time.sleep(1) 
                 elif -1 == get_done[turn_id] and dk_value != None:
                     dmj[turn_id].append([2, [dk_value]])
                     continue
@@ -1914,6 +1931,11 @@ def main():
                                     ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                     get_done[turn_id] = 2
                                     first_turn[turn_id] += 1
+                                    
+                                    display_all(winner)
+                                    pygame.display.update()
+                                    if True == Add_Delay:
+                                        time.sleep(1) 
                                 else: # select != None:
                                     drop_mj[turn_id].append(player_mj[turn_id][select])
                                     del player_mj[turn_id][select]
@@ -1921,6 +1943,11 @@ def main():
                                     ebutton = check_p0_button(player_mj[turn_id], player_mj_num[turn_id])
                                     get_done[turn_id] = 2
                                     first_turn[turn_id] += 1
+                                    
+                                    display_all(winner)
+                                    pygame.display.update()
+                                    if True == Add_Delay:
+                                        time.sleep(1)
                                 if False == ebutton:
                                     # here get_done[turn_id] == 2
                                     handle_drop_done = 0
@@ -2145,6 +2172,11 @@ def main():
                                         else:
                                             handle_drop_done = 5
                                             break
+                                            
+                                        display_all(winner)
+                                        pygame.display.update()
+                                        if True == Add_Delay:
+                                            time.sleep(1) 
                         elif 5 == handle_drop_done:
                             if False == button_enable_chk():
                                 handle_drop_done = 1
@@ -2297,6 +2329,8 @@ def main():
                                                 p0_mjloc = copy.deepcopy(p0_mjloc_org)
                                                 display_all(winner)
                                                 pygame.display.update()
+                                                if True == Add_Delay:
+                                                    time.sleep(1) 
                                                 first_turn[did] += 1
                                                 
                                                 ebutton = check_p0_button(player_mj[did], player_mj_num[did])
