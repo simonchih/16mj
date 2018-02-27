@@ -1245,7 +1245,9 @@ def display_all(win_id, did = -1, akong = None):
                 (x, y) = add_kong_loc[did][akong]
                 p = pid_to_image(did, dmj[did][akong][1][0]) 
             else:
-                (x, y) = drop_mj_loc[did][-1]
+                # NOT (x, y) = drop_mj_loc[did][-1], since the number of drop_mj_loc is maximum
+                (x, y) = drop_mj_loc[did][len(drop_mj[did])-1]
+                
                 p = pid_to_image(did, drop_mj[did][-1])
             pygame.draw.rect(screen, (0xff, 0, 0), (x, y, p.get_width(), p.get_height()), 3)
     elif 1 == calc_tai:
