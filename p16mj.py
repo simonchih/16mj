@@ -603,6 +603,8 @@ def p0_add_kong(dj, mj, gmj, dindex):
     return None
 
 def hear_dark_kong(mj, mj_num, gmj, tloc):
+    # gdone in this function is only 2 for dark_kong_value = None
+    # or -1 for dark_kong_value != None
     gdone = 2
     dark_kong_value = None
     
@@ -1243,7 +1245,7 @@ def display_all(win_id, did = -1, akong = None):
                 (x, y) = add_kong_loc[did][akong]
                 p = pid_to_image(did, dmj[did][akong][1][0]) 
             else:
-                (x, y) = drop_mj_loc[did][len(drop_mj[did])-1]
+                (x, y) = drop_mj_loc[did][-1]
                 p = pid_to_image(did, drop_mj[did][-1])
             pygame.draw.rect(screen, (0xff, 0, 0), (x, y, p.get_width(), p.get_height()), 3)
     elif 1 == calc_tai:
