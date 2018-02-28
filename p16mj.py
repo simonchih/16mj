@@ -2053,7 +2053,7 @@ def main():
             display_all(winner)
             pygame.display.update()
             # Handle drop mj
-            while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done or 5 == handle_drop_done:
+            while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done:
                 
                 did = (turn_id + 1)%4
                 run_once = False
