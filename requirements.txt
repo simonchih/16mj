@@ -1,0 +1,21 @@
+For Windows:
+
+1. Download Python 3.5+ below:
+https://www.python.org/downloads/
+
+2. Customize installation with Python 3 and then checked "pip" to install pip
+
+3. Install pygame with command below:
+py -3 -m pip install pygame
+
+4. Change to game directory
+
+5. Try to execute p16mj.py:
+py -3 p16mj.py
+
+For Linux:
+
+Almost the same step as windows,
+but you need replace "py -3 -m pip install pygame" with
+"pip3 install pygame" in step 3.
+And replace "py -3 p16mj.py" with "python3 p16mj.py" in step 5.
