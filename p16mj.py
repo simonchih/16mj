@@ -1163,9 +1163,7 @@ def draw_hear():
         if 0 == i:
             continue
         elif h != 0:
-            screen.blit(button, hear_loc[i])
-            (x, y) = hear_loc[i]
-            screen.blit(write(index_to_btext(2), (255, 0, 0), 30), (x+10, y+5))
+            screen.blit(pid_to_image(i, 53), hear_loc[i])
     
 def draw_text():
     screen.blit(write(u"%s風%s局"%(wind_index_to_text(circle), wind_index_to_text(player_door[host_id])), (255, 255, 255)), wind_loc)
