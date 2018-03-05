@@ -356,7 +356,13 @@ def pid_to_image(pid, index):
         return pygame.transform.rotate(pic , 180)
     elif 3 == pid:
         return pygame.transform.rotate(pic , 270)
-    
+
+def delay(second):
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            exit()            
+    time.sleep(second)
+        
 def next_two_not_block(block, mj_num, next):
     n0 = next_not_block(block, mj_num, next)
     if -1 == n0:
@@ -620,7 +626,7 @@ def hear_dark_kong(mj, mj_num, gmj, tloc):
             screen.blit(write(u"暗槓", (0, 0, 255)), tloc)
             pygame.display.update()
             if True == Add_Delay:
-                time.sleep(1)      
+                delay(1)      
             return temp_mj, temp_mj_num, gdone, dark_kong_value 
     
     return mj, mj_num, gdone, dark_kong_value
@@ -888,7 +894,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     display_all(hid, drop_id, akong)
     pygame.display.update()
     if True == Add_Delay:
-        time.sleep(4)
+        delay(4)
     
     if hid == host_id:
         host_num += 1
@@ -973,7 +979,7 @@ def proc_add_hmj(pid, get = False, value = -1):
         screen.blit(write(u"補花", (0, 0, 255)), htext_loc[pid])
         pygame.display.update()
         if True == Add_Delay:
-            time.sleep(1)
+            delay(1)
     
     return tget_num
 
@@ -1270,7 +1276,7 @@ def display_all(win_id, did = -1, akong = None):
             
             if True == p0_is_AI:
                 if True == Add_Delay:
-                    time.sleep(5)
+                    delay(5)
                 calc_tai = 2
                 break
             
@@ -1429,7 +1435,7 @@ def mjAI(tid, getv = None):
             
             pygame.display.update()
             if True == Add_Delay:
-                time.sleep(1)  
+                delay(1)  
             
             add_kong_mj = aki
             return -1
@@ -1444,7 +1450,7 @@ def mjAI(tid, getv = None):
         screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[tid])
         pygame.display.update()
         if True == Add_Delay:
-            time.sleep(1)        
+            delay(1)        
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
         player_mj_num[tid] = len(player_mj[tid])
         dmj[tid].append([2, [tmj[si]]])
@@ -1468,7 +1474,7 @@ def mjAI(tid, getv = None):
     display_all(winner)
     pygame.display.update()
     if True == Add_Delay:
-        time.sleep(1)
+        delay(1)
                     
     return 2
     
@@ -1664,7 +1670,7 @@ def main():
                 display_all(winner)
                 pygame.display.update()
                 if True == Add_Delay:
-                    time.sleep(1)
+                    delay(1)
                 
                 #temp
                 #dmj[0].append([3, [15]])
@@ -1798,7 +1804,7 @@ def main():
                         display_all(winner)
                         pygame.display.update()
                         if True == Add_Delay:
-                            time.sleep(1) 
+                            delay(1) 
                     elif -1 == get_done[turn_id] and dk_value != None:
                         dmj[turn_id].append([2, [dk_value]])
                         continue
@@ -1818,7 +1824,7 @@ def main():
                             display_all(winner)
                             pygame.display.update()
                             if True == Add_Delay:
-                                time.sleep(1) 
+                                delay(1) 
                             break
                     
                     if True == br:
@@ -1834,7 +1840,7 @@ def main():
                     display_all(winner)
                     pygame.display.update()
                     if True == Add_Delay:
-                        time.sleep(1) 
+                        delay(1) 
                 elif -1 == get_done[turn_id] and dk_value != None:
                     dmj[turn_id].append([2, [dk_value]])
                     continue
@@ -1937,7 +1943,7 @@ def main():
                                     display_all(winner)
                                     pygame.display.update()
                                     if True == Add_Delay:
-                                        time.sleep(1) 
+                                        delay(1) 
                                 else: # select != None:
                                     drop_mj[turn_id].append(player_mj[turn_id][select])
                                     del player_mj[turn_id][select]
@@ -1949,7 +1955,7 @@ def main():
                                     display_all(winner)
                                     pygame.display.update()
                                     if True == Add_Delay:
-                                        time.sleep(1)
+                                        delay(1)
                                 if False == ebutton:
                                     # here get_done[turn_id] == 2
                                     handle_drop_done = 0
@@ -1975,7 +1981,7 @@ def main():
                                         
                                         pygame.display.update()
                                         if True == Add_Delay:
-                                            time.sleep(1)
+                                            delay(1)
                                         
                                         did = (turn_id + 1) % 4
                                         br = False
@@ -2008,7 +2014,7 @@ def main():
                                             screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[turn_id])
                                             pygame.display.update()
                                             if True == Add_Delay:
-                                                time.sleep(1)
+                                                delay(1)
                                                 
                                             for i in gi:
                                                 del player_mj[turn_id][i]
@@ -2021,7 +2027,7 @@ def main():
                                             screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[turn_id])
                                             pygame.display.update()
                                             if True == Add_Delay:
-                                                time.sleep(1)
+                                                delay(1)
                                                 
                                             for i in gi:
                                                 del player_mj[turn_id][i]
@@ -2107,7 +2113,7 @@ def main():
                                     screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
                                     pygame.display.update()
                                     if True == Add_Delay:
-                                        time.sleep(1)
+                                        delay(1)
                                     
                                     reset_p0_button()
                                     handle_drop_done = 4
@@ -2128,7 +2134,7 @@ def main():
                                     screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
                                     pygame.display.update()
                                     if True == Add_Delay:
-                                        time.sleep(1)
+                                        delay(1)
                                     
                                     reset_p0_button()
                                     handle_drop_done = 2
@@ -2178,7 +2184,7 @@ def main():
                                         display_all(winner)
                                         pygame.display.update()
                                         if True == Add_Delay:
-                                            time.sleep(1) 
+                                            delay(1) 
                         elif 5 == handle_drop_done:
                             if False == button_enable_chk():
                                 handle_drop_done = 1
@@ -2217,7 +2223,7 @@ def main():
                             screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
                             pygame.display.update()
                             if True == Add_Delay:
-                                time.sleep(1)
+                                delay(1)
                             handle_drop_done = 2
                             
                             get_done[turn_id] = 0
@@ -2236,7 +2242,7 @@ def main():
                             screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
                             pygame.display.update()
                             if True == Add_Delay:
-                                time.sleep(1)
+                                delay(1)
                             handle_drop_done = 1
                             
                             get_done[turn_id] = 0
@@ -2300,7 +2306,7 @@ def main():
                                                         screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
                                                         pygame.display.update()
                                                         if True == Add_Delay:
-                                                            time.sleep(1)
+                                                            delay(1)
                                                         
                                                         reset_p0_button()
                                                         p0_mjloc = copy.deepcopy(p0_mjloc_org)
@@ -2332,7 +2338,7 @@ def main():
                                                 display_all(winner)
                                                 pygame.display.update()
                                                 if True == Add_Delay:
-                                                    time.sleep(1) 
+                                                    delay(1) 
                                                 first_turn[did] += 1
                                                 
                                                 ebutton = check_p0_button(player_mj[did], player_mj_num[did])
@@ -2396,7 +2402,7 @@ def main():
                             screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
                             pygame.display.update()
                             if True == Add_Delay:
-                                time.sleep(1)
+                                delay(1)
                             
                             get_done[turn_id] = 0
                             turn_id = did
