@@ -1174,11 +1174,11 @@ def draw_host_location():
                 continue
             
             # avoid double enter
-            # 20180327, known issue
-            #if True == enter_finger_code_twice:
-            #    continue
-            #else:
-            #    enter_finger_code_twice = True
+            # 20180327, has bug
+            if True == enter_finger_code_twice:
+                continue
+            else:
+                enter_finger_code_twice = True
             
             PIC_finger_index = 54
     
@@ -1776,6 +1776,8 @@ def main():
             handle_drop_done = -1
             add_kong_mj = None            
             
+            enter_finger_code_twice = False #20180327, has bug
+            
             if True == p0_is_AI:
                 # auto debug only
                 for p in range(4):
@@ -2106,6 +2108,8 @@ def main():
             pygame.display.update()
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done:
+                
+                enter_finger_code_twice = False #20180327, has bug
                 
                 did = (turn_id + 1)%4
                 run_once = False
