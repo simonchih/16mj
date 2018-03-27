@@ -74,6 +74,7 @@ mjb_image_filename = 'Image/mjb.gif'
 hu_image_filename = 'Image/hu.gif'
 button_image_filename = 'Image/50x50_mjb.gif'
 com_hear_image_filename = 'Image/50x50_hear.gif'
+finger_filename = 'Image/finger_50x61.gif'
 
 SCREEN_SIZE = (1200, 900) 
 pygame.init()
@@ -147,6 +148,8 @@ host_img = pygame.image.load(host_image_filename).convert()
 mjback = pygame.image.load(mjback_image_filename).convert()
 mjbk   = pygame.image.load(mjb_image_filename).convert()
 
+finger = pygame.image.load(finger_filename).convert()
+
 mjback2 = pygame.transform.rotate(mjback , 90)
 mjback3 = pygame.transform.rotate(mjback , 180)
 mjback4 = pygame.transform.rotate(mjback , 270)
@@ -212,6 +215,7 @@ hmj = [[], [], [], []]
 add_kong_mj = None
 bool_pre_kong = False
 bool_last_one = False
+enter_finger_code_twice = False
 add_kong_loc = [[], [], [], []]
 dmj_loc = [[(280, 755)], [(1040, 150)], [(280, 150)], [(110, 150)]]
 # [type, [value]] in dmj. type 0: eat, 1: show kong, 2: dark kong, 3: pon
@@ -333,6 +337,8 @@ def index_to_pic(index):
         return host_img
     elif 53 == index:
         return com_hear
+    elif 54 == index:
+        return finger
 
 def wind_index_to_text(opi):
     # east to north
@@ -1138,6 +1144,7 @@ def draw_hmj():
                 screen.blit(pid_to_image(pid, hmj[pid][i]), hmj_loc[pid][i])
             
 def draw_drop_mj():
+    
     for pid in range(4):
         for i in range(len(drop_mj[pid])):
             screen.blit(pid_to_image(pid, drop_mj[pid][i]), drop_mj_loc[pid][i])
@@ -1155,9 +1162,48 @@ def draw_p123_mj(win_id = -1):
             draw_mj_column(mjback4, mjloc[pid], player_mj_num[pid], draw)
 
 def draw_host_location():
+    global enter_finger_code_twice
+    
     for i, l in enumerate(east_to_north):
         if l == turn_id:
             screen.blit(pid_to_image(l, 48+i), lloc[l])
+            
+            # add code below for display finger 20180327
+            # avoid if NO drop_mj
+            if 0 == len(drop_mj[l]):
+                continue
+            
+            # avoid double enter
+            # 20180327, known issue
+            #if True == enter_finger_code_twice:
+            #    continue
+            #else:
+            #    enter_finger_code_twice = True
+            
+            PIC_finger_index = 54
+    
+            # if i is last one try to handle finger display
+            i = len(drop_mj[l]) - 1
+            (finger_x, finger_y) = drop_mj_loc[l][i]
+            
+            if 0 == l:
+                fx = finger_x
+                fy = finger_y + t1.get_height()
+            elif 1 == l:
+                fx = finger_x + t1.get_width()
+                fy = finger_y
+            elif 2 == l:
+                fx = finger_x
+                fy = finger_y - finger.get_height()
+            elif 3 == l:
+                fx = finger_x - finger.get_width()
+                fy = finger_y
+            else:
+                print("Impossible!pid(l) is NOT 0~3!")
+            
+            screen.blit(pid_to_image(l, PIC_finger_index), (fx, fy))
+            # end finger code 20180327
+            
         else:
             screen.blit(pid_to_image(l, 44+i), lloc[l])
             
@@ -1239,6 +1285,7 @@ def display_all(win_id, did = -1, akong = None):
         draw_hmj()
         draw_drop_mj()
         draw_p0_button()
+        # draw_drop_mj should first than draw host location 
         draw_host_location()
         draw_hear()
         draw_hu(win_id)
@@ -1510,6 +1557,7 @@ def main():
     global bool_pre_kong
     global bool_last_one
     global calc_tai
+    global enter_finger_code_twice
     
     first = 1
     p0_mjloc_ini = []
@@ -2302,7 +2350,8 @@ def main():
                                                         del player_mj[did][sort_index[0]]
                                                         
                                                         player_mj_num[did] = len(player_mj[did])
-                                                        display_all(winner)            
+                                                        display_all(winner)
+                                                        
                                                         screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
                                                         pygame.display.update()
                                                         if True == Add_Delay:
@@ -2398,7 +2447,8 @@ def main():
                             del player_mj[did][etemp[0]]
                             
                             player_mj_num[did] = len(player_mj[did])
-                            display_all(winner)            
+                            display_all(winner)
+                            
                             screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
                             pygame.display.update()
                             if True == Add_Delay:
