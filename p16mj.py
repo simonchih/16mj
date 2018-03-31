@@ -1776,6 +1776,18 @@ def main():
             handle_drop_done = -1
             add_kong_mj = None            
             
+            """
+            enter_finger_code_twice = False #20180331
+                    
+            # 20180331, display finger, error
+            draw_drop_mj()
+            draw_host_location()
+            pygame.display.update()
+            
+            if True == Add_Delay:
+                delay(1) #delay for finger display
+            """
+            
             if True == p0_is_AI:
                 # auto debug only
                 for p in range(4):
@@ -2106,6 +2118,16 @@ def main():
             pygame.display.update()
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done:
+                
+                """
+                # 20180331, display finger, error
+                draw_drop_mj()
+                draw_host_location()
+                pygame.display.update()
+                
+                if True == Add_Delay:
+                    delay(1) #delay for finger display
+                """
                 
                 did = (turn_id + 1)%4
                 run_once = False
