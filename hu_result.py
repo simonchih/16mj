@@ -93,7 +93,7 @@ class hu_result():
             
         self.table = {
             "莊家": self.hosthu(),
-            ("連%d拉%d" % (hnum, hnum)): 2 * hnum,
+            ("連%d拉%d" % (hnum, hnum)): self.continue_hosthu(),
             "自摸": self.selfhu(),
             "門清": self.dmjclear(),
             "三元台": self.dragons(2),
@@ -182,7 +182,13 @@ class hu_result():
             return 1
         else:
             return 0
-            
+    
+    def continue_hosthu(self):
+        if 0 == self.hnum:
+            return 0
+        else:
+            return 2 * (self.hnum-1)
+    
     def p_selfhu(self):
         if True == self.hhu:
             return 0

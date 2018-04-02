@@ -1165,6 +1165,9 @@ def draw_host_location():
     global enter_finger_code_twice
     
     for i, l in enumerate(east_to_north):
+        if l == host_id:
+            screen.blit(pid_to_image(l, 52), hostloc[l])
+            
         if l == turn_id:
             screen.blit(pid_to_image(l, 48+i), lloc[l])
             
@@ -1206,9 +1209,6 @@ def draw_host_location():
             
         else:
             screen.blit(pid_to_image(l, 44+i), lloc[l])
-            
-        if l == host_id:
-            screen.blit(pid_to_image(l, 52), hostloc[l])
             
 def draw_hear():
     for i, h in enumerate(first_hear):
