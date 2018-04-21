@@ -93,7 +93,7 @@ class hu_result():
             
         self.table = {
             "莊家": self.hosthu(),
-            ("連%d拉%d" % (hnum, hnum)): self.continue_hosthu(),
+            ("連%d拉%d" % (hnum-1, hnum-1)): self.continue_hosthu(),
             "自摸": self.selfhu(),
             "門清": self.dmjclear(),
             "三元台": self.dragons(2),
