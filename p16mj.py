@@ -1521,7 +1521,7 @@ def mjAI(tid, getv = None):
     pygame.display.update()
     if True == Add_Delay:
         delay(1)
-                    
+    
     return 2
     
 def main():
@@ -1698,17 +1698,28 @@ def main():
                 player_mj_num = [p_num, p_num, p_num, p_num]
                 
                 random.shuffle(all_mj)
-                for i in range(0, p_num, 4):
-                    j = i//4
-                    for pid in range(4):
-                        if 0 == pid:
-                            player_mj[turn_id][i:i+4] = all_mj[p_num*j:p_num*j+4]
-                        elif 1 == pid:
-                            player_mj[(turn_id+1)%4][i:i+4] = all_mj[p_num*j+4:p_num*j+8]
-                        elif 2 == pid:
-                            player_mj[(turn_id+2)%4][i:i+4] = all_mj[p_num*j+8:p_num*j+12]
-                        elif 3 == pid:
-                            player_mj[(turn_id+3)%4][i:i+4] = all_mj[p_num*j+12:p_num*j+16]
+                
+                if 16 == p_num:
+                    for i in range(0, p_num, 4):
+                        j = i//4
+                        for pid in range(4):
+                            if 0 == pid:
+                                player_mj[turn_id][i:i+4] = all_mj[p_num*j:p_num*j+4]
+                            elif 1 == pid:
+                                player_mj[(turn_id+1)%4][i:i+4] = all_mj[p_num*j+4:p_num*j+8]
+                            elif 2 == pid:
+                                player_mj[(turn_id+2)%4][i:i+4] = all_mj[p_num*j+8:p_num*j+12]
+                            elif 3 == pid:
+                                player_mj[(turn_id+3)%4][i:i+4] = all_mj[p_num*j+12:p_num*j+16]
+                else: # 13 == p_num:
+                    j = 0
+                    for i in range(0, p_num, 1):
+                        player_mj[turn_id][i] = all_mj[j]
+                        player_mj[(turn_id+1)%4][i] = all_mj[j+1]
+                        player_mj[(turn_id+2)%4][i] = all_mj[j+2]
+                        player_mj[(turn_id+3)%4][i] = all_mj[j+3]
+                        j += 4
+                    
                 player_mj_num = [p_num, p_num, p_num, p_num]
                 p0_mjloc_org = copy.deepcopy(p0_mjloc_ini)
                 p0_mjloc = copy.deepcopy(p0_mjloc_ini)
