@@ -1456,6 +1456,37 @@ def write(msg="pygame is cool", color= (0,0,0), size = 36):
     mytext = mytext.convert_alpha()
     return mytext 
 
+# assume eati:[a, c] where a index < c index
+# this function return 0 for smallest, 2 for biggest 
+def eat_middle_position(eati, value):
+        if value + 2 == eati[0] + 1 == eati[1]:
+            return 0
+        elif eati[0] + 2 == value + 1 == eati[1]:
+            return 1
+        else: # eati[0] + 2 == eati[1] + 1 == value
+            return 2
+    
+def AI_drop_for_eat(tid):
+    global player_mj
+    global player_mj_num
+    
+    tmj = player_mj[tid][:]
+    tmj_num = player_mj_num[tid]
+        
+    block = [0] * tmj_num
+    block = add_block3(tmj, tmj_num, block)
+    block0_num = block.count(0)
+    
+    if block0_num > 2:
+        block = add_block2(tmj, tmj_num, block)
+    
+    di = next_not_block(block, len(block))
+    if -1 == di:
+        print("di == -1")
+        input("wrong")
+    
+    return tmj[di]
+    
 def mjAI(tid, getv = None):
     global player_mj
     global player_mj_num
@@ -2453,7 +2484,15 @@ def main():
                                 handle_drop_done = 0
                     else: 
                         etemp = eat(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
-                        if etemp != []:
+                        if etemp != []: # avoid eat i and then drop i
+                            if drop_mj[turn_id][-1] == AI_drop_for_eat(did):
+                                etemp = [] #Won't eat
+                            else:
+                                ev = eat_middle_position([player_mj[did][etemp[0]], player_mj[did][etemp[1]]], drop_mj[turn_id][-1])
+                                consider_drop = AI_drop_for_eat(did)
+                                if (2 == ev and consider_drop + 3 == drop_mj[turn_id][-1] and consider_drop%9 != 8) or (0 == ev and consider_drop == drop_mj[turn_id][-1] + 3 and consider_drop%9 != 0):
+                                    etemp = [] #Won't eat
+                        if etemp != []: # do eat process
                             etempv = []
                             for i in range(2):
                                 etempv.append(player_mj[did][etemp[i]])

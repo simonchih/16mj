@@ -1,4 +1,4 @@
-Image source:
+﻿Image source:
 Mahjong wiki(https://en.wikipedia.org/wiki/Mahjong)
 TJMJ(https://sourceforge.net/projects/tjmj/)
 
@@ -9,9 +9,9 @@ Chinese readme below.
 
 ==遊戲說明==
 大部份採用台灣16張麻將的規則，一開始隨機選出一家做東家，
-由東家開始做莊，有一些潛規則，例如不能吃6萬打6萬，
+由東家開始做莊，電腦會避免吃6萬打6萬，
 或者手牌有5, 6萬吃7萬，打4萬之類的，
-因為台灣麻將wiki上沒提到這種規則，所以不打算實作。
+但是人類玩家仍然可以這樣吃。
 
 * 當"碰"發生時，玩家可以按"碰"的按鈕，會自動處理碰。
 
