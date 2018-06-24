@@ -1466,14 +1466,17 @@ def eat_middle_position(eati, value):
         else: # eati[0] + 2 == eati[1] + 1 == value
             return 2
     
-def AI_drop_for_eat(tid):
+def AI_drop_for_eat(tid, eati):
     global player_mj
     global player_mj_num
     
     tmj = player_mj[tid][:]
     tmj_num = player_mj_num[tid]
-        
+    
     block = [0] * tmj_num
+    
+    block[eati[0]] = block[eati[1]] = 1
+    
     block = add_block3(tmj, tmj_num, block)
     block0_num = block.count(0)
     
@@ -2485,12 +2488,14 @@ def main():
                     else: 
                         etemp = eat(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                         if etemp != []: # avoid eat i and then drop i
-                            if drop_mj[turn_id][-1] == AI_drop_for_eat(did):
+                            if drop_mj[turn_id][-1] == AI_drop_for_eat(did, etemp):
+                                #print('a', player_mj[did][etemp[0]], player_mj[did][etemp[1]], drop_mj[turn_id][-1])
                                 etemp = [] #Won't eat
                             else:
                                 ev = eat_middle_position([player_mj[did][etemp[0]], player_mj[did][etemp[1]]], drop_mj[turn_id][-1])
-                                consider_drop = AI_drop_for_eat(did)
+                                consider_drop = AI_drop_for_eat(did, etemp)
                                 if (2 == ev and consider_drop + 3 == drop_mj[turn_id][-1] and consider_drop%9 != 8) or (0 == ev and consider_drop == drop_mj[turn_id][-1] + 3 and consider_drop%9 != 0):
+                                    #print('b', player_mj[did][etemp[0]], player_mj[did][etemp[1]], drop_mj[turn_id][-1], consider_drop)
                                     etemp = [] #Won't eat
                         if etemp != []: # do eat process
                             etempv = []
