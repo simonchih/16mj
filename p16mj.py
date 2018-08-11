@@ -1591,6 +1591,7 @@ def main():
     global bool_last_one
     global calc_tai
     global enter_finger_code_twice
+    global east_to_north
     
     first = 1
     p0_mjloc_ini = []
@@ -1606,6 +1607,10 @@ def main():
             east_to_north.append(ei)
             ei = (ei + 1) % 4
     # end assign east_to_north
+    
+    #temp 20180811
+    #east_to_north = [0, 1, 2, 3]
+    #end temp 20180811
     
     # assign player_door
     
@@ -1765,11 +1770,11 @@ def main():
                     delay(1)
                 
                 #temp
-                #dmj[0].append([3, [15]])
-                #dmj[0].append([3, [4]])
+                #dmj[0].append([3, [1]])
+                #dmj[0].append([0, [5,6,7]])
                 #dmj[0].append([3, [13]])
-                #player_mj[0] = [0, 1, 2, 3, 4, 4, 5, 5, 6, 9, 10, 11, 15, 15, 32, 32]
-                #player_mj_num[0] = len(player_mj[2])
+                #player_mj[0] = [4, 6, 13, 14, 14, 18, 19, 25, 26, 26]
+                #player_mj_num[0] = len(player_mj[0])
                 #end temp
                 
                 player_mj[0].sort()
@@ -2195,7 +2200,9 @@ def main():
                             break
                             
                         run_once = True
-                        
+                    # temp 20180811
+                    #print('did', did, 'turn_id', turn_id, 'check_button', check_button)
+                    # end temp 20180811
                     if False == p0_is_AI and 0 == did:
                         if check_button < 3:
                             check_p0_button(player_mj[did], player_mj_num[did], myvalue = None, dj = None, value = drop_mj[turn_id][-1])
@@ -2226,7 +2233,7 @@ def main():
                                     first_turn[did] += 1
                                     continue
                             if 2 == button_enable[1]: #kong
-                                gi = pon(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
+                                gi = kong(player_mj[did], player_mj_num[did], drop_mj[turn_id][-1])
                                 if gi != -1:
                                     # 1: show kong
                                     dmj[did].append([1, [drop_mj[turn_id][-1]]])
@@ -2293,6 +2300,7 @@ def main():
                                 handle_drop_done = 1
                                 get_done[turn_id] = 0
                                 turn_id = did
+                                check_button = 0
                                 break
                             
                             #bselect = None
@@ -2331,6 +2339,7 @@ def main():
                             
                             get_done[turn_id] = 0
                             turn_id = did
+                            check_button = 0
                             first_turn[did] += 1
                             break
                             
@@ -2351,6 +2360,7 @@ def main():
                             get_done[turn_id] = 0
                             turn_id = did
                             mjAI(turn_id)
+                            check_button = 0
                             first_turn[did] += 1
                             break
                     
@@ -2522,6 +2532,7 @@ def main():
                             get_done[turn_id] = 0
                             turn_id = did
                             mjAI(turn_id)
+                            check_button = 0
                             first_turn[did] += 1
                             continue
                 if 2 == handle_drop_done:
