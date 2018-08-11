@@ -2285,7 +2285,8 @@ def main():
                                             handle_drop_done = 1
                                             get_done[turn_id] = 0
                                             turn_id = did
-                                            check_button = 1
+                                            #check_button = 1
+                                            check_button = 0
                                             break
                                         else:
                                             handle_drop_done = 5
@@ -2309,14 +2310,16 @@ def main():
                                 handle_drop_done = 1
                                 get_done[turn_id] = 0
                                 turn_id = did
-                                check_button = 1
+                                #check_button = 1
+                                check_button = 0
                                 break
                             elif 2 == bselect: #hear
                                 reset_p0_button()
                                 handle_drop_done = 1
                                 get_done[turn_id] = 0
                                 turn_id = did
-                                check_button = 1
+                                #check_button = 1
+                                check_button = 0
                                 break
                         elif 2 == handle_drop_done:
                             break
@@ -2461,7 +2464,8 @@ def main():
                                                 if False == ebutton:
                                                     get_done[turn_id] = 0
                                                     turn_id = did
-                                                    check_button = 1
+                                                    #check_button = 1
+                                                    check_button = 0
                                                     break
                                                     
                                                 break
@@ -2470,7 +2474,8 @@ def main():
                                         handle_drop_done = 7
                                         get_done[turn_id] = 0
                                         turn_id = did
-                                        check_button = 1
+                                        #check_button = 1
+                                        check_button = 0
                                         break
                                     
                                     #bselect = None
@@ -2479,14 +2484,16 @@ def main():
                                         handle_drop_done = 7
                                         get_done[turn_id] = 0
                                         turn_id = did
-                                        check_button = 1
+                                        #check_button = 1
+                                        check_button = 0
                                         break
                                     elif 2 == bselect: #hear
                                         reset_p0_button()
                                         handle_drop_done = 7
                                         get_done[turn_id] = 0
                                         turn_id = did
-                                        check_button = 1
+                                        #check_button = 1
+                                        check_button = 0
                                         break
                                 elif 8 == handle_drop_done:
                                     break
