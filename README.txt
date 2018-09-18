@@ -1,9 +1,10 @@
 ﻿Image source:
 Mahjong wiki(https://en.wikipedia.org/wiki/Mahjong)
 TJMJ(https://sourceforge.net/projects/tjmj/)
+http://163.20.160.14/~word/modules/myalbum_search/
 
 ==Environment==
-Python 3.5 and Pygame
+Python 3.6 and Pygame
 
 Chinese readme below.
 
