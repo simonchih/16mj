@@ -66,6 +66,9 @@ lred1_image_filename = 'Image/lred1.gif'
 lred2_image_filename = 'Image/lred2.gif'
 lred3_image_filename = 'Image/lred3.gif'
 
+liu_image_filename = 'Image/liu.gif'
+g_image_filename = 'Image/g.gif'
+
 host_image_filename = 'Image/host.gif'
 
 mjback_image_filename = 'Image/mjback.gif'
@@ -143,6 +146,9 @@ lred1 = pygame.image.load(lred1_image_filename).convert()
 lred2 = pygame.image.load(lred2_image_filename).convert()
 lred3 = pygame.image.load(lred3_image_filename).convert()
 
+liu = pygame.image.load(liu_image_filename).convert()
+g = pygame.image.load(g_image_filename).convert()
+
 host_img = pygame.image.load(host_image_filename).convert()
 
 mjback = pygame.image.load(mjback_image_filename).convert()
@@ -180,6 +186,7 @@ huloc = [(575, 630), (910, 425), (575, 270), (240, 425)]
 hear_loc = [(1100, 800), (1150, 70), (180, 40), (10, 800)]
 p0_is_AI = False
 Add_Delay = True
+end_game_loc = (450, 380)
 p0_get_loc_org = (880, 815)
 p0_get_loc = []
 eat_index = []
@@ -1048,6 +1055,12 @@ def fill_background():
         for x in range(0, screen_width, background.get_width()):
             screen.blit(background, (x, y))
 
+def draw_end_game(loc):
+    (x, y) = loc
+    gx = x + liu.get_width()
+    screen.blit(liu, loc)
+    screen.blit(g, (gx, y))
+            
 def display_dark_kong(pid, loc):
     (x, y) = loc
     if 0 == pid or 2 == pid:
@@ -1272,7 +1285,7 @@ def draw_ctai(r):
     screen.blit(write(u"總共: %3d台\n"%s, (255, 255, 255)), (850, y+40))
     
 # here did is drop player id            
-def display_all(win_id, did = -1, akong = None):
+def display_all(win_id, did = -1, akong = None, end_game = False):
     global calc_tai
     
     fill_background()
@@ -1289,6 +1302,9 @@ def display_all(win_id, did = -1, akong = None):
         draw_hear()
         draw_hu(win_id)
         draw_text()
+        
+        if end_game:
+            draw_end_game(end_game_loc)
     
         if did != -1:
             if akong != None:
@@ -2557,7 +2573,12 @@ def main():
             if winner != -1:
                 break
         
-        if winner != -1 and host_id != winner:
+        if -1 == winner:
+            display_all(-1, end_game = True)
+            pygame.display.update()
+            if True == Add_Delay:
+                delay(3)
+        elif host_id != winner: #winner != -1
             # host_num set to 0 in handle_hu
             #host_num = 0
             host_id = (host_id + 1)%4
