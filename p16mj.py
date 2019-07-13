@@ -1837,7 +1837,7 @@ def main():
             # End Temp Test
             pygame.display.update()
 
-            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue next process. 8: all done (for return button and NOT eating), end process
+            # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue next process. 8: all done (for return button and NOT eat), end process
             handle_drop_done = -1
             add_kong_mj = None
             
