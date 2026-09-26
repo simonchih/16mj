@@ -3,166 +3,186 @@ import time
 import pygame
 import math
 import copy
+from pathlib import Path
+from functools import lru_cache
+import jade_ui
 import hu_result
 from pygame.locals import *
 from sys import exit
 
-background_image_filename = 'Image/Nostalgy.gif'
+background_image_filename = 'Image/Nostalgy.png'
 
-t1_image_filename = 'Image/MJt1.gif'
-t2_image_filename = 'Image/MJt2.gif'
-t3_image_filename = 'Image/MJt3.gif'
-t4_image_filename = 'Image/MJt4.gif'
-t5_image_filename = 'Image/MJt5.gif'
-t6_image_filename = 'Image/MJt6.gif'
-t7_image_filename = 'Image/MJt7.gif'
-t8_image_filename = 'Image/MJt8.gif'
-t9_image_filename = 'Image/MJt9.gif'
+t1_image_filename = 'Image/MJt1.png'
+t2_image_filename = 'Image/MJt2.png'
+t3_image_filename = 'Image/MJt3.png'
+t4_image_filename = 'Image/MJt4.png'
+t5_image_filename = 'Image/MJt5.png'
+t6_image_filename = 'Image/MJt6.png'
+t7_image_filename = 'Image/MJt7.png'
+t8_image_filename = 'Image/MJt8.png'
+t9_image_filename = 'Image/MJt9.png'
 
-s1_image_filename = 'Image/MJs1.gif'
-s2_image_filename = 'Image/MJs2.gif'
-s3_image_filename = 'Image/MJs3.gif'
-s4_image_filename = 'Image/MJs4.gif'
-s5_image_filename = 'Image/MJs5.gif'
-s6_image_filename = 'Image/MJs6.gif'
-s7_image_filename = 'Image/MJs7.gif'
-s8_image_filename = 'Image/MJs8.gif'
-s9_image_filename = 'Image/MJs9.gif'
+s1_image_filename = 'Image/MJs1.png'
+s2_image_filename = 'Image/MJs2.png'
+s3_image_filename = 'Image/MJs3.png'
+s4_image_filename = 'Image/MJs4.png'
+s5_image_filename = 'Image/MJs5.png'
+s6_image_filename = 'Image/MJs6.png'
+s7_image_filename = 'Image/MJs7.png'
+s8_image_filename = 'Image/MJs8.png'
+s9_image_filename = 'Image/MJs9.png'
 
-w1_image_filename = 'Image/MJw1.gif'
-w2_image_filename = 'Image/MJw2.gif'
-w3_image_filename = 'Image/MJw3.gif'
-w4_image_filename = 'Image/MJw4.gif'
-w5_image_filename = 'Image/MJw5.gif'
-w6_image_filename = 'Image/MJw6.gif'
-w7_image_filename = 'Image/MJw7.gif'
-w8_image_filename = 'Image/MJw8.gif'
-w9_image_filename = 'Image/MJw9.gif'
+w1_image_filename = 'Image/MJw1.png'
+w2_image_filename = 'Image/MJw2.png'
+w3_image_filename = 'Image/MJw3.png'
+w4_image_filename = 'Image/MJw4.png'
+w5_image_filename = 'Image/MJw5.png'
+w6_image_filename = 'Image/MJw6.png'
+w7_image_filename = 'Image/MJw7.png'
+w8_image_filename = 'Image/MJw8.png'
+w9_image_filename = 'Image/MJw9.png'
 
-f1_image_filename = 'Image/MJf1.gif'
-f2_image_filename = 'Image/MJf2.gif'
-f3_image_filename = 'Image/MJf3.gif'
-f4_image_filename = 'Image/MJf4.gif'
+f1_image_filename = 'Image/MJf1.png'
+f2_image_filename = 'Image/MJf2.png'
+f3_image_filename = 'Image/MJf3.png'
+f4_image_filename = 'Image/MJf4.png'
 
-u1_image_filename = 'Image/MJd1.gif'
-u2_image_filename = 'Image/MJd2.gif'
-u3_image_filename = 'Image/MJd3.gif'
+u1_image_filename = 'Image/MJd1.png'
+u2_image_filename = 'Image/MJd2.png'
+u3_image_filename = 'Image/MJd3.png'
 
-h1_image_filename = 'Image/MJh1.gif'
-h2_image_filename = 'Image/MJh2.gif'
-h3_image_filename = 'Image/MJh3.gif'
-h4_image_filename = 'Image/MJh4.gif'
-h5_image_filename = 'Image/MJh5.gif'
-h6_image_filename = 'Image/MJh6.gif'
-h7_image_filename = 'Image/MJh7.gif'
-h8_image_filename = 'Image/MJh8.gif'
+h1_image_filename = 'Image/MJh1.png'
+h2_image_filename = 'Image/MJh2.png'
+h3_image_filename = 'Image/MJh3.png'
+h4_image_filename = 'Image/MJh4.png'
+h5_image_filename = 'Image/MJh5.png'
+h6_image_filename = 'Image/MJh6.png'
+h7_image_filename = 'Image/MJh7.png'
+h8_image_filename = 'Image/MJh8.png'
 
-l0_image_filename = 'Image/l0.gif'
-l1_image_filename = 'Image/l1.gif'
-l2_image_filename = 'Image/l2.gif'
-l3_image_filename = 'Image/l3.gif'
-lred0_image_filename = 'Image/lred0.gif'
-lred1_image_filename = 'Image/lred1.gif'
-lred2_image_filename = 'Image/lred2.gif'
-lred3_image_filename = 'Image/lred3.gif'
+l0_image_filename = 'Image/l0.png'
+l1_image_filename = 'Image/l1.png'
+l2_image_filename = 'Image/l2.png'
+l3_image_filename = 'Image/l3.png'
+lred0_image_filename = 'Image/lred0.png'
+lred1_image_filename = 'Image/lred1.png'
+lred2_image_filename = 'Image/lred2.png'
+lred3_image_filename = 'Image/lred3.png'
 
-liu_image_filename = 'Image/liu.gif'
-g_image_filename = 'Image/g.gif'
+liu_image_filename = 'Image/liu.png'
+g_image_filename = 'Image/g.png'
 
-host_image_filename = 'Image/host.gif'
+host_image_filename = 'Image/host.png'
 
-mjback_image_filename = 'Image/mjback.gif'
-mjb_image_filename = 'Image/mjb.gif'
+mjback_image_filename = 'Image/mjback.png'
+mjb_image_filename = 'Image/mjb.png'
 
-hu_image_filename = 'Image/hu.gif'
-button_image_filename = 'Image/50x50_mjb.gif'
-com_hear_image_filename = 'Image/50x50_hear.gif'
-finger_filename = 'Image/finger_50x61.gif'
+hu_image_filename = 'Image/hu.png'
+button_image_filename = 'Image/50x50_mjb.png'
+com_hear_image_filename = 'Image/50x50_hear.png'
+finger_filename = 'Image/finger_50x61.png'
 
 SCREEN_SIZE = (1200, 900)
 pygame.init()
+ASSET_ROOT = Path(__file__).resolve().parent
+def load_asset(filename):
+    return pygame.image.load(str(ASSET_ROOT / filename)).convert_alpha()
+effects = jade_ui.Effects()
+frame_clock = pygame.time.Clock()
 
-#pygame.display.set_icon(pygame.image.load("Image/as_arrow.png"))
-screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)#SCREEN_SIZE, FULLSCREEN, 32)
-pygame.display.set_caption("16 Mahjong")
+def present():
+    # Restore the static frame after compositing so effects never leave trails.
+    base = screen.copy()
+    effects.draw(screen)
+    pygame.display.update()
+    screen.blit(base, (0, 0))
+    frame_clock.tick(60)
+
+def announce(text, pos):
+    effects.emit(text, (pos[0] + 25, pos[1] + 15))
+
+
+screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
+pygame.display.set_caption("翡翠麻將 · 台灣十六張")
+pygame.display.set_icon(load_asset("Image/icon.png"))
 
 screen_width, screen_height = SCREEN_SIZE
 
-background = pygame.image.load(background_image_filename).convert()
-t1 = pygame.image.load(t1_image_filename).convert()
-t2 = pygame.image.load(t2_image_filename).convert()
-t3 = pygame.image.load(t3_image_filename).convert()
-t4 = pygame.image.load(t4_image_filename).convert()
-t5 = pygame.image.load(t5_image_filename).convert()
-t6 = pygame.image.load(t6_image_filename).convert()
-t7 = pygame.image.load(t7_image_filename).convert()
-t8 = pygame.image.load(t8_image_filename).convert()
-t9 = pygame.image.load(t9_image_filename).convert()
+background = load_asset(background_image_filename)
+t1 = load_asset(t1_image_filename)
+t2 = load_asset(t2_image_filename)
+t3 = load_asset(t3_image_filename)
+t4 = load_asset(t4_image_filename)
+t5 = load_asset(t5_image_filename)
+t6 = load_asset(t6_image_filename)
+t7 = load_asset(t7_image_filename)
+t8 = load_asset(t8_image_filename)
+t9 = load_asset(t9_image_filename)
 
-s1 = pygame.image.load(s1_image_filename).convert()
-s2 = pygame.image.load(s2_image_filename).convert()
-s3 = pygame.image.load(s3_image_filename).convert()
-s4 = pygame.image.load(s4_image_filename).convert()
-s5 = pygame.image.load(s5_image_filename).convert()
-s6 = pygame.image.load(s6_image_filename).convert()
-s7 = pygame.image.load(s7_image_filename).convert()
-s8 = pygame.image.load(s8_image_filename).convert()
-s9 = pygame.image.load(s9_image_filename).convert()
+s1 = load_asset(s1_image_filename)
+s2 = load_asset(s2_image_filename)
+s3 = load_asset(s3_image_filename)
+s4 = load_asset(s4_image_filename)
+s5 = load_asset(s5_image_filename)
+s6 = load_asset(s6_image_filename)
+s7 = load_asset(s7_image_filename)
+s8 = load_asset(s8_image_filename)
+s9 = load_asset(s9_image_filename)
 
-w1 = pygame.image.load(w1_image_filename).convert()
-w2 = pygame.image.load(w2_image_filename).convert()
-w3 = pygame.image.load(w3_image_filename).convert()
-w4 = pygame.image.load(w4_image_filename).convert()
-w5 = pygame.image.load(w5_image_filename).convert()
-w6 = pygame.image.load(w6_image_filename).convert()
-w7 = pygame.image.load(w7_image_filename).convert()
-w8 = pygame.image.load(w8_image_filename).convert()
-w9 = pygame.image.load(w9_image_filename).convert()
+w1 = load_asset(w1_image_filename)
+w2 = load_asset(w2_image_filename)
+w3 = load_asset(w3_image_filename)
+w4 = load_asset(w4_image_filename)
+w5 = load_asset(w5_image_filename)
+w6 = load_asset(w6_image_filename)
+w7 = load_asset(w7_image_filename)
+w8 = load_asset(w8_image_filename)
+w9 = load_asset(w9_image_filename)
 
-f1 = pygame.image.load(f1_image_filename).convert()
-f2 = pygame.image.load(f2_image_filename).convert()
-f3 = pygame.image.load(f3_image_filename).convert()
-f4 = pygame.image.load(f4_image_filename).convert()
+f1 = load_asset(f1_image_filename)
+f2 = load_asset(f2_image_filename)
+f3 = load_asset(f3_image_filename)
+f4 = load_asset(f4_image_filename)
 
-u1 = pygame.image.load(u1_image_filename).convert()
-u2 = pygame.image.load(u2_image_filename).convert()
-u3 = pygame.image.load(u3_image_filename).convert()
+u1 = load_asset(u1_image_filename)
+u2 = load_asset(u2_image_filename)
+u3 = load_asset(u3_image_filename)
 
-h1 = pygame.image.load(h1_image_filename).convert()
-h2 = pygame.image.load(h2_image_filename).convert()
-h3 = pygame.image.load(h3_image_filename).convert()
-h4 = pygame.image.load(h4_image_filename).convert()
-h5 = pygame.image.load(h5_image_filename).convert()
-h6 = pygame.image.load(h6_image_filename).convert()
-h7 = pygame.image.load(h7_image_filename).convert()
-h8 = pygame.image.load(h8_image_filename).convert()
+h1 = load_asset(h1_image_filename)
+h2 = load_asset(h2_image_filename)
+h3 = load_asset(h3_image_filename)
+h4 = load_asset(h4_image_filename)
+h5 = load_asset(h5_image_filename)
+h6 = load_asset(h6_image_filename)
+h7 = load_asset(h7_image_filename)
+h8 = load_asset(h8_image_filename)
 
-l0 = pygame.image.load(l0_image_filename).convert()
-l1 = pygame.image.load(l1_image_filename).convert()
-l2 = pygame.image.load(l2_image_filename).convert()
-l3 = pygame.image.load(l3_image_filename).convert()
-lred0 = pygame.image.load(lred0_image_filename).convert()
-lred1 = pygame.image.load(lred1_image_filename).convert()
-lred2 = pygame.image.load(lred2_image_filename).convert()
-lred3 = pygame.image.load(lred3_image_filename).convert()
+l0 = load_asset(l0_image_filename)
+l1 = load_asset(l1_image_filename)
+l2 = load_asset(l2_image_filename)
+l3 = load_asset(l3_image_filename)
+lred0 = load_asset(lred0_image_filename)
+lred1 = load_asset(lred1_image_filename)
+lred2 = load_asset(lred2_image_filename)
+lred3 = load_asset(lred3_image_filename)
 
-liu = pygame.image.load(liu_image_filename).convert()
-g = pygame.image.load(g_image_filename).convert()
+liu = load_asset(liu_image_filename)
+g = load_asset(g_image_filename)
 
-host_img = pygame.image.load(host_image_filename).convert()
+host_img = load_asset(host_image_filename)
 
-mjback = pygame.image.load(mjback_image_filename).convert()
-mjbk   = pygame.image.load(mjb_image_filename).convert()
+mjback = load_asset(mjback_image_filename)
+mjbk   = load_asset(mjb_image_filename)
 
-finger = pygame.image.load(finger_filename).convert()
+finger = load_asset(finger_filename)
 
 mjback2 = pygame.transform.rotate(mjback , 90)
 mjback3 = pygame.transform.rotate(mjback , 180)
 mjback4 = pygame.transform.rotate(mjback , 270)
 
-hu_button = pygame.image.load(hu_image_filename).convert()
-button = pygame.image.load(button_image_filename).convert()
-com_hear = pygame.image.load(com_hear_image_filename).convert()
+hu_button = load_asset(hu_image_filename)
+button = load_asset(button_image_filename)
+com_hear = load_asset(com_hear_image_filename)
 
 p_num = 16
 mjp = 0
@@ -206,15 +226,15 @@ hear_status = [False] * 4
 # 0:ini, 1:after first drop, 2: after first hear or after 2 turn drop, 3~
 first_turn = [0] * 4
 #button loc
-button_loc = [(1000, 800), (1050, 800), (1100, 800), (1000, 850), (1050, 850), (1100, 850)]
+button_loc = [(994, 784), (1046, 784), (1098, 784), (994, 836), (1046, 836), (1098, 836)]
 #0: Disable, 1: Enable, 2: Clicked (for eat and dark kong only)
 # button_enable[0]: pon, button_enable[1]: kong, button_enable[2]: hear
 # button_enable[3]: eat, button_enable[4]: hu, button_enable[5]: back
 button_enable = [0] * 6
 drop_mj_loc = [[(460, 645)]*64, [(930, 320)]*64, [(460, 260)]*64, [(220, 320)]*64]
 drop_mj = [[], [], [], []]
-lloc = [(410, 710), (1155, 400), (750, 205), (5, 400)]
-hostloc = [(360, 710), (1155, 450), (800, 205), (5, 450)]
+lloc = [(410, 688), (1155, 400), (750, 218), (5, 400)]
+hostloc = [(360, 688), (1155, 450), (800, 218), (5, 450)]
 hmj_loc = [[(460, 700)], [(985, 320)], [(460, 205)], [(165, 320)]]
 htext_loc = [(750, 700), (950, 270), (380, 205), (165, 270)]
 hmj = [[], [], [], []]
@@ -361,6 +381,7 @@ def wind_index_to_text(opi):
     elif 3 == opi:
         return "北"
 
+@lru_cache(maxsize=256)
 def pid_to_image(pid, index):
     pic = index_to_pic(index)
 
@@ -374,10 +395,14 @@ def pid_to_image(pid, index):
         return pygame.transform.rotate(pic , 270)
 
 def delay(second):
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            exit()
-    time.sleep(second)
+    deadline = time.monotonic() + second
+    while time.monotonic() < deadline:
+        for event in pygame.event.get([QUIT]):
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+        present()
+
 
 def next_two_not_block(block, mj_num, next):
     n0 = next_not_block(block, mj_num, next)
@@ -639,8 +664,8 @@ def hear_dark_kong(mj, mj_num, gmj, tloc):
         dark_kong_value = tmj[di]
         if 1 == hear(temp_mj, temp_mj_num):
             gdone = -1
-            screen.blit(write(u"暗槓", (0, 0, 255)), tloc)
-            pygame.display.update()
+            announce("暗槓", tloc)
+            present()
             if True == Add_Delay:
                 delay(1*step)      
             return temp_mj, temp_mj_num, gdone, dark_kong_value
@@ -908,7 +933,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
     # end debug only
 
     display_all(hid, drop_id, akong)
-    pygame.display.update()
+    present()
     if True == Add_Delay:
         delay(4*step)
 
@@ -931,7 +956,7 @@ def handle_hu(hid, drop_id = -1, get_hu = True, akong = None, hhu = False):
 
     calc_tai = 1
     display_all(hid, drop_id, akong)
-    pygame.display.update()
+    present()
     return hid
 
 # p0 is NOT get hu
@@ -992,8 +1017,8 @@ def proc_add_hmj(pid, get = False, value = -1):
 
     if tget_num > 0:
         display_all(winner)
-        screen.blit(write(u"補花", (0, 0, 255)), htext_loc[pid])
-        pygame.display.update()
+        announce("補花", htext_loc[pid])
+        present()
         if True == Add_Delay:
             delay(1*step)
 
@@ -1007,7 +1032,10 @@ def draw_p0_mj(pmj, pmjloc, mjnum):
     for c in range(mjnum):
         i = p_num - mjnum + c
         (x, y) = pmjloc[i]
-        screen.blit(pid_to_image(0, pmj[c]), (x, y))
+        pic = pid_to_image(0, pmj[c])
+        screen.blit(pic, (x, y))
+        if turn_id == 0 and winner == -1 and pygame.Rect(x, y, p0_mj_width, pic.get_height()).collidepoint(pygame.mouse.get_pos()):
+            pygame.draw.rect(screen, jade_ui.GOLD, (x, y, p0_mj_width, pic.get_height()-7), 2, border_radius=4)
 
     if 1 == get_done[turn_id] and 0 == turn_id and getmj != None:
         # draw get mj
@@ -1054,9 +1082,9 @@ def draw_mj_row(mj_pic, xy, mj_num, draw_all = -1):
             screen.blit(pid_to_image(draw_all, getmj), (startx - gap - t1.get_width(), starty))
 
 def fill_background():
-    for y in range(0, screen_height, background.get_height()):
-        for x in range(0, screen_width, background.get_width()):
-            screen.blit(background, (x, y))
+    screen.blit(background, (0, 0))
+    if calc_tai == 0:
+        jade_ui.table_overlay(screen)
 
 def draw_end_game(loc):
     (x, y) = loc
@@ -1064,37 +1092,18 @@ def draw_end_game(loc):
     screen.blit(liu, loc)
     screen.blit(g, (gx, y))
 
+@lru_cache(maxsize=140)
+def kong_image(pid, value):
+    pic = pid_to_image(pid, value)
+    return pygame.transform.smoothscale(pic, (round(pic.get_width()*.75), round(pic.get_height()*.75)))
+
 def display_dark_kong(pid, loc):
-    (x, y) = loc
-    if 0 == pid or 2 == pid:
-        for i in range(3):
-            screen.blit(pid_to_image(pid, 42), (x + i*p0_mj_width, y))
-
-        screen.blit(pid_to_image(pid, 42), (x + p0_mj_width, y))
-    elif 1 == pid:
-        for i in range(2, -1, -1):
-            screen.blit(pid_to_image(pid, 42), (x, y + i*p0_mj_width))
-    elif 3 == pid:
-        for i in range(3):
-            screen.blit(pid_to_image(pid, 42), (x, y + i*p0_mj_width))
-
-        screen.blit(pid_to_image(pid, 42), (x, y + p0_mj_width))
+    for xy in jade_ui.meld_layout(pid, loc, p0_mj_width, kong=True):
+        screen.blit(kong_image(pid, 42), xy)
 
 def display_show_kong(pid, value, loc):
-    (x, y) = loc
-    if 0 == pid or 2 == pid:
-        for i in range(3):
-            screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
-
-        screen.blit(pid_to_image(pid, value), (x + p0_mj_width, y))
-    elif 1 == pid:
-        for i in range(2, -1, -1):
-            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
-    elif 3 == pid:
-        for i in range(3):
-            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
-
-        screen.blit(pid_to_image(pid, value), (x, y + p0_mj_width))
+    for xy in jade_ui.meld_layout(pid, loc, p0_mj_width, kong=True):
+        screen.blit(kong_image(pid, value), xy)
 
 # pid: 0~3, middle is fmj[2]
 def display_front_eat(pid, fmj, middle, loc):
@@ -1117,19 +1126,8 @@ def display_front_eat(pid, fmj, middle, loc):
         screen.blit(pid_to_image(3, fmj[1]), (x, y + 2*p0_mj_width))
 
 def display_pon(pid, value, loc):
-    (x, y) = loc
-    if 0 == pid:
-        for i in range(3):
-            screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
-    elif 2 == pid:
-         for i in range(2, -1, -1):
-            screen.blit(pid_to_image(pid, value), (x + i*p0_mj_width, y))
-    elif 1 == pid:
-        for i in range(2, -1, -1):
-            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
-    elif 3 == pid:
-        for i in range(3):
-            screen.blit(pid_to_image(pid, value), (x, y + i*p0_mj_width))
+    for xy in jade_ui.meld_layout(pid, loc, p0_mj_width):
+        screen.blit(pid_to_image(pid, value), xy)
 
 def draw_dmj(win_id):
 
@@ -1148,7 +1146,7 @@ def draw_dmj(win_id):
                 (mouseX, mouseY) = pygame.mouse.get_pos()
                 (x, y) = dmj_loc[pid][i]
                 if x < mouseX < x + 2*p0_mj_width + mjbk.get_width() and y < mouseY < y + mjbk.get_height():
-                    pygame.draw.rect(screen, (0xff, 0, 0), (x, y, 2*p0_mj_width + mjbk.get_width() , mjbk.get_height()), 3)
+                    pygame.draw.rect(screen, jade_ui.GOLD, (x, y, 2*p0_mj_width + mjbk.get_width() , mjbk.get_height()), 3)
 
 def draw_hmj():
     for pid in range(4):
@@ -1233,8 +1231,8 @@ def draw_hear():
             screen.blit(pid_to_image(i, 53), hear_loc[i])
 
 def draw_text():
-    screen.blit(write(u"%s風%s局"%(wind_index_to_text(circle), wind_index_to_text(player_door[host_id])), (255, 255, 255)), wind_loc)
-    screen.blit(write(u"麻將剩餘:%d"%(mjb - mjp + 1), (255, 255, 255)), renum_loc)
+    jade_ui.hud(screen, "%s風 · %s局" % (wind_index_to_text(circle), wind_index_to_text(player_door[host_id])),
+                mjb - mjp + 1, turn_id, host_num)
 
 def draw_ctai(r):
     (x, y)= (50, 290)
@@ -1291,6 +1289,9 @@ def draw_ctai(r):
 def display_all(win_id, did = -1, akong = None, end_game = False):
     global calc_tai
 
+    # Opponent ordinary ready hands are private; only sky/ground ready is announced.
+    visible_hear = [hear_status[0]] + [bool(first_hear[i]) for i in range(1, 4)]
+    effects.observe(drop_mj, drop_mj_loc, win_id, getmj, turn_id, get_done, p0_get_loc, visible_hear)
     fill_background()
 
     if 0 == calc_tai:
@@ -1318,7 +1319,7 @@ def display_all(win_id, did = -1, akong = None, end_game = False):
                 (x, y) = drop_mj_loc[did][len(drop_mj[did])-1]
 
                 p = pid_to_image(did, drop_mj[did][-1])
-            pygame.draw.rect(screen, (0xff, 0, 0), (x, y, p.get_width(), p.get_height()), 3)
+            pygame.draw.rect(screen, jade_ui.GOLD, (x, y, p.get_width(), p.get_height()), 3)
     elif 1 == calc_tai:
         # Test temp
         #result = hu_result.hu_result([1,1,2,3,4,4,4,4,5,6], [[0, [6,8,7]], [2, [0,0,0]]], 0, 1, [34, 35, 36], 0, 0, False, 1, 0, None, False, False, False)
@@ -1326,7 +1327,12 @@ def display_all(win_id, did = -1, akong = None, end_game = False):
 
         (bx, by) = (575, 820)  #for button loc
         fill_background()
-        pygame.draw.rect(screen, (0, 0, 0), (20, 20, 1160, 860), 3)
+        jade_ui.panel(screen, (20, 20, 1160, 860), radius=18)
+        screen.blit(jade_ui.label("本局結算", 28, jade_ui.GOLD), (50, 32))
+        screen.blit(jade_ui.label("花牌", 20), (60, 90))
+        screen.blit(jade_ui.label("副露", 20), (60, 150))
+        screen.blit(jade_ui.label("胡牌牌型", 20), (60, 210))
+        pygame.draw.line(screen, (100, 111, 63), (50, 267), (1150, 267))
         draw_ctai(result)
         while 1 == calc_tai:
             # draw back button
@@ -1337,7 +1343,7 @@ def display_all(win_id, did = -1, akong = None, end_game = False):
             else:
                 screen.blit(write(index_to_btext(5), (0, 0, 0), 30), (bx+10, by+5))
 
-            pygame.display.update()
+            present()
 
             if True == p0_is_AI:
                 if True == Add_Delay:
@@ -1368,20 +1374,10 @@ def index_to_btext(index):
         return u"返"
 
 def draw_p0_button():
-    # Test only
-    #button_enable = [1] * 6
-    # End Test only
-    for i in range(len(button_loc)):
-        if button_enable[i] > 0:
-            (mouseX, mouseY) = pygame.mouse.get_pos()
-            (x, y) = button_loc[i]
-            screen.blit(button, button_loc[i])
-            if 2 == button_enable[i]:
-                screen.blit(write(index_to_btext(i), (255, 0, 0), 30), (x+10, y+5))
-            elif x < mouseX < x + button.get_width() and y < mouseY < y + button.get_height():
-                screen.blit(write(index_to_btext(i), (0, 255, 0), 30), (x+10, y+5))
-            else:
-                screen.blit(write(index_to_btext(i), (0, 0, 0), 30), (x+10, y+5))
+    mouse = pygame.mouse.get_pos()
+    for i, loc in enumerate(button_loc):
+        rect = button.get_rect(topleft=loc)
+        jade_ui.button(screen, button, rect, index_to_btext(i), button_enable[i], rect.collidepoint(mouse))
 
 def p0_button_proc(mouseX, mouseY):
     global button_enable
@@ -1438,7 +1434,7 @@ def click_p0_button():
                 return bs
 
     display_all(winner)
-    pygame.display.update()
+    present()
 
     return bs
 
@@ -1465,15 +1461,13 @@ def handle_p0_sky_hear():
                     break
 
         display_all(winner)
-        pygame.display.update()
+        present()
 
 
-def write(msg="pygame is cool", color= (0,0,0), size = 36):
-    #myfont = pygame.font.SysFont("None", 32) #To avoid py2exe error
-    myfont = pygame.font.Font("wqy-zenhei.ttf",size)
-    mytext = myfont.render(msg, True, color)
-    mytext = mytext.convert_alpha()
-    return mytext
+def write(msg="pygame is cool", color=(0,0,0), size=36):
+    palette = {(0,0,0): jade_ui.IVORY, (0,255,0): jade_ui.MINT,
+               (255,0,0): jade_ui.GOLD, (255,255,255): jade_ui.IVORY}
+    return jade_ui.label(msg, size, palette.get(color, color))
 
 # assume eati:[a, c] where a index < c index
 # this function return 0 for smallest, 2 for biggest
@@ -1526,13 +1520,13 @@ def mjAI(tid, getv = None):
         #add_kong_mj = None
         if player_add_kong(dmj[tid], player_mj[tid], getv) != None:
             aki, vi, player_mj[tid], player_mj_num[tid] = player_add_kong(dmj[tid], player_mj[tid], getv)
-            screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[tid])
+            announce("加槓", htext_loc[tid])
             dmj[tid][aki] = [1, [getv]]
 
             del player_mj[tid][vi]
             player_mj_num[tid] = len(player_mj[tid])
 
-            pygame.display.update()
+            present()
             if True == Add_Delay:
                 delay(1*step)
 
@@ -1546,8 +1540,8 @@ def mjAI(tid, getv = None):
 
     si = dark_kong(tmj, tmj_num)
     if si != -1 and getv != None:
-        screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[tid])
-        pygame.display.update()
+        announce("暗槓", htext_loc[tid])
+        present()
         if True == Add_Delay:
             delay(1*step)
         player_mj[tid] = list(filter(lambda a: a != tmj[si], tmj))
@@ -1571,7 +1565,7 @@ def mjAI(tid, getv = None):
     player_mj_num[tid] = len(player_mj[tid])
 
     display_all(winner)
-    pygame.display.update()
+    present()
     if True == Add_Delay:
         delay(1*step)
 
@@ -1784,7 +1778,7 @@ def main():
                 p0_get_loc = list(p0_get_loc_org)
                 mjp = p_num*4
                 display_all(winner)
-                pygame.display.update()
+                present()
                 if True == Add_Delay:
                     delay(1*step)
 
@@ -1838,7 +1832,7 @@ def main():
             #    screen.blit(pid_to_image(i, 43), huloc[i])
             #screen.blit(button, button_loc[0])
             # End Temp Test
-            pygame.display.update()
+            present()
 
             # handle_drop_done. -1: ini, 0: handle player drop mj, 1: done and drop mj again (for pon and kong), 2: done and get from mjb, 3: hu, 4: need to handle p0 drop mj, 5: after pon and kong drop, handle hear. 6: after eat drop, handle hear. 7: all done to continue next process. 8: all done (for return button and NOT eat), end process
             handle_drop_done = -1
@@ -1918,7 +1912,7 @@ def main():
                         handle_drop_done = 0
 
                         display_all(winner)
-                        pygame.display.update()
+                        present()
                         if True == Add_Delay:
                             delay(1*step)
                     elif -1 == get_done[turn_id] and dk_value != None:
@@ -1938,7 +1932,7 @@ def main():
                             handle_drop_done = 0
 
                             display_all(winner)
-                            pygame.display.update()
+                            present()
                             if True == Add_Delay:
                                 delay(1*step)
                             break
@@ -1954,7 +1948,7 @@ def main():
                     handle_drop_done = 0
 
                     display_all(winner)
-                    pygame.display.update()
+                    present()
                     if True == Add_Delay:
                         delay(1*step)
                 elif -1 == get_done[turn_id] and dk_value != None:
@@ -2036,7 +2030,7 @@ def main():
                     add_kong_mj = ak_select
 
                 display_all(winner)
-                pygame.display.update()
+                present()
 
                 if get_done[turn_id] != 2:
                     br = False
@@ -2057,7 +2051,7 @@ def main():
                                     first_turn[turn_id] += 1
 
                                     display_all(winner)
-                                    pygame.display.update()
+                                    present()
                                     if True == Add_Delay:
                                         delay(1*step)
                                 else: # select != None:
@@ -2069,7 +2063,7 @@ def main():
                                     first_turn[turn_id] += 1
 
                                     display_all(winner)
-                                    pygame.display.update()
+                                    present()
                                     if True == Add_Delay:
                                         delay(1*step)
                                 if False == ebutton:
@@ -2090,12 +2084,12 @@ def main():
                                     if p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, add_kong_mj) != None:
                                         vi, player_mj[turn_id], player_mj_num[turn_id] = p0_add_kong(dmj[turn_id], player_mj[turn_id], getmj, add_kong_mj)
 
-                                        screen.blit(write(u"加槓", (0, 0, 255)), htext_loc[turn_id])
+                                        announce("加槓", htext_loc[turn_id])
                                         dmj[turn_id][add_kong_mj] = [1, [player_mj[turn_id][vi]]]
                                         del player_mj[turn_id][vi]
                                         player_mj_num[turn_id] = len(player_mj[turn_id])
 
-                                        pygame.display.update()
+                                        present()
                                         if True == Add_Delay:
                                             delay(1*step)
 
@@ -2127,8 +2121,8 @@ def main():
 
                                         gi.sort(reverse=True)
                                         if value == getmj and 3 == len(gi):
-                                            screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[turn_id])
-                                            pygame.display.update()
+                                            announce("暗槓", htext_loc[turn_id])
+                                            present()
                                             if True == Add_Delay:
                                                 delay(1*step)
 
@@ -2140,8 +2134,8 @@ def main():
                                             reset_p0_button()
                                             break
                                         elif 4 == len(gi):
-                                            screen.blit(write(u"暗槓", (0, 0, 255)), htext_loc[turn_id])
-                                            pygame.display.update()
+                                            announce("暗槓", htext_loc[turn_id])
+                                            present()
                                             if True == Add_Delay:
                                                 delay(1*step)
 
@@ -2171,7 +2165,7 @@ def main():
                         handle_drop_done = 0
 
             display_all(winner)
-            pygame.display.update()
+            present()
             # Handle drop mj
             while 0 == handle_drop_done or 1 == handle_drop_done or 4 == handle_drop_done:
 
@@ -2180,7 +2174,7 @@ def main():
 
                 draw_drop_mj()
                 draw_host_location()
-                pygame.display.update()
+                present()
 
                 if True == Add_Delay:
                     delay(1*step) #delay for finger display
@@ -2239,8 +2233,8 @@ def main():
                                     player_mj[did] = player_mj[did][:pi] + player_mj[did][pi+2:]
                                     player_mj_num[did] = len(player_mj[did])
                                     display_all(winner)
-                                    screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
-                                    pygame.display.update()
+                                    announce("碰", htext_loc[did])
+                                    present()
                                     if True == Add_Delay:
                                         delay(1*step)
 
@@ -2248,7 +2242,7 @@ def main():
                                     handle_drop_done = 4
 
                                     display_all(winner)
-                                    pygame.display.update()
+                                    present()
                                     first_turn[did] += 1
                                     continue
                             if 2 == button_enable[1]: #kong
@@ -2260,8 +2254,8 @@ def main():
                                     player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
                                     player_mj_num[did] = len(player_mj[did])
                                     display_all(winner)
-                                    screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
-                                    pygame.display.update()
+                                    announce("槓", htext_loc[did])
+                                    present()
                                     if True == Add_Delay:
                                         delay(1*step)
 
@@ -2269,7 +2263,7 @@ def main():
                                     handle_drop_done = 2
 
                                     display_all(winner)
-                                    pygame.display.update()
+                                    present()
 
                                     check_button = 0
                                     get_done[turn_id] = 0
@@ -2283,7 +2277,7 @@ def main():
                             # for drop mj
                             select = select_mj(p0_mjloc_org)
                             display_all(winner)
-                            pygame.display.update()
+                            present()
 
                             for event in pygame.event.get():
                                 if event.type == QUIT:
@@ -2295,7 +2289,7 @@ def main():
                                         player_mj_num[did] = len(player_mj[did])
                                         p0_mjloc = copy.deepcopy(p0_mjloc_org)
                                         display_all(winner)
-                                        pygame.display.update()
+                                        present()
                                         first_turn[did] += 1
 
                                         ebutton = check_p0_button(player_mj[did], player_mj_num[did])
@@ -2312,7 +2306,7 @@ def main():
                                             break
 
                                         display_all(winner)
-                                        pygame.display.update()
+                                        present()
                                         if True == Add_Delay:
                                             delay(1*step)
                         elif 5 == handle_drop_done:
@@ -2353,8 +2347,8 @@ def main():
                             player_mj[did] = player_mj[did][:gi] + player_mj[did][gi+3:]
                             player_mj_num[did] = len(player_mj[did])
                             display_all(winner)
-                            screen.blit(write(u"槓", (0, 0, 255)), htext_loc[did])
-                            pygame.display.update()
+                            announce("槓", htext_loc[did])
+                            present()
                             if True == Add_Delay:
                                 delay(1*step)
                             handle_drop_done = 2
@@ -2373,8 +2367,8 @@ def main():
                             player_mj[did] = player_mj[did][:pi] + player_mj[did][pi+2:]
                             player_mj_num[did] = len(player_mj[did])
                             display_all(winner)
-                            screen.blit(write(u"碰", (0, 0, 255)), htext_loc[did])
-                            pygame.display.update()
+                            announce("碰", htext_loc[did])
+                            present()
                             if True == Add_Delay:
                                 delay(1*step)
                             handle_drop_done = 1
@@ -2404,7 +2398,7 @@ def main():
                                 select = select_mj(p0_mjloc_org, did, smj)
 
                                 display_all(winner)
-                                pygame.display.update()
+                                present()
 
                                 if 0 == handle_drop_done:
                                     (mouseX, mouseY) = pygame.mouse.get_pos()
@@ -2439,8 +2433,8 @@ def main():
                                                         player_mj_num[did] = len(player_mj[did])
                                                         display_all(winner)
 
-                                                        screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
-                                                        pygame.display.update()
+                                                        announce("吃", htext_loc[did])
+                                                        present()
                                                         if True == Add_Delay:
                                                             delay(1*step)
 
@@ -2472,7 +2466,7 @@ def main():
                                                 player_mj_num[did] = len(player_mj[did])
                                                 p0_mjloc = copy.deepcopy(p0_mjloc_org)
                                                 display_all(winner)
-                                                pygame.display.update()
+                                                present()
                                                 if True == Add_Delay:
                                                     delay(1*step)
                                                 first_turn[did] += 1
@@ -2550,8 +2544,8 @@ def main():
                             player_mj_num[did] = len(player_mj[did])
                             display_all(winner)
 
-                            screen.blit(write(u"吃", (0, 0, 255)), htext_loc[did])
-                            pygame.display.update()
+                            announce("吃", htext_loc[did])
+                            present()
                             if True == Add_Delay:
                                 delay(1*step)
 
@@ -2578,7 +2572,7 @@ def main():
 
         if -1 == winner:
             display_all(-1, end_game = True)
-            pygame.display.update()
+            present()
             if True == Add_Delay:
                 delay(3*step)
         elif host_id != winner: #winner != -1

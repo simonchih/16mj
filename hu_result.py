@@ -1,5 +1,5 @@
-from p16mj import next_two_not_block
-from p16mj import next_two_not_blsame
+from mahjong_utils import next_two_not_block
+from mahjong_utils import next_two_not_blsame
 
 def insert_mj(mjv, mj):
     return_mj = mj[:]

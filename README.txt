@@ -1,4 +1,29 @@
-﻿Image source:
+== 翡翠美術重製版 ==
+
+本機直接雙擊 Start-Mahjong.cmd 啟動（已建立 .venv）。
+其他電腦建議 Python 3.10+，在專案目錄執行：
+  py -3 -m venv .venv
+  .venv\Scripts\python.exe -m pip install -r requirements.txt
+  .venv\Scripts\python.exe p16mj.py
+
+美術：Image 下全部 60 張舊 GIF 已替換為 PNG，新增一張視窗圖示。
+翡翠桌面、象牙牌面、金框、牌背、風位與按鈕全面重製。
+新增落牌／摸牌光圈、金色粒子、吃碰槓補花提示及胡牌動畫。
+碰為 3 張相同牌；槓為 4 張相同牌，在同一副露格略縮小並排。
+既有台灣十六張流程、AI、聽牌與計台維持原設計。
+注意：選中按鈕現為金色外框與金字（下方舊說明的「紅字」）。
+
+驗證：
+  .venv\Scripts\python.exe -m unittest discover -s tests -v
+  .venv\Scripts\python.exe tools\smoke_game.py --rounds 12
+  .venv\Scripts\python.exe tools\smoke_game.py --native --rounds 3 --seed 42
+
+美術原稿、完整生成提示及重建方式：art/ART_DIRECTION.md。
+執行遊戲不需 Pillow 或 imagegen；僅需 requirements.txt 中的 pygame-ce。
+16mj.spec 已更新主程式路徑與圖片／字型打包清單；未在本次驗證中建置 EXE。
+
+下方為原版規則說明；Image source 為舊版素材歷史來源。
+Image source:
 Mahjong wiki(https://en.wikipedia.org/wiki/Mahjong)
 TJMJ(https://sourceforge.net/projects/tjmj/)
 http://163.20.160.14/~word/modules/myalbum_search/
