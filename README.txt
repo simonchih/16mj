@@ -20,7 +20,36 @@
 
 美術原稿、完整生成提示及重建方式：art/ART_DIRECTION.md。
 執行遊戲不需 Pillow 或 imagegen；僅需 requirements.txt 中的 pygame-ce。
-16mj.spec 已更新主程式路徑與圖片／字型打包清單；未在本次驗證中建置 EXE。
+
+== 打包成單一執行檔（不需另外安裝 Python） ==
+
+務必使用同一個 Python 環境安裝依賴並執行 PyInstaller。
+套件安裝名稱為 pygame-ce，程式內的匯入名稱仍是 pygame。
+只加 hiddenimports 無法打包未安裝的套件。
+
+macOS / Linux，在專案目錄執行：
+  python3 -m venv .venv
+  .venv/bin/python -m pip install -r requirements-build.txt
+  .venv/bin/python -m PyInstaller --clean --noconfirm 16mj.spec
+  ./dist/16mj
+
+Windows，在專案目錄執行：
+  py -3 -m venv .venv
+  .venv\Scripts\python.exe -m pip install -r requirements-build.txt
+  .venv\Scripts\python.exe -m PyInstaller --clean --noconfirm 16mj.spec
+  dist\16mj.exe
+
+16mj.spec 已設定單檔模式，包含 Python、遊戲使用的 Python 模組、
+pygame/SDL 動態函式庫、整個 Image 資料夾及 wqy-zenhei.ttf 字型。
+使用 spec 建置不需另加 --onefile 或 --add-data。
+只需複製 dist/16mj（Windows 為 dist/16mj.exe）即可；
+執行時會先解壓縮到暫存目錄，首次啟動可能稍慢。
+art 是美術原稿及開發資料，不是遊戲執行時所需的資源。
+
+執行檔依作業系統與 CPU 架構而定；macOS 建置的檔案無法當作 Windows EXE。
+要提供 Windows 版本，請在 Windows 上執行上述 Windows 指令。
+仍需要相容的作業系統；不代表同一個檔案能在所有平台執行。
+若建置前 pygame 檢查失敗，請依錯誤訊息在該 Python 環境安裝依賴。
 
 下方為原版規則說明；Image source 為舊版素材歷史來源。
 Image source:
